@@ -45,3 +45,18 @@ All provider parsing, model/SDK calls, and rendering must be isolated behind por
 
 ## Acceptance
 End-to-end synthetic event replay, deterministic and evidence-traceable insights, agent-driven audience narratives, broadcast-style timed overlays, automated tests, cloud integration, useful demo, honest limitations.
+
+
+## DRY (mandatory engineering principle)
+- One canonical source of truth per concept: event schemas, match state, derived metrics, verified evidence, viewing modes, deployment settings.
+- Typed interfaces and generated client types instead of duplicating Python/TypeScript contracts by hand.
+- Common match calculations and validators reused by detectors, agents, recaps and overlays; never recalculate statistics inside prompts or UI.
+- Shared agent tools/prompt grounding rules, with role-specific deltas only.
+- Factor repetition only when it is real; avoid speculative abstractions and excessive generic frameworks.
+- Review PRs explicitly for divergent duplicate logic/data and redundant configuration.
+
+## Agentic architecture status
+Owner approved deterministic core plus agentic explanation/personalization. **Selective specialist-agent orchestration remains proposed** pending review of ADR-0002 and measured value compared with a single-agent baseline.
+
+## Tooling governance
+The owner approved Codex interaction **for this MatchPulse AI project**; this does not grant access to unrelated repositories or organizations. Existing feature branch/PR reviews and billable Azure provisioning approval requirements remain in force.
