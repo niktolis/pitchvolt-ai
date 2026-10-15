@@ -53,9 +53,12 @@ class MatchProcessor:
             raise ValueError("Duplicate event ID")
         if event.event_type == EventType.TURNOVER and event.team_id != event.possession_team_id:
             raise ValueError("A turnover must award possession to the recovering team")
-        if self.possession_team is not None and event.possession_team_id != self.possession_team:
-            if event.event_type != EventType.TURNOVER:
-                raise ValueError("Possession change must use an explicit turnover event")
+        if (
+            self.possession_team is not None
+            and event.possession_team_id != self.possession_team
+            and event.event_type != EventType.TURNOVER
+        ):
+            raise ValueError("Possession change must use an explicit turnover event")
         self.events.append(event)
         self.possession_team = event.possession_team_id
         found = self._detect()
