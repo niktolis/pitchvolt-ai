@@ -8,7 +8,7 @@ This is the architectural entry point. **D2 source is authoritative**, while emb
 
 [Editable D2 source](diagrams/deployment.d2) · [Rendering and exports](rendering.md)
 
-The current implementation runs locally as Python scenarios and a synchronous match processor. Azure Container Apps, Foundry, and React remain intended deployment components, **not implemented in this PR**. The deployment boundary clarifies who owns match state and where future streaming interfaces connect.
+The current implementation runs locally as Python scenarios and a synchronous match processor, either natively or through Docker Compose and an optional VS Code Dev Container. [Development commands](../development.md). Azure Container Apps, Foundry, and React remain intended deployment components, **not implemented in this PR**. The deployment boundary clarifies who owns match state and where future streaming interfaces connect.
 
 ## 2. Dynamic sequence — From a football action to an overlay
 
