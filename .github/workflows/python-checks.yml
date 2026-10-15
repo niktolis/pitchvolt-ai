@@ -3,8 +3,6 @@ on:
   pull_request:
   push:
     branches: [main]
-permissions:
-  contents: write
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,24 +10,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
       - uses: astral-sh/setup-uv@v6
         with:
           version: '0.10.0'
-      - name: Generate lock and commit once
+      - name: Validate lockfile and install exact dependencies
         run: |
-          uv lock --python 3.12
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add uv.lock
-          if ! git diff --cached --quiet; then
-            git commit -m 'build: lock Python dependencies'
-            git fetch origin feat/stateful-match-intelligence
-            git rebase origin/feat/stateful-match-intelligence
-            git push origin HEAD:feat/stateful-match-intelligence
-          fi
-      - run: python -m pip install -e '.[dev]'
-      - run: bash scripts/check.sh
+          uv lock --check
+          uv sync --frozen --extra dev
+      - name: Run shared checks
+        run: uv run --frozen bash scripts/check.sh
       - name: Build and test development container
         run: |
           docker compose build backend
