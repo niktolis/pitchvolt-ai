@@ -17,9 +17,9 @@ local: Local development {
 }
 azure: Azure (planned, not deployed) {
   aca: Azure Container Apps Consumption {
-    backend: Match engine + API
+    backend: Match engine + FastAPI / SSE
     frontend: React client
-    backend -> frontend: event overlays / narrative updates
+    backend -> frontend: SSE events + tactical insights (API implemented; UI planned)
   }
   foundry: Microsoft Foundry {
     agents: Analyst + Storyteller + conditional Editor
