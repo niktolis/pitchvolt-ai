@@ -3,7 +3,7 @@ source: Synthetic EventSource
 adapter: Canonical adapter
 engine: MatchProcessor
 detector: Tactical detector
-ui: Live overlay
+api: FastAPI SSE\nui: Live overlay (planned)
 orchestrator: Agent orchestrator
 foundry: Foundry agents
 verifier: Deterministic verifier
@@ -11,7 +11,7 @@ verifier: Deterministic verifier
 source -> adapter: match event at replay timestamp
 adapter -> engine: validated MatchEvent
 engine -> detector: updated state
-detector -> ui: verified tactical insight + evidence IDs
+detector -> api: verified tactical insight + evidence IDs\napi -> ui: SSE match_event / tactical_insight (UI planned)
 detector -> orchestrator: valuable insight candidate (async, planned)
 orchestrator -> foundry: evidence-only tools + audience profile
 foundry -> verifier: structured narrative with references
