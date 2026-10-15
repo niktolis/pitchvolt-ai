@@ -1,19 +1,24 @@
 shape: sequence_diagram
+
 source: Synthetic EventSource
-adapter: Canonical adapter
 engine: MatchProcessor
-detector: Tactical detector
-api: FastAPI SSE\nui: Live overlay (planned)
+api: FastAPI / SSE
+ui: React broadcast UI
 orchestrator: Agent orchestrator
 foundry: Foundry agents
-verifier: Deterministic verifier
+verifier: Deterministic claim verifier
 
-source -> adapter: match event at replay timestamp
-adapter -> engine: validated MatchEvent
-engine -> detector: updated state
-detector -> api: verified tactical insight + evidence IDs\napi -> ui: SSE match_event / tactical_insight (UI planned)
-detector -> orchestrator: valuable insight candidate (async, planned)
-orchestrator -> foundry: evidence-only tools + audience profile
-foundry -> verifier: structured narrative with references
-verifier -> ui: accepted personalized overlay (planned)
-verifier -> orchestrator: invalid claim / fail-closed (planned)
+source -> engine: validated canonical MatchEvent
+engine -> api: accepted event
+api -> ui: SSE match_event
+engine -> api: tactical insight + evidence IDs
+api -> ui: SSE tactical_insight
+ui -> api: GET evidence for selected insight
+api -> ui: exact source events + deterministic metrics
+
+engine -> orchestrator: high-value insight candidate (planned)
+orchestrator -> foundry: read-only evidence + audience profile (planned)
+foundry -> verifier: structured narrative + references (planned)
+verifier -> orchestrator: accepted / rejected claim (planned)
+orchestrator -> api: verified narrative for same insight ID (planned)
+api -> ui: asynchronous personalized narrative (planned)

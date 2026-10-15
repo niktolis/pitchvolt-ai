@@ -1,65 +1,112 @@
 """Replayable HTTP/SSE adapter for the deterministic football domain.
 
 Stateless, per-request replay sessions avoid shared mutable match state across viewers.
+The adapter owns transport DTOs; football validation and detection remain in MatchProcessor.
 """
 from __future__ import annotations
 
 import asyncio
+import os
 from collections.abc import AsyncIterator
-from typing import Annotated
+from pathlib import Path
+from typing import Annotated, Literal
 
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from matchpulse.intelligence import MatchProcessor, analyze_stream
-from matchpulse.scenarios import scenario
+from matchpulse.events import MatchEvent, MatchMetadata
+from matchpulse.intelligence import MatchProcessor, TacticalInsight, analyze_stream
+from matchpulse.scenarios import SCENARIO_NAMES, scenario
 
-app = FastAPI(title="MatchPulse AI", version="0.2.0")
-SCENARIOS = ("high_press", "counterattack", "sustained_possession")
+app = FastAPI(title="MatchPulse AI", version="0.3.0")
+
+
+class TacticalInsightPayload(BaseModel):
+    insight_id: str
+    kind: str
+    team_id: str
+    clock_ms: int
+    evidence_event_ids: list[str]
+    metrics: dict[str, int | float]
 
 
 class ReplayMessage(BaseModel):
     id: int
-    kind: str
+    kind: Literal["match_event", "tactical_insight"]
     match_id: str
-    payload: dict
+    payload: MatchEvent | TacticalInsightPayload
 
 
-def _load(name: str):
-    if name not in SCENARIOS:
+class ScenarioCatalog(BaseModel):
+    scenarios: list[str]
+
+
+class MatchStateResponse(BaseModel):
+    match: MatchMetadata
+    events_processed: int
+    possession_team_id: str | None
+    insights: list[TacticalInsightPayload]
+
+
+class EvidenceResponse(BaseModel):
+    insight_id: str
+    events: list[MatchEvent]
+    metrics: dict[str, int | float]
+
+
+def _insight_payload(insight: TacticalInsight) -> TacticalInsightPayload:
+    """One transport mapping for every API surface that exposes an insight."""
+    return TacticalInsightPayload(
+        insight_id=insight.insight_id,
+        kind=insight.kind.value,
+        team_id=insight.team_id,
+        clock_ms=insight.clock_ms,
+        evidence_event_ids=list(insight.evidence_event_ids),
+        metrics=insight.metrics,
+    )
+
+
+def _load(name: str) -> tuple[MatchMetadata, list[MatchEvent]]:
+    if name not in SCENARIO_NAMES:
         raise HTTPException(status_code=404, detail="Unknown scenario")
     return scenario(name)
 
 
 def timeline(name: str) -> list[ReplayMessage]:
-    """Single deterministic publication contract for replay and catch-up."""
+    """Single deterministic publication contract for replay, UI and catch-up."""
     match, events = _load(name)
     processor = MatchProcessor(match)
     messages: list[ReplayMessage] = []
     for event in events:
         insights = processor.ingest(event)
-        messages.append(ReplayMessage(
-            id=len(messages) + 1, kind="match_event", match_id=match.match_id,
-            payload=event.model_dump(mode="json"),
-        ))
+        messages.append(
+            ReplayMessage(
+                id=len(messages) + 1,
+                kind="match_event",
+                match_id=match.match_id,
+                payload=event,
+            )
+        )
         for insight in insights:
-            messages.append(ReplayMessage(
-                id=len(messages) + 1, kind="tactical_insight", match_id=match.match_id,
-                payload={
-                    "insight_id": insight.insight_id,
-                    "kind": insight.kind.value,
-                    "team_id": insight.team_id,
-                    "clock_ms": insight.clock_ms,
-                    "evidence_event_ids": list(insight.evidence_event_ids),
-                    "metrics": insight.metrics,
-                },
-            ))
+            messages.append(
+                ReplayMessage(
+                    id=len(messages) + 1,
+                    kind="tactical_insight",
+                    match_id=match.match_id,
+                    payload=_insight_payload(insight),
+                )
+            )
     return messages
 
 
 def _sse(message: ReplayMessage) -> str:
-    return f"id: {message.id}\nevent: {message.kind}\ndata: {message.model_dump_json()}\n\n"
+    return (
+        f"id: {message.id}\n"
+        f"event: {message.kind}\n"
+        f"data: {message.model_dump_json()}\n\n"
+    )
 
 
 @app.get("/health")
@@ -67,41 +114,41 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/api/scenarios")
-def list_scenarios() -> dict[str, list[str]]:
-    return {"scenarios": list(SCENARIOS)}
+@app.get("/api/scenarios", response_model=ScenarioCatalog)
+def list_scenarios() -> ScenarioCatalog:
+    return ScenarioCatalog(scenarios=list(SCENARIO_NAMES))
 
 
-@app.get("/api/matches/{name}/state")
-def match_state(name: str) -> dict:
+@app.get("/api/matches/{name}/timeline", response_model=list[ReplayMessage])
+def replay_timeline(name: str) -> list[ReplayMessage]:
+    """Finite deterministic snapshot used for contract generation and replay inspection."""
+    return timeline(name)
+
+
+@app.get("/api/matches/{name}/state", response_model=MatchStateResponse)
+def match_state(name: str) -> MatchStateResponse:
     match, events = _load(name)
-    return {
-        "match": match.model_dump(),
-        "events_processed": len(events),
-        "possession_team_id": events[-1].possession_team_id if events else None,
-        "insights": [
-            {
-                "insight_id": i.insight_id, "kind": i.kind.value,
-                "evidence_event_ids": list(i.evidence_event_ids), "metrics": i.metrics,
-            }
-            for i in analyze_stream(match, events)
-        ],
-    }
+    return MatchStateResponse(
+        match=match,
+        events_processed=len(events),
+        possession_team_id=events[-1].possession_team_id if events else None,
+        insights=[_insight_payload(item) for item in analyze_stream(match, events)],
+    )
 
 
-@app.get("/api/matches/{name}/evidence/{insight_id:path}")
-def evidence(name: str, insight_id: str) -> dict:
+@app.get("/api/matches/{name}/evidence/{insight_id:path}", response_model=EvidenceResponse)
+def evidence(name: str, insight_id: str) -> EvidenceResponse:
     match, events = _load(name)
     insights = analyze_stream(match, events)
-    insight = next((i for i in insights if i.insight_id == insight_id), None)
+    insight = next((item for item in insights if item.insight_id == insight_id), None)
     if insight is None:
         raise HTTPException(status_code=404, detail="Insight not found")
     ids = set(insight.evidence_event_ids)
-    return {
-        "insight_id": insight.insight_id,
-        "events": [e.model_dump(mode="json") for e in events if e.event_id in ids],
-        "metrics": insight.metrics,
-    }
+    return EvidenceResponse(
+        insight_id=insight.insight_id,
+        events=[event for event in events if event.event_id in ids],
+        metrics=insight.metrics,
+    )
 
 
 @app.get("/api/matches/{name}/stream")
@@ -123,14 +170,9 @@ async def stream(
         raise HTTPException(status_code=400, detail="Replay cursor out of range")
 
     async def publish() -> AsyncIterator[str]:
-        _, events = _load(name)
-        clocks = {e.event_id: e.clock_ms for e in events}
         previous_clock: int | None = None
         for message in messages:
-            if message.kind == "match_event":
-                clock = clocks[message.payload["event_id"]]
-            else:
-                clock = int(message.payload["clock_ms"])
+            clock = message.payload.clock_ms
             if message.id <= cursor:
                 previous_clock = clock
                 continue
@@ -142,5 +184,13 @@ async def stream(
             previous_clock = clock
         yield "event: replay_complete\ndata: {}\n\n"
 
-    return StreamingResponse(publish(), media_type="text/event-stream",
-                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+    return StreamingResponse(
+        publish(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+_web_dist = Path(os.environ.get("MATCHPULSE_WEB_DIST", "web/dist"))
+if _web_dist.is_dir():
+    app.mount("/", StaticFiles(directory=str(_web_dist), html=True), name="matchpulse-web")

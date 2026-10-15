@@ -1,36 +1,86 @@
 # Development environments
 
 ## Business purpose
-The same canonical football intelligence Python package runs natively, in local Docker Compose, and eventually in a Container Apps OCI runtime. Containers do not change tactical inference: a press, turnover, carry, pass and shot still yield a single evidence-backed high-press insight.
 
-## Local development (macOS / fish compatible)
-Install Docker Desktop (or a compatible Compose runtime), and from repository root:
+The same canonical football-intelligence package runs natively, in Docker Compose and in the production OCI image. Packaging must never change tactical inference: the same canonical event sequence must produce the same evidence-backed insight.
 
-```sh
-docker compose build backend
-docker compose run --rm backend bash scripts/check.sh
-docker compose run --rm backend python -c "from matchpulse.scenarios import scenario; from matchpulse.intelligence import analyze_stream; m, e = scenario('high_press'); print(analyze_stream(m, e))"
-```
+## Prerequisites
 
-Open the repository with VS Code **Dev Containers: Reopen in Container** to work in the long-lived Compose `dev` service.
+- Python 3.12 for the CI-equivalent native workflow.
+- `uv 0.10.0`.
+- Node.js 24.22.x and npm 11 for frontend development.
+- Docker Desktop or a compatible Docker/Compose runtime.
+- D2 v0.9.0 only when rendering architecture locally.
 
-Native Python is equally supported:
+## Python checks
 
-```sh
+~~~sh
 uv sync --frozen --extra dev
 uv run --frozen bash scripts/check.sh
-```
+~~~
 
-## Scope and architecture
-- `docker/backend.Dockerfile`: multi-stage build with separate development and non-root runtime stages.
-- `compose.yaml`: local test and development services using the same image source, not extra cloud services.
-- `.devcontainer/devcontainer.json`: reuse Compose rather than duplicate dependency installation.
-- `scripts/check.sh`: single test/lint entrypoint for local and CI.
-- Architecture rendering: `bash scripts/render-architecture.sh` on a host with D2 installed.
+`scripts/check.sh` is the shared local/CI entrypoint for Pytest and Ruff.
 
-**Explicitly not implemented:** FastAPI ingress, frontend, streaming transport, Foundry inference, cloud provisioning, distributed state, or production liveness probes. The runtime image currently executes a CLI smoke example until an API exists.
+## Frontend and generated API contracts
 
-## Reproducibility follow-up
-The committed `uv.lock` fixes Python transitive dependency versions and distribution hashes; `uv lock --check` is mandatory in CI, and Docker uses `uv sync --frozen`. The package requires Python 3.11+ and CI exercises Python 3.12. The Dockerfile pins the Python 3.12.12 image, uv 0.10.0 image and Dockerfile frontend using immutable OCI digests (multi-platform manifests). Keep those digests updated deliberately, with tested PRs and documented dependency changes. The remaining CI GitHub Actions references are version tags rather than immutable action commit SHAs; pinning actions by SHA is recommended as a separate supply-chain hardening improvement. D2 renderer version is pinned to `v0.9.0` in CI and verified in `scripts/render-architecture.sh`. Install that D2 version locally with the official installer (`--version v0.9.0`) when necessary.
+The backend is the transport contract source of truth. Do not hand-copy Pydantic response models into TypeScript.
 
-For Apple Silicon development, Docker builds local ARM64 images by default; Azure deployment image builds must explicitly target `linux/amd64` or provide a multiarch manifest and be tested.
+~~~sh
+npm ci --prefix web
+uv run --frozen bash scripts/check-web.sh
+~~~
+
+`scripts/check-web.sh`:
+
+1. exports FastAPI OpenAPI to `web/openapi.json`;
+2. generates `web/src/api/generated.ts` with `openapi-typescript`;
+3. fails if committed generated artifacts drift;
+4. runs Biome, TypeScript, Vitest and the Vite production build.
+
+When intentionally changing an API contract, regenerate the committed files before review:
+
+~~~sh
+uv run --frozen python scripts/export-openapi.py
+npm --prefix web run contracts:generate
+npm --prefix web run format
+~~~
+
+## Live development with Docker Compose
+
+~~~sh
+docker compose up --build api frontend
+~~~
+
+- FastAPI/Uvicorn: http://localhost:8000
+- React/Vite: http://localhost:5173
+- Vite proxies `/api` and `/health` to the API service, so development does not require a separate CORS policy.
+- SSE remains same-path from the browser's perspective.
+
+The long-lived `dev` service remains available for VS Code Dev Containers.
+
+## Production-style runtime
+
+~~~sh
+docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-runtime:test .
+docker run --rm -p 8000:8000 matchpulse-runtime:test
+~~~
+
+The multi-stage build compiles React and copies the static bundle into the non-root FastAPI runtime. FastAPI serves the UI same-origin after explicit API routes. This deliberately gives the hackathon one deployable workload while keeping Python and React source boundaries separate.
+
+## Reproducibility
+
+- `uv.lock` fixes Python transitive versions and hashes; CI uses `uv lock --check` and `uv sync --frozen`.
+- `web/package-lock.json` fixes the npm dependency graph; CI uses `npm ci`.
+- Python, uv and Node container images are pinned by immutable OCI digests.
+- D2 is pinned to v0.9.0 in CI.
+- GitHub Action references are still version tags rather than immutable action SHAs; pinning them is a separate supply-chain hardening task.
+
+Apple Silicon development builds ARM64 locally by default. Any eventual Azure image build must explicitly target the intended Container Apps architecture or publish a tested multi-architecture manifest.
+
+## Implemented vs planned
+
+Implemented locally: canonical schemas, synthetic scenarios, deterministic detectors, FastAPI/SSE, evidence HTTP API, React broadcast UI, generated transport contracts, Docker packaging and automated checks.
+
+Planned: Foundry agent orchestration, deterministic narrative claim verification, production telemetry, Azure Container Apps deployment, persisted multi-replica state, authentication and authorized external feed adapters.
+
+No billable Azure resource may be provisioned or modified without explicit cost review and approval.

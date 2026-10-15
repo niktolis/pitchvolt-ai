@@ -1,0 +1,29 @@
+name: Frontend checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install exact backend dependencies
+        run: uv sync --frozen --extra dev
+      - name: Install exact frontend dependencies
+        run: npm ci --prefix web
+      - name: Run shared frontend checks
+        run: uv run --frozen bash scripts/check-web.sh
+      - name: Build frontend development container
+        run: docker build --target web-development -f docker/backend.Dockerfile -t matchpulse-web:test .
