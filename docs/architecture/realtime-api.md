@@ -20,7 +20,7 @@ For local demo: `curl -N 'http://localhost:8000/api/matches/high_press/stream?sp
 
 Each subscriber constructs an independent `MatchProcessor`; it replays one deterministic fixture and emits a single `timeline()` publication contract. No global mutable state, background worker, or model calls are required. Reconnects use the deterministic message ID, not a mutable server buffer. The source clock determines the sleep between frames. `speed` changes replay wall-clock delay only, never match timing or football facts.
 
-The fast path is **implemented as a finite synthetic SSE replay**. The asynchronous Foundry narrative path, multi-match state store, persistence, access control, user-specific preferences, live external feed connectors, and UI are **not implemented**.
+The fast path is **implemented as a finite synthetic SSE replay** and is consumed by the React live-broadcast UI. The asynchronous Foundry narrative path, multi-match state store, persistence, access control, persisted user preferences, and live external feed connectors are **not implemented**.
 
 ## Limitations and operational consequences
 
@@ -30,7 +30,7 @@ The fast path is **implemented as a finite synthetic SSE replay**. The asynchron
 - `after` and `Last-Event-ID` refer to **published message IDs** (events plus insights), not just football event sequence numbers.
 - No cross-replica state consistency problem yet, because streams are reconstructed from fixed immutable fixtures. Dynamic live feeds will need persisted ordering and recoverable checkpoints.
 - Disconnections do not mutate shared state. A reconnection can resume the exact deterministic stream, but accumulated *live* realtime events are not persisted.
-- Agent inference must never block SSE publication. Future narratives should reference the same insight ID and evidence.
+- Agent inference must never block SSE publication. Future narratives must reference the same insight ID and evidence; the current UI already reserves that factual boundary.
 - No claims of measured p95 latency or concurrent-user scaling yet.
 
 ## Architecture ownership

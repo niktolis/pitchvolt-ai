@@ -4,35 +4,45 @@ title: MatchPulse AI deployment architecture {
   near: top-center
   style.font-size: 24
 }
-local: Local development {
-  devcontainer: VS Code Dev Container / Docker Compose
-  devcontainer -> simulator: editable workspace
-  simulator: Synthetic scenario generator
-  processor: Canonical event processor
-  unit_tests: Pytest + Ruff via scripts/check.sh
-  devcontainer -> unit_tests: shared validation
-  simulator -> processor: canonical events
-  processor -> devcontainer: shared OCI Python package
-  unit_tests -> processor: validates
+
+local: Current implementation {
+  source: Synthetic scenarios
+  processor: Canonical MatchProcessor
+  api: FastAPI + SSE
+  ui: React / TypeScript broadcast
+  checks: Pytest + Ruff + TS + Vitest + Biome
+  image: Production OCI image {
+    backend: Uvicorn + FastAPI
+    static: Compiled React assets
+  }
+
+  source -> processor: canonical MatchEvent
+  processor -> api: events + deterministic insights
+  api -> ui: SSE + evidence HTTP
+  checks -> processor: domain validation
+  checks -> api: API contracts
+  checks -> ui: generated OpenAPI types + UI checks
+  api -> image.backend: packaged
+  ui -> image.static: Vite production build
+  image.static -> image.backend: same-origin static mount
 }
-azure: Azure (planned, not deployed) {
-  aca: Azure Container Apps Consumption {
-    backend: Match engine + FastAPI / SSE
-    frontend: React client
-    backend -> frontend: SSE events + tactical insights (API implemented; UI planned)
+
+azure: Azure target (planned, not deployed) {
+  aca: Container Apps Consumption {
+    runtime: One MatchPulse OCI workload
   }
   foundry: Microsoft Foundry {
     agents: Analyst + Storyteller + conditional Editor
   }
-  backend_log: Structured telemetry
-  aca.backend -> foundry.agents: selective evidence-grounded requests
-  foundry.agents -> aca.backend: narrative results
-  aca.backend -> backend_log: metrics and traces
+  telemetry: Structured telemetry
+
+  aca.runtime -> foundry.agents: selective evidence-grounded requests
+  foundry.agents -> aca.runtime: verified narrative candidate
+  aca.runtime -> telemetry: metrics + traces
 }
-local.processor -> azure.aca.backend: OCI container deployment (future) {
+
+local.image -> azure.aca.runtime: deploy only after cost approval {
   style.stroke-dash: 5
 }
-legend: Boundary legend {
-  shape: text
-  label: "Local = current implementation; Azure = deployment target; not provisioned by this PR."
-}
+
+legend: "Solid local flows = implemented. Dashed Azure deployment = approved target only."

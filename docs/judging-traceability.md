@@ -1,28 +1,37 @@
 # Judging Traceability Matrix
 
-Status: planning hypothesis. Official rubric states **five equal 20% criteria**; confirm exact subcriterion wording against the official challenge/rules before final submission.
+Status: implementation evidence as of 15 October 2026. The five judging criteria are treated as equal priorities; final submission wording must still be checked against the official rules immediately before hand-in.
 
-| Criterion (20% each) | Evidence required in product | Verification / demonstration | Tracking |
+| Criterion | Current evidence | Remaining proof before submission | Tracking |
 |---|---|---|---|
-| Technological Implementation | Original realistic synthetic stream, canonical adapters, deterministic analytics, code quality, Azure integration | Fixed-seed replay, invariants, automated tests, CI, deployed proof | #1 #2 #3 #6 |
-| Agentic Design & Innovation | Foundry-orchestrated meaningful analyst/narrator/verifier responsibilities, tool access to evidence, controlled AI flow | Trace of tool calls, compare narratives, unsupported claim rejection | #4 |
-| Real-World Impact & Applicability | Structured broadcast protocol, replayability, low latency, resiliency, cost controls | Latency measurements, fault demonstrations, running endpoint, cost summary | #5 #6 #8 |
-| User Experience & Presentation | Live pitch/overlay, three visibly distinct modes, compelling 60–90s demo | Recorded event → evidence → overlay → mode switch | #5 #8 |
-| Challenge Adherence | Ingest, Interpret, Explain, Render, Personalize; original synthetic data; narratives, recaps and multilingual when feasible | Feature checklist, one continuous wow sequence, match recap | #2 #3 #4 #5 #7 |
+| Technological Implementation | Versioned Pydantic event model, deterministic stream invariants/detectors, fixed synthetic scenarios, FastAPI/SSE replay/evidence API, generated TS contracts, Python/frontend/D2 CI, containerized runtime | Measured performance and final deployed proof | #1 #2 #3 #6 |
+| Agentic Design & Innovation | Accepted selective Analyst + Storyteller + deterministic verifier architecture; evidence endpoint already forms the read-only factual tool boundary | Implement actual Microsoft Foundry orchestration, tool-call/handoff trace, unsupported-claim rejection, latency/cost comparison | #4 |
+| Real-World Impact & Applicability | Replay cursor, reconnect semantics, evidence inspection, single deployable OCI workload, documented scaling limitations and cost guardrails | Production telemetry, fault/timeout demonstration, accessible endpoint and cost summary | #5 #6 #8 |
+| User Experience & Presentation | Live React pitch, synchronized event timeline, tactical insight card, evidence drill-down, replay controls and casual/analyst/club presentation modes | Visual polish review, judge walkthrough capture, AI narrative arrival in the same interface | #5 #8 |
+| Challenge Adherence | Synthetic-data provenance; implemented Ingest → Interpret → Render and deterministic personalization preview; Explain boundary prepared through evidence contracts | Foundry Explain step, verified personalized narratives, final end-to-end wow sequence; recap/multilingual only if core demo is secure | #2 #3 #4 #5 #7 |
 
 ## Demo spine
-1. Replay invented teams and players (press → turnover → pass → shot).
-2. Highlight evidence and deterministic tactical insight.
-3. Show synchronized overlay.
-4. Switch casual/analyst/club profiles while facts and evidence remain unchanged.
-5. Show optional player focus and full-time recap if validated and implemented.
+
+1. Replay fictional teams and players through pressure → failed pressured pass → turnover → carry/pass → shot.
+2. Show the canonical event moving on the pitch and the ordered timeline.
+3. Let the detector publish a high-press insight immediately after the shot.
+4. Open the insight's exact evidence records and metrics.
+5. Switch casual/analyst/club modes while the underlying facts remain unchanged.
+6. Once Foundry is implemented, show the slower grounded narrative update for the same stable insight ID and expose the agent/evidence trace.
 
 ## Quality gates
-- **G0 planning**: reviewed architecture, rubric mapping, backlog, financial guardrails.
-- **G1 data**: deterministic event generator and fixture scenarios with unit tests.
-- **G2 intelligence**: traced detectors and Foundry grounding test.
-- **G3 UX**: complete wow moment and personalized views.
-- **G4 submission**: deployed accessible demo, verified claims, public-source publication, recording, operating instructions.
+
+- **G0 planning — complete:** reviewed architecture, rubric mapping, backlog and financial guardrails.
+- **G1 deterministic data/core — substantially complete:** canonical schema, synthetic scenarios, invariants, replay and detector tests.
+- **G2 intelligence/agentic — partial:** deterministic intelligence complete for the implemented scenarios; Foundry orchestration and narrative verifier remain.
+- **G3 UX — first vertical slice implemented:** live broadcast, replay, evidence and deterministic audience modes; AI narrative integration remains.
+- **G4 submission — not started:** approved Azure deployment, measured latency/cost, demo recording, final README/rules/license/secrets checks.
 
 ## Submission constraints
-Private development repository may need publication before final hand-in; screen for secrets and external data licenses. Azure trial: €175.99 available and spending limit On as of Oct 15, 2026. No cash spending beyond trial credit; budget alerts are not a hard kill switch. Verify judging-period availability through Nov 10 and reserve enough credits for review.
+
+- Synthetic fictional data only unless a future source is explicitly authorized and licensed.
+- Private development may require a reviewed public-source publication before hand-in; perform a secrets/license scan first.
+- Azure Free Trial spending limit must remain enabled.
+- Budget alerts are observability, not a hard kill switch.
+- No Azure provisioning or billable-resource modification without explicit project-owner approval.
+- Reserve sufficient approved trial capacity for the judging window rather than consuming credits during development.

@@ -26,12 +26,15 @@ jobs:
           docker compose run --rm backend bash scripts/check.sh
       - name: Build production-stage image
         run: docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-runtime:test .
-      - name: Run production-stage HTTP smoke test
+      - name: Run production-stage HTTP and UI smoke test
         run: |
           docker run -d --name matchpulse-test -p 8000:8000 matchpulse-runtime:test
           trap 'docker rm -f matchpulse-test || true' EXIT
           for i in $(seq 1 20); do
-            if curl --fail --silent http://localhost:8000/health; then exit 0; fi
+            if curl --fail --silent http://localhost:8000/health; then
+              curl --fail --silent http://localhost:8000/ | grep -q 'MatchPulse AI'
+              exit 0
+            fi
             sleep 1
           done
           docker logs matchpulse-test

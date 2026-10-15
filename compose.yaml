@@ -9,7 +9,35 @@ services:
       - .:/workspace
     command: ["python", "-m", "pytest", "-q"]
     init: true
+
+  api:
+    extends:
+      service: backend
+    command: ["uvicorn", "matchpulse.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      target: web-development
+    working_dir: /web
+    environment:
+      VITE_API_PROXY_TARGET: http://api:8000
+    volumes:
+      - ./web:/web
+      - frontend-node-modules:/web/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    init: true
+
   dev:
     extends:
       service: backend
     command: ["sleep", "infinity"]
+
+volumes:
+  frontend-node-modules:
