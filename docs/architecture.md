@@ -56,7 +56,7 @@ End-to-end synthetic event replay, deterministic and evidence-traceable insights
 - Review PRs explicitly for divergent duplicate logic/data and redundant configuration.
 
 ## Agentic architecture status
-Owner approved deterministic core plus agentic explanation/personalization. **Selective specialist-agent orchestration remains proposed** pending review of ADR-0002 and measured value compared with a single-agent baseline.
+Owner approved deterministic core plus agentic explanation/personalization. **Selective specialist-agent orchestration was approved on 2026-10-15**, recorded in ADR-0002. Analyst and Storyteller provide meaningful specialist collaboration, with deterministic validation for every output and conditional Editorial review; optimize against measured cost and latency.
 
 ## Tooling governance
 The owner approved Codex interaction **for this MatchPulse AI project**; this does not grant access to unrelated repositories or organizations. Existing feature branch/PR reviews and billable Azure provisioning approval requirements remain in force.
