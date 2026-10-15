@@ -18,8 +18,8 @@ jobs:
       - name: Install D2 CLI
         run: |
           curl -fsSL https://d2lang.com/install.sh -o /tmp/d2-install.sh
-          sh /tmp/d2-install.sh
-          d2 --version
+          sh /tmp/d2-install.sh --version v0.9.0
+          test "$(d2 --version)" = "v0.9.0"
       - name: Render and export D2 architecture
         run: bash scripts/render-architecture.sh --export
       - name: Upload documentation renders
