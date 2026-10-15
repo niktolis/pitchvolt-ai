@@ -1,0 +1,44 @@
+name: Architecture diagrams
+on:
+  push:
+    branches:
+      - 'feat/**'
+      - 'docs/**'
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Install D2 CLI
+        run: |
+          curl -fsSL https://d2lang.com/install.sh -o /tmp/d2-install.sh
+          sh /tmp/d2-install.sh --version v0.9.0
+          test "$(d2 --version)" = "v0.9.0"
+      - name: Render and export D2 architecture
+        run: bash scripts/render-architecture.sh --export
+      - name: Upload documentation renders
+        uses: actions/upload-artifact@v4
+        with:
+          name: matchpulse-architecture
+          path: |
+            docs/architecture/rendered/*.svg
+            build/architecture/*.pdf
+            build/architecture/*.pptx
+      - name: Commit generated SVG for GitHub Markdown
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/architecture/rendered
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: render D2 architecture SVGs"
+            git fetch origin "${{ github.head_ref || github.ref_name }}"
+            git rebase "origin/${{ github.head_ref || github.ref_name }}"
+            git push origin "HEAD:${{ github.head_ref || github.ref_name }}"
+          fi

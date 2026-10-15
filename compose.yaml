@@ -1,0 +1,15 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      target: development
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: ["python", "-m", "pytest", "-q"]
+    init: true
+  dev:
+    extends:
+      service: backend
+    command: ["sleep", "infinity"]

@@ -10,7 +10,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - run: python -m pip install -e '.[dev]'
-      - run: python -m pytest -q
-      - run: ruff check src tests
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - name: Validate lockfile and install exact dependencies
+        run: |
+          uv lock --check
+          uv sync --frozen --extra dev
+      - name: Run shared checks
+        run: uv run --frozen bash scripts/check.sh
+      - name: Build and test development container
+        run: |
+          docker compose build backend
+          docker compose run --rm backend bash scripts/check.sh
+      - name: Build production-stage image
+        run: docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-runtime:test .
+      - name: Run production-stage smoke test
+        run: docker run --rm matchpulse-runtime:test

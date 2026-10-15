@@ -1,0 +1,14 @@
+direction: right
+ingestion: Event validation
+possession: Possession ownership
+transition: Explicit turnover
+shot: Shot detection
+insight: Evidence-backed tactical insight
+reject: Reject invalid input
+
+ingestion -> possession: valid ordered event
+ingestion -> reject: unknown team / duplicate / out of order
+possession -> transition: possession changes only with TURNOVER
+transition -> shot: carry / pass / shot within time window
+shot -> insight: classify pressure or counterattack
+possession -> shot: no turnover = no transition insight
