@@ -17,8 +17,8 @@ Open the repository with VS Code **Dev Containers: Reopen in Container** to work
 Native Python is equally supported:
 
 ```sh
-python -m pip install -e '.[dev]'
-bash scripts/check.sh
+uv sync --frozen --extra dev
+uv run --frozen bash scripts/check.sh
 ```
 
 ## Scope and architecture
@@ -31,6 +31,6 @@ bash scripts/check.sh
 **Explicitly not implemented:** FastAPI ingress, frontend, streaming transport, Foundry inference, cloud provisioning, distributed state, or production liveness probes. The runtime image currently executes a CLI smoke example until an API exists.
 
 ## Reproducibility follow-up
-Python is fixed to the 3.12 minor and dependency versions are bounded but not yet fully locked. Before producing deployment images, generate and commit a reproducible lock file and pin image digests. The D2 CLI version should likewise be fixed consistently across local development and CI; do not mistake this first containerized slice for fully reproducible production packaging.
+The committed `uv.lock` fixes Python transitive dependency versions and distribution hashes; `uv lock --check` is mandatory in CI, and Docker uses `uv sync --frozen`. The package requires Python 3.11+ and CI exercises Python 3.12. The OCI base image and uv tool-image digest locking is tracked as a separate explicit supply-chain gate; floating image digests still prevent claiming fully reproducible container builds. D2 renderer version is pinned to `v0.9.0` in CI and verified in `scripts/render-architecture.sh`. Install that D2 version locally with the official installer (`--version v0.9.0`) when necessary.
 
 For Apple Silicon development, Docker builds local ARM64 images by default; Azure deployment image builds must explicitly target `linux/amd64` or provide a multiarch manifest and be tested.
