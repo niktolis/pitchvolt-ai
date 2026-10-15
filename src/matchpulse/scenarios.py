@@ -6,7 +6,13 @@ from datetime import UTC, datetime, timedelta
 from random import Random
 
 from matchpulse.events import (
-    EventType, MatchEvent, MatchMetadata, Outcome, Point, Provenance, validate_stream,
+    EventType,
+    MatchEvent,
+    MatchMetadata,
+    Outcome,
+    Point,
+    Provenance,
+    validate_stream,
 )
 from matchpulse.simulation import MATCH, high_press_replay
 
