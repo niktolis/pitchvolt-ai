@@ -1,0 +1,33 @@
+name: Bootstrap reproducible Python lock
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/stateful-match-intelligence]
+    paths:
+      - 'pyproject.toml'
+      - '.github/workflows/bootstrap-lock.yml'
+permissions:
+  contents: write
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/stateful-match-intelligence
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - name: Produce dependency lock (all platforms)
+        run: uv lock --python 3.12
+      - name: Commit lock
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add uv.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "build: lock Python dependency graph"
+            git fetch origin feat/stateful-match-intelligence
+            git rebase origin/feat/stateful-match-intelligence
+            git push origin HEAD:feat/stateful-match-intelligence
+          fi
