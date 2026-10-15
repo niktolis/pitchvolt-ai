@@ -1,0 +1,52 @@
+name: Architecture diagrams
+on:
+  push:
+    branches:
+      - 'feat/**'
+      - 'docs/**'
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: Install D2 CLI
+        run: |
+          curl -fsSL https://d2lang.com/install.sh -o /tmp/d2-install.sh
+          sh /tmp/d2-install.sh
+          d2 --version
+      - name: Validate and render D2 documentation
+        run: |
+          set -euo pipefail
+          mkdir -p docs/architecture/rendered
+          for source in docs/architecture/diagrams/*.d2; do
+            name="$(basename "$source" .d2)"
+            d2 validate "$source"
+            d2 --layout=elk "$source" "docs/architecture/rendered/$name.svg"
+          done
+          # Optional presentation formats: export for reviewers, not committed binaries.
+          d2 --layout=elk docs/architecture/diagrams/deployment.d2 /tmp/matchpulse-deployment.pdf
+          d2 --layout=elk docs/architecture/diagrams/deployment.d2 /tmp/matchpulse-deployment.pptx
+      - name: Upload documentation renders
+        uses: actions/upload-artifact@v4
+        with:
+          name: matchpulse-architecture
+          path: |
+            docs/architecture/rendered/*.svg
+            /tmp/matchpulse-deployment.pdf
+            /tmp/matchpulse-deployment.pptx
+      - name: Commit generated SVG for GitHub Markdown
+        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/architecture/rendered
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: render D2 architecture SVGs"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
