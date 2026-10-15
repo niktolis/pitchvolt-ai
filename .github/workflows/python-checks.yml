@@ -20,10 +20,6 @@ jobs:
           uv sync --frozen --extra dev
       - name: Run shared checks
         run: uv run --frozen bash scripts/check.sh
-      - name: Record upstream OCI image digests for reproducibility
-        run: |
-          docker buildx imagetools inspect python:3.12.12-slim-bookworm | head -n 8
-          docker buildx imagetools inspect ghcr.io/astral-sh/uv:0.10.0 | head -n 8
       - name: Build and test development container
         run: |
           docker compose build backend
