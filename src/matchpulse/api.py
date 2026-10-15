@@ -5,7 +5,6 @@ Stateless, per-request replay sessions avoid shared mutable match state across v
 from __future__ import annotations
 
 import asyncio
-import json
 from collections.abc import AsyncIterator
 from typing import Annotated
 
@@ -13,8 +12,7 @@ from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from matchpulse.events import MatchEvent
-from matchpulse.intelligence import MatchProcessor, TacticalInsight, analyze_stream
+from matchpulse.intelligence import MatchProcessor, analyze_stream
 from matchpulse.scenarios import scenario
 
 app = FastAPI(title="MatchPulse AI", version="0.2.0")
