@@ -12,5 +12,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -e '.[dev]'
-      - run: python -m pytest -q
-      - run: ruff check src tests
+      - run: bash scripts/check.sh
+      - name: Build and test development container
+        run: |
+          docker compose build backend
+          docker compose run --rm backend bash scripts/check.sh
+      - name: Build production-stage image
+        run: docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-runtime:test .
+      - name: Run production-stage smoke test
+        run: docker run --rm matchpulse-runtime:test
