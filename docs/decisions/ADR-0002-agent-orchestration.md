@@ -1,6 +1,6 @@
 # ADR-0002: Selective specialist-agent orchestration (proposal)
 
-**Status:** Proposed — user requested tradeoff discussion before approval.  
+**Status:** Accepted — approved by project owner on 2026-10-15.  
 **Context:** Hackathon Agentic Design & Innovation is 20% of judging criteria; deadline October 27, 2026, Azure Free Trial only.
 
 ## Options
@@ -38,5 +38,5 @@
 ## Explicit non-goals
 - Three always-on hosted agents, open-ended conversations, LLM for deterministic stats, Foundry visual workflows scheduled for retirement Dec 1 2026.
 
-## Approval gate
-Do not treat this ADR as accepted until project owner approves the selective multi-agent design and escalation criteria.
+## Approval and execution policy
+Approved by project owner on 2026-10-15: selective specialist-agent orchestration. Analyst and Storyteller handle substantive narrative workflows; deterministic verification always runs; Editorial review is conditional on uncertainty, failed factual checks, or high-impact interpretation. Use measured cost, latency, and output quality to tune escalation thresholds. Changes to this architectural policy require a new review.
