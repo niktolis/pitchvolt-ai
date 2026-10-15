@@ -36,3 +36,7 @@ The fast path is **implemented as a finite synthetic SSE replay** and is consume
 ## Architecture ownership
 
 `src/matchpulse/api.py` is an adapter. Football validation/detection stays in `MatchProcessor`. Stream and evidence endpoints reference the existing canonical schema and deterministic insight calculations. Do not duplicate football statistics or embed LLM calls in the transport.
+
+## Additional synthetic input path
+
+`statsbomb_high_press` is a fourth supported synthetic scenario, produced by the StatsBomb-shaped fixture generator and provider adapter. Existing `/api/scenarios`, `state`, `timeline`, `stream` and `evidence` APIs require **no** special-case transport branch because they consume the canonical model. The API does not yet accept arbitrary uploaded StatsBomb files or provide live external feeds; full integration is tracked in #15.

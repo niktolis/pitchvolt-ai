@@ -67,7 +67,7 @@ class MatchProcessor:
 
     def _detect(self) -> list[TacticalInsight]:
         current = self.events[-1]
-        if current.event_type != EventType.SHOT:
+        if current.event_type not in (EventType.SHOT, EventType.GOAL):
             return []
         window = self.events[max(0, len(self.events) - 8) :]
         if any(event.period != current.period for event in window):

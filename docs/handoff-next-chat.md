@@ -53,3 +53,7 @@ bash scripts/render-architecture.sh --check
 ```
 
 Read `docs/architecture/README.md`, `docs/architecture/realtime-api.md`, `docs/development.md` and current GitHub issues #1–#8 before changing interfaces or scope. Every PR should describe the business logic with concrete code examples and update static/dynamic D2 architecture plus rendering.
+
+## October 16 update — StatsBomb-shaped synthetic input (issue #15)
+
+PR #14 (React UI) merged into main at `345ba2c81f8bafc60f84597311436eb7dd3f6b9d`. Issue #15 tracks strict synthetic StatsBomb-shaped adaptation and future full Open Data compatibility. A subsequent unmerged feature PR may add the 120 × 80 → 105 × 68m coordinate transformation, original synthetic source/adapter, and the `statsbomb_high_press` demo. The canonical source-of-truth model, single tactical processor, evidence and React pitch continue to use 105 × 68 **metres**; no real historical data may be mislabeled synthetic. Check the actual PR and main status before resuming. Foundry issue #4 remains the highest-priority agentic milestone.

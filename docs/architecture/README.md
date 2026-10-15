@@ -33,3 +33,7 @@ Input validation precedes state mutation. A possession change requires an explic
 Every PR that changes architecture, behavior, or deployment must update relevant D2 sources **and** written explanation, regenerate checked SVGs, and keep all diagrams consistent with actual implementation. Validate rendering in the **Architecture diagrams** CI job and visually inspect the embedded Markdown images. No hand-maintained duplicate diagrams.
 
 PDF and PPTX exports are produced as workflow artifacts; multi-board animations and clickable board navigation are available when future diagrams justify them. GitHub inline SVG embeds do not preserve interactive links, so this page provides ordinary links to each source and related documentation.
+
+## Input-adapter boundary
+
+The current `Synthetic EventSource` deployment box includes an additional **local** StatsBomb-shaped fictional adapter (issue #15). It translates 120 × 80 native provider coordinates into the same canonical 105 × 68m `MatchEvent`; all downstream arrows and deployed topology in the diagrams are unchanged. The adapter is not a remote StatsBomb service, and neither real historical import nor live provider ingestion is implied. [Data format and limits](../synthetic-data.md).

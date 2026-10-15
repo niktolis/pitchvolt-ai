@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_scenarios_health_state_and_timeline() -> None:
     assert client.get("/health").json() == {"status": "ok"}
     catalog = client.get("/api/scenarios").json()
-    assert catalog["scenarios"] == ["high_press", "counterattack", "sustained_possession"]
+    assert catalog["scenarios"] == ["high_press", "counterattack", "sustained_possession", "statsbomb_high_press"]
 
     state = client.get("/api/matches/high_press/state").json()
     assert state["insights"][0]["kind"] == "high_press"

@@ -41,3 +41,5 @@ Azure Container Apps and Microsoft Foundry are still **planned, not provisioned 
 - The UI has no authentication or user persistence.
 - EventSource resumes are supported by the API, but this first UI slice starts a fresh scenario when the replay controls change.
 - Sustained possession remains a negative-control fixture and emits no tactical insight.
+
+The fourth scenario, `statsbomb_high_press`, validates that StatsBomb-native synthetic pitch coordinates are normalized before UI delivery: the React pitch **always** receives canonical 105 × 68m event positions and never interprets 120 × 80 provider coordinates.

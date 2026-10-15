@@ -14,9 +14,10 @@ from matchpulse.events import (
     Provenance,
     validate_stream,
 )
+from matchpulse.providers.statsbomb import StatsBombSyntheticSource, synthetic_to_statsbomb
 from matchpulse.simulation import MATCH, high_press_replay
 
-SCENARIO_NAMES = ("high_press", "counterattack", "sustained_possession")
+SCENARIO_NAMES = ("high_press", "counterattack", "sustained_possession", "statsbomb_high_press")
 
 
 def _scenario(
@@ -81,6 +82,23 @@ def scenario(name: str, seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]
         raise ValueError(f"Unknown synthetic scenario: {name}")
 
     home, away = MATCH.home_team_id, MATCH.away_team_id
+    if name == "statsbomb_high_press":
+        # Export *original fiction* to the vendor-shaped schema and ingest it through
+        # the same adapter that a separate fictional StatsBomb JSON feed may use.
+        native_match, native_events = scenario("high_press", seed)
+        match = native_match.model_copy(update={
+            "match_id": f"synthetic-statsbomb-high-press-{seed}"
+        })
+        retagged = [e.model_copy(update={
+            "match_id": match.match_id,
+            "event_id": f"{match.match_id}-e{i:03d}",
+        }) for i, e in enumerate(native_events, 1)]
+        raw = synthetic_to_statsbomb(match, retagged)
+        provenance = Provenance(
+            generator="matchpulse-statsbomb-shaped", generator_version="0.1.0",
+            seed=seed, scenario=name,
+        )
+        return match, StatsBombSyntheticSource(match, raw, provenance).events()
     if name == "high_press":
         base = high_press_replay(seed)
         metadata = MATCH.model_copy(update={"match_id": f"synthetic-high-press-{seed}"})
