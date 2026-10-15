@@ -30,9 +30,16 @@ case "${1:-}" in
   *) usage >&2; exit 2 ;;
 esac
 
+D2_REQUIRED_VERSION="v0.9.0"
 if ! command -v d2 >/dev/null 2>&1; then
   echo "D2 CLI is required. On macOS: brew install d2" >&2
   exit 127
+fi
+
+actual_version="$(d2 --version)"
+if [[ "$actual_version" != "$D2_REQUIRED_VERSION" ]]; then
+  echo "D2 version mismatch: expected $D2_REQUIRED_VERSION, got $actual_version" >&2
+  exit 1
 fi
 
 shopt -s nullglob
