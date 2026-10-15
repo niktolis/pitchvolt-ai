@@ -21,4 +21,5 @@ WORKDIR /app
 RUN useradd --create-home --uid 10001 matchpulse
 COPY --from=base /opt/matchpulse-venv /opt/matchpulse-venv
 USER matchpulse
-CMD ["python", "-c", "from matchpulse.scenarios import scenario; from matchpulse.intelligence import analyze_stream; match, events = scenario('high_press'); print(analyze_stream(match, events))"]
+EXPOSE 8000
+CMD ["uvicorn", "matchpulse.api:app", "--host", "0.0.0.0", "--port", "8000"]
