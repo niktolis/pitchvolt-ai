@@ -1,0 +1,19 @@
+shape: sequence_diagram
+source: Synthetic EventSource
+adapter: Canonical adapter
+engine: MatchProcessor
+detector: Tactical detector
+ui: Live overlay
+orchestrator: Agent orchestrator
+foundry: Foundry agents
+verifier: Deterministic verifier
+
+source -> adapter: match event at replay timestamp
+adapter -> engine: validated MatchEvent
+engine -> detector: updated state
+detector -> ui: verified tactical insight + evidence IDs
+detector -> orchestrator: valuable insight candidate (async, planned)
+orchestrator -> foundry: evidence-only tools + audience profile
+foundry -> verifier: structured narrative with references
+verifier -> ui: accepted personalized overlay (planned)
+verifier -> orchestrator: invalid claim / fail-closed (planned)
