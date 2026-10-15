@@ -1,6 +1,4 @@
 """Contract tests for repeatable one-way streaming and evidence access."""
-import json
-
 from fastapi.testclient import TestClient
 
 from matchpulse.api import app, timeline
