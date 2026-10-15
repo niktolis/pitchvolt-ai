@@ -5,10 +5,14 @@ title: MatchPulse AI deployment architecture {
   style.font-size: 24
 }
 local: Local development {
+  devcontainer: VS Code Dev Container / Docker Compose
+  devcontainer -> simulator: editable workspace
   simulator: Synthetic scenario generator
   processor: Canonical event processor
-  unit_tests: Pytest
+  unit_tests: Pytest + Ruff via scripts/check.sh
+  devcontainer -> unit_tests: shared validation
   simulator -> processor: canonical events
+  processor -> devcontainer: shared OCI Python package
   unit_tests -> processor: validates
 }
 azure: Azure (planned, not deployed) {
