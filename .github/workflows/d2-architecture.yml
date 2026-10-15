@@ -41,12 +41,12 @@ jobs:
             /tmp/matchpulse-deployment.pdf
             /tmp/matchpulse-deployment.pptx
       - name: Commit generated SVG for GitHub Markdown
-        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/architecture/rendered
           if ! git diff --cached --quiet; then
             git commit -m "docs: render D2 architecture SVGs"
-            git push origin "HEAD:${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.head_ref || github.ref_name }}"
           fi
