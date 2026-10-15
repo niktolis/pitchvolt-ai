@@ -1,9 +1,7 @@
-from datetime import datetime, timezone
-
 import pytest
 from pydantic import ValidationError
 
-from matchpulse.events import EventType, MatchEvent, Outcome, Point, Provenance, validate_stream
+from matchpulse.events import EventType, MatchEvent, Point, Provenance, validate_stream
 from matchpulse.simulation import MATCH, high_press_replay
 
 
