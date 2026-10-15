@@ -1,0 +1,34 @@
+direction: right
+title: MatchPulse AI deployment architecture {
+  shape: text
+  near: top-center
+  style.font-size: 24
+}
+local: Local development {
+  simulator: Synthetic scenario generator
+  processor: Canonical event processor
+  unit_tests: Pytest
+  simulator -> processor: canonical events
+  unit_tests -> processor: validates
+}
+azure: Azure (planned, not deployed) {
+  aca: Azure Container Apps Consumption {
+    backend: Match engine + API
+    frontend: React client
+    backend -> frontend: event overlays / narrative updates
+  }
+  foundry: Microsoft Foundry {
+    agents: Analyst + Storyteller + conditional Editor
+  }
+  backend_log: Structured telemetry
+  aca.backend -> foundry.agents: selective evidence-grounded requests
+  foundry.agents -> aca.backend: narrative results
+  aca.backend -> backend_log: metrics and traces
+}
+local.processor -> azure.aca.backend: OCI container deployment (future) {
+  style.stroke-dash: 5
+}
+legend: Boundary legend {
+  shape: text
+  label: "Local = current implementation; Azure = deployment target; not provisioned by this PR."
+}
