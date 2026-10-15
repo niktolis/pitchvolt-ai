@@ -1,12 +1,33 @@
-# MatchPulse AI software architecture
+# MatchPulse AI — Software Architecture
 
-Architecture is documented as source and reviewed with each implementation PR. **D2 is authoritative** for diagrams. Keep the static deployment view, dynamic execution views, and narrative description consistent with the code.
+This is the architectural entry point. **D2 source is authoritative**, while embedded SVGs are generated automatically to make the design readable in GitHub. The views explicitly distinguish *implemented* and *planned* behaviors.
 
-- [Deployment architecture](diagrams/deployment.d2): Azure Container Apps deployment boundaries, current versus planned elements.
-- [Stream processing sequence](diagrams/streaming-sequence.d2): event ingest, deterministic detectors, agent-based narratives, asynchronous overlay updates.
-- [Tactical detection state transitions](diagrams/tactical-state.d2): simplified causal match-event flow and failure behavior.
-- [Business logic and limitations](business-logic.md): scenarios, detection rules, tests, known gaps.
+## 1. Deployment view
 
-To render diagrams (if D2 is installed): `d2 docs/architecture/diagrams/deployment.d2 deployment.svg`. Similarly for other .d2 files. Editable .d2 files are the tracked source; generated SVGs are optional build artifacts.
+![Deployment boundary and intended Azure integration](rendered/deployment.svg)
 
-**Architecture governance:** Every feature PR that alters components, data contracts, execution order, or deployment must update relevant diagrams and business logic, and document any consciously deferred capabilities. Do not create duplicate diagrams for identical concerns.
+[Editable D2 source](diagrams/deployment.d2) · [Rendering and exports](rendering.md)
+
+The current implementation runs locally as Python scenarios and a synchronous match processor. Azure Container Apps, Foundry, and React remain intended deployment components, **not implemented in this PR**. The deployment boundary clarifies who owns match state and where future streaming interfaces connect.
+
+## 2. Dynamic sequence — From a football action to an overlay
+
+![Event processing and planned narrative orchestration](rendered/streaming-sequence.svg)
+
+[Editable D2 source](diagrams/streaming-sequence.d2)
+
+The event source supplies a canonical event to the MatchProcessor. Each accepted event updates state and can emit a deterministic tactical insight with evidence IDs. The orchestrator/Foundry narrative calls and UI delivery are **planned**; their sequence conveys the approved two-speed architecture, not running functionality.
+
+## 3. Tactical process / state flow
+
+![Validation, possession change and tactical detection](rendered/tactical-state.svg)
+
+[Editable D2 source](diagrams/tactical-state.d2)
+
+Input validation precedes state mutation. A possession change requires an explicit turnover; otherwise the processor rejects the event. On a shot, the engine inspects a bounded causal window and may classify a pressing-assisted recovery or counterattack. [Business rules and worked examples](business-logic.md).
+
+## 4. Maintenance contract
+
+Every PR that changes architecture, behavior, or deployment must update relevant D2 sources **and** written explanation, regenerate checked SVGs, and keep all diagrams consistent with actual implementation. Validate rendering in the **Architecture diagrams** CI job and visually inspect the embedded Markdown images. No hand-maintained duplicate diagrams.
+
+PDF and PPTX exports are produced as workflow artifacts; multi-board animations and clickable board navigation are available when future diagrams justify them. GitHub inline SVG embeds do not preserve interactive links, so this page provides ordinary links to each source and related documentation.
