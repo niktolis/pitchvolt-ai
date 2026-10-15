@@ -5,7 +5,7 @@ This is a deliberately bounded demonstration fixture, not a full-match simulator
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from random import Random
 
 from matchpulse.events import (
@@ -19,7 +19,7 @@ from matchpulse.events import (
 )
 
 MATCH = MatchMetadata(match_id="synthetic-press-001", home_team_id="harbor-fc", away_team_id="ridge-fc")
-START = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
+START = datetime(2026, 1, 1, 12, 0, tzinfo=UTC)
 VERSION = "0.1.0"
 
 
