@@ -41,7 +41,7 @@ class Provenance(BaseModel):
     scenario: str
 
     @model_validator(mode="after")
-    def synthetic_only(self) -> "Provenance":
+    def synthetic_only(self) -> Provenance:
         if self.source != "synthetic":
             raise ValueError("MVP events must originate from synthetic data")
         return self
@@ -70,7 +70,7 @@ class MatchEvent(BaseModel):
     provenance: Provenance
 
     @model_validator(mode="after")
-    def validate_semantics(self) -> "MatchEvent":
+    def validate_semantics(self) -> MatchEvent:
         if not self.match_id or not self.event_id or not self.team_id or not self.player_id:
             raise ValueError("Identity fields must not be empty")
         if self.event_type == EventType.PASS and self.destination is None:
@@ -92,7 +92,7 @@ class MatchMetadata(BaseModel):
     pitch_width_m: float = 68
 
     @model_validator(mode="after")
-    def different_teams(self) -> "MatchMetadata":
+    def different_teams(self) -> MatchMetadata:
         if self.home_team_id == self.away_team_id:
             raise ValueError("Match requires two distinct teams")
         return self
