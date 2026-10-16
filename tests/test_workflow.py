@@ -61,8 +61,12 @@ def test_handoff_renders_only_server_owned_fact_templates() -> None:
     ))
     assert result.source == "controlled"
     assert result.rejection_reason is None
-    assert [step.role for step in result.trace] == [
-        "evidence", "analyst", "storyteller", "verifier",
+    assert result.trace[0].role == "evidence"
+    evidence_steps = [s for s in result.trace if s.action == "get_event"]
+    assert [s.reference for s in evidence_steps] == list(bundle.insight.evidence_event_ids)
+    assert all(s.role == "evidence" and s.duration_ms >= 0 for s in evidence_steps)
+    assert [s.role for s in result.trace[-3:]] == [
+        "analyst", "storyteller", "verifier",
     ]
     assert result.narrative.insight_id == bundle.insight.insight_id
     assert f"{bundle.insight.metrics['attacking_actions']} attacking actions" in result.narrative.text
@@ -99,3 +103,28 @@ def test_storyteller_cannot_change_insight_or_angle() -> None:
     )
     with pytest.raises(ValueError, match="insight"):
         publish_controlled(decision, plan, bundle)
+
+
+def test_evidence_tool_rejects_fabricated_event_reference() -> None:
+    bundle = _bundle()
+    tool = InMemoryEvidenceTool(lambda _: bundle)
+    with pytest.raises(ValueError, match="not evidence"):
+        tool.get_event(bundle.insight.insight_id, "invented-event-id")
+
+
+def test_event_tool_failure_prevents_controlled_publication() -> None:
+    bundle = _bundle()
+
+    class MissingEventTool:
+        def get(self, insight_id: str) -> EvidenceBundle:
+            assert insight_id == bundle.insight.insight_id
+            return bundle
+
+        def get_event(self, insight_id: str, event_id: str):
+            raise ValueError("event unavailable")
+
+    flow = Orchestrator(MissingEventTool(), AnalystDouble(), StorytellerDouble())
+    result = asyncio.run(flow.narrate(bundle.insight.insight_id, Audience.ANALYST))
+    assert result.source == "fallback"
+    assert result.trace[-1].action == "reject"
+    assert result.narrative.evidence_event_ids == bundle.insight.evidence_event_ids

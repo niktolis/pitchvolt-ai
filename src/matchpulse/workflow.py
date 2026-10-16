@@ -64,6 +64,7 @@ class TraceStep:
     role: str
     action: str
     duration_ms: float
+    reference: str | None = None
 
 
 @dataclass(frozen=True)
@@ -138,6 +139,16 @@ class Orchestrator:
         bundle = self.evidence_tool.get(insight_id)
         trace.append(TraceStep("evidence", "lookup", (perf_counter() - start) * 1000))
         try:
+            # Independently resolve cited evidence through the read-only port.
+            # This is a real local tool invocation, not a model-initiated call.
+            for event_id in bundle.insight.evidence_event_ids:
+                start = perf_counter()
+                event = self.evidence_tool.get_event(insight_id, event_id)
+                if event.event_id != event_id or event.match_id != bundle.insight.match_id:
+                    raise NarrativeRejection("Evidence tool returned a mismatched event")
+                trace.append(
+                    TraceStep("evidence", "get_event", (perf_counter() - start) * 1000, event_id)
+                )
             start = perf_counter()
             plan = await self.analyst.analyze(bundle)
             trace.append(TraceStep("analyst", "plan", (perf_counter() - start) * 1000))

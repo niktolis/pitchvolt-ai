@@ -84,6 +84,8 @@ class EvidenceTool(Protocol):
 
     def get(self, insight_id: str) -> EvidenceBundle: ...
 
+    def get_event(self, insight_id: str, event_id: str) -> MatchEvent: ...
+
 
 @dataclass(frozen=True)
 class InMemoryEvidenceTool:
@@ -96,6 +98,14 @@ class InMemoryEvidenceTool:
         if result.insight.insight_id != insight_id:
             raise ValueError("Evidence tool returned another insight")
         return result
+
+    def get_event(self, insight_id: str, event_id: str) -> MatchEvent:
+        """Read exactly one verified event; reject unrelated or fabricated IDs."""
+        bundle = self.get(insight_id)
+        for event in bundle.events:
+            if event.event_id == event_id:
+                return event
+        raise ValueError("Requested event is not evidence for the insight")
 
 
 class NarrativeRejection(ValueError):
