@@ -18,3 +18,14 @@ export function isTacticalInsight(message: ReplayMessage): message is ReplayMess
 } {
   return message.kind === "tactical_insight";
 }
+
+// The narrative SSE contract is provisional and intentionally not part of the
+// existing immutable replay-publication schema. It uses validated server fields.
+export interface NarrativeUpdate {
+  insight_id: string;
+  audience: "casual" | "analyst" | "club";
+  headline: string;
+  text: string;
+  source: "local_controlled" | "deterministic_fallback";
+  evidence_event_ids: string[];
+}

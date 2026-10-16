@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { fetchEvidence, fetchScenarios, openReplayStream } from "./api/client";
-import type { EvidenceResponse, MatchEvent, ReplayMessage, TacticalInsight } from "./api/types";
+import { fetchEvidence, fetchScenarios, openNarrativeStream, openReplayStream } from "./api/client";
+import type { EvidenceResponse, MatchEvent, NarrativeUpdate, ReplayMessage, TacticalInsight } from "./api/types";
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
@@ -17,6 +17,8 @@ export function App() {
   const [mode, setMode] = useState<AudienceMode>("casual");
   const [messages, setMessages] = useState<ReplayMessage[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [narratives, setNarratives] = useState<Record<string, NarrativeUpdate>>({});
+  const [narrativeError, setNarrativeError] = useState<string | null>(null);
   const [evidence, setEvidence] = useState<EvidenceResponse | null>(null);
   const [streamState, setStreamState] = useState<"connecting" | "live" | "complete" | "error">(
     "connecting",
@@ -65,6 +67,27 @@ export function App() {
       },
     });
   }, [scenario, speed, replayNonce]);
+
+  useEffect(() => {
+    if (!scenario) return undefined;
+    setNarratives({});
+    setNarrativeError(null);
+    let active = true;
+    const close = openNarrativeStream(scenario, mode, {
+      onNarrative: (message) => {
+        if (active) {
+          setNarratives((current) => ({ ...current, [message.insight_id]: message }));
+        }
+      },
+      onError: (message) => {
+        if (active) setNarrativeError(message);
+      },
+    });
+    return () => {
+      active = false;
+      close();
+    };
+  }, [scenario, mode, replayNonce]);
 
   const selected = useMemo(
     () => messages.find((message) => message.id === selectedId) ?? messages.at(-1) ?? null,
@@ -186,6 +209,7 @@ export function App() {
       </section>
 
       {error ? <div className="error-banner">{error}</div> : null}
+      {narrativeError ? <div className="error-banner">{narrativeError}</div> : null}
 
       <section className="broadcast-grid">
         <Pitch event={selectedEvent} />
@@ -200,7 +224,7 @@ export function App() {
           </div>
 
           {latestInsight ? (
-            <InsightCard mode={mode} insight={latestInsight} />
+            <InsightCard mode={mode} insight={latestInsight} narrative={narratives[latestInsight.insight_id] ?? null} />
           ) : (
             <div className="insight-placeholder">
               <strong>Watching the causal sequence…</strong>
@@ -255,13 +279,13 @@ export function App() {
 
       <footer>
         <span>Ingest → Interpret → Explain → Render → Personalize</span>
-        <span>Foundry narrative workflow: next milestone</span>
+        <span>Local controlled narratives · Foundry inference disabled</span>
       </footer>
     </main>
   );
 }
 
-function InsightCard({ mode, insight }: { mode: AudienceMode; insight: TacticalInsight }) {
+function InsightCard({ mode, insight, narrative }: { mode: AudienceMode; insight: TacticalInsight; narrative: NarrativeUpdate | null }) {
   const duration = insight.metrics.transition_duration_ms;
   const actions = insight.metrics.attacking_actions;
 
@@ -290,7 +314,11 @@ function InsightCard({ mode, insight }: { mode: AudienceMode; insight: TacticalI
       </div>
 
       <div className="narrative-status">
-        Deterministic audience preview · Foundry-generated narrative not yet connected
+        {narrative ? (
+          <><strong>{narrative.headline}</strong><p>{narrative.text}</p><small>Local controlled narrative · No model inference</small></>
+        ) : (
+          "Deterministic audience preview · local narrative pending · Foundry disabled"
+        )}
       </div>
     </article>
   );
