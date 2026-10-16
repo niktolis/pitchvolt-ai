@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, HTTPException, Query
@@ -9,6 +10,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from matchpulse.events import MatchEvent, MatchMetadata
+from matchpulse.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles
 from matchpulse.intelligence import TacticalInsight, analyze_stream
 from matchpulse.narrative import (
     Audience,
@@ -75,22 +77,48 @@ def _bundles(match: MatchMetadata, events: list[MatchEvent]) -> dict[str, Eviden
     }
 
 
+def _provider_roles() -> tuple[object, object, str]:
+    """Resolve roles without granting permission for paid inference."""
+    provider = os.environ.get("MATCHPULSE_NARRATIVE_PROVIDER", "local").strip().lower()
+    if provider == "local":
+        return LocalAnalyst(), LocalStoryteller(), "local_controlled"
+    if provider == "foundry":
+        config = FoundryConfig(
+            project_endpoint=os.environ.get("MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT", ""),
+            model_deployment=os.environ.get("MATCHPULSE_FOUNDRY_MODEL", ""),
+            inference_explicitly_approved=False,
+        )
+        roles = FoundryRoles(config)
+        return roles, roles, "foundry_controlled"
+    raise ValueError(f"Unsupported narrative provider: {provider}")
+
+
 async def narrative_updates(name: str, audience: Audience) -> AsyncIterator[NarrativeUpdate]:
-    """Local-only replay, ordered by insight; no remote or billable inference."""
+    """Fail-closed role selection; fallback never calls a remote provider."""
     match, events = scenario(name)
     bundles = _bundles(match, events)
     if not bundles:
         return
     tool = InMemoryEvidenceTool(lambda insight_id: bundles[insight_id])
-    orchestrator = Orchestrator(tool, LocalAnalyst(), LocalStoryteller())
+    try:
+        analyst, storyteller, controlled_source = _provider_roles()
+    except (FoundryDisabled, ValueError):
+        analyst, storyteller, controlled_source = None, None, "deterministic_fallback"
+    orchestrator = (
+        Orchestrator(tool, analyst, storyteller)
+        if analyst is not None and storyteller is not None
+        else None
+    )
     for insight_id in bundles:
         try:
             # A slow or failing role must never break finite SSE completion.
             # Cancellation of a disconnected client is intentionally not swallowed.
+            if orchestrator is None:
+                raise FoundryDisabled("Provider is not approved or configured")
             result = await asyncio.wait_for(orchestrator.narrate(insight_id, audience), timeout=2)
             narrative = result.narrative
             source = (
-                "local_controlled"
+                controlled_source
                 if result.source == "controlled"
                 else "deterministic_fallback"
             )
