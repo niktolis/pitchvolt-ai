@@ -59,3 +59,35 @@ def test_local_narrative_uses_no_remote_provider_and_keeps_audience() -> None:
     assert len(updates) == 1
     assert updates[0].audience == Audience.CLUB
     assert updates[0].source == "local_controlled"
+
+
+def test_provider_failure_returns_evidence_backed_fallback(monkeypatch) -> None:
+    from matchpulse import narrative_stream
+
+    async def fail(self, evidence):
+        raise RuntimeError("Local agent unavailable")
+
+    monkeypatch.setattr(narrative_stream.LocalAnalyst, "analyze", fail)
+    response = client.get("/api/matches/high_press/narratives/stream?audience=analyst")
+    assert response.status_code == 200
+    payload = next(
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ") and line != "data: {}"
+    )
+    assert payload["source"] == "deterministic_fallback"
+    assert payload["evidence_event_ids"]
+    assert "event: narrative_complete" in response.text
+
+
+def test_role_timeout_falls_back_without_failing_sse(monkeypatch) -> None:
+    from matchpulse import narrative_stream
+
+    async def timeout(*args, **kwargs):
+        raise TimeoutError("Model timed out")
+
+    monkeypatch.setattr(narrative_stream.asyncio, "wait_for", timeout)
+    response = client.get("/api/matches/high_press/narratives/stream")
+    assert response.status_code == 200
+    assert '"source":"deterministic_fallback"' in response.text
+    assert "event: narrative_complete" in response.text

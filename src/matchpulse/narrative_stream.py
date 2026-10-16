@@ -10,7 +10,12 @@ from pydantic import BaseModel
 
 from matchpulse.events import MatchEvent, MatchMetadata
 from matchpulse.intelligence import TacticalInsight, analyze_stream
-from matchpulse.narrative import Audience, EvidenceBundle, InMemoryEvidenceTool
+from matchpulse.narrative import (
+    Audience,
+    EvidenceBundle,
+    InMemoryEvidenceTool,
+    bounded_deterministic_fallback,
+)
 from matchpulse.scenarios import SCENARIO_NAMES, scenario
 from matchpulse.workflow import (
     AnalystPlan,
@@ -79,14 +84,27 @@ async def narrative_updates(name: str, audience: Audience) -> AsyncIterator[Narr
     tool = InMemoryEvidenceTool(lambda insight_id: bundles[insight_id])
     orchestrator = Orchestrator(tool, LocalAnalyst(), LocalStoryteller())
     for insight_id in bundles:
-        result = await asyncio.wait_for(orchestrator.narrate(insight_id, audience), timeout=2)
-        narrative = result.narrative
+        try:
+            # A slow or failing role must never break finite SSE completion.
+            # Cancellation of a disconnected client is intentionally not swallowed.
+            result = await asyncio.wait_for(orchestrator.narrate(insight_id, audience), timeout=2)
+            narrative = result.narrative
+            source = (
+                "local_controlled"
+                if result.source == "controlled"
+                else "deterministic_fallback"
+            )
+        except (TimeoutError, RuntimeError, ValueError):
+            # No LLM-generated text survives this branch. The trusted
+            # immutable evidence bundle is our only publication input.
+            narrative = bounded_deterministic_fallback(bundles[insight_id], audience)
+            source = "deterministic_fallback"
         yield NarrativeUpdate(
             insight_id=narrative.insight_id,
             audience=narrative.audience,
             headline=narrative.headline,
             text=narrative.text,
-            source="local_controlled" if result.source == "controlled" else "deterministic_fallback",
+            source=source,
             evidence_event_ids=list(narrative.evidence_event_ids),
         )
 
