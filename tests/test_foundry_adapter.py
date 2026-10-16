@@ -17,7 +17,7 @@ def test_invalid_endpoint_or_empty_model_rejected_without_cloud_access() -> None
     with pytest.raises(ValueError, match="HTTPS"):
         FoundryConfig("http://example.com", "model")
     with pytest.raises(ValueError, match="deployment"):
-        FoundryConfig("https://example.com", " ")
+        FoundryConfig("https://example.services.ai.azure.com", " ")
 
 
 @pytest.mark.parametrize("endpoint", [
