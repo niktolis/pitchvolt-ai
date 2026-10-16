@@ -7,6 +7,7 @@ optional SDK. It is not activated by the application by default.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 from matchpulse.narrative import Audience, EvidenceBundle
 from matchpulse.workflow import AnalystPlan, StorytellerSelection
@@ -17,10 +18,26 @@ class FoundryConfig:
     project_endpoint: str
     model_deployment: str
     inference_explicitly_approved: bool = False
+    max_output_tokens_per_role: int = 256
+    max_inference_calls_per_narrative: int = 2
 
     def __post_init__(self) -> None:
-        if not self.project_endpoint.startswith("https://"):
-            raise ValueError("Foundry endpoint must be HTTPS")
+        parsed = urlsplit(self.project_endpoint)
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError("Foundry endpoint must be a clean HTTPS project URL")
+        if not parsed.hostname.endswith(".services.ai.azure.com"):
+            raise ValueError("Foundry endpoint must target the Foundry project domain")
+        if not 1 <= self.max_output_tokens_per_role <= 1024:
+            raise ValueError("Per-role output token cap must be between 1 and 1024")
+        if self.max_inference_calls_per_narrative != 2:
+            raise ValueError("Two-role narrative must have exactly two inference calls")
         if not self.model_deployment.strip():
             raise ValueError("Foundry deployment name is required")
 
@@ -49,6 +66,7 @@ class FoundryRoles:
             model=config.model_deployment,
             credential=DefaultAzureCredential(),
         )
+        self._max_output_tokens = config.max_output_tokens_per_role
         self._analyst = Agent(
             client=client,
             name="MatchPulseAnalyst",
@@ -76,7 +94,10 @@ class FoundryRoles:
             f"Events: {list(insight.evidence_event_ids)}\n"
             f"Metrics: {insight.metrics}\n"
             "Return a structured plan and preserve all IDs exactly.",
-            options={"response_format": AnalystPlan},
+            options={
+                "response_format": AnalystPlan,
+                "max_output_tokens": self._max_output_tokens,
+            },
         )
         if response.value is None:
             raise ValueError("Analyst returned no structured output")
@@ -89,7 +110,10 @@ class FoundryRoles:
             f"Requested audience: {audience.value}\n"
             f"Approved Analyst plan: {plan.model_dump_json()}\n"
             "Choose an allowed style and preserve the evidence-grounded angle.",
-            options={"response_format": StorytellerSelection},
+            options={
+                "response_format": StorytellerSelection,
+                "max_output_tokens": self._max_output_tokens,
+            },
         )
         if response.value is None:
             raise ValueError("Storyteller returned no structured output")
