@@ -8,7 +8,11 @@ from matchpulse.intelligence import analyze_stream
 from matchpulse.narrative import Audience, EvidenceBundle, InMemoryEvidenceTool
 from matchpulse.scenarios import scenario
 from matchpulse.workflow import (
-    Angle, AnalystPlan, Orchestrator, StorytellerSelection, Style,
+    AnalystPlan,
+    Angle,
+    Orchestrator,
+    StorytellerSelection,
+    Style,
     publish_controlled,
 )
 

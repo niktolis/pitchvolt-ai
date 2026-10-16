@@ -3,8 +3,14 @@ import pytest
 
 from matchpulse.intelligence import analyze_stream
 from matchpulse.narrative import (
-    Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate,
-    NarrativeRejection, bounded_deterministic_fallback, verify_claims,
+    Audience,
+    Claim,
+    ClaimKind,
+    EvidenceBundle,
+    NarrativeCandidate,
+    NarrativeRejection,
+    bounded_deterministic_fallback,
+    verify_claims,
     verify_narrative,
 )
 from matchpulse.scenarios import scenario
