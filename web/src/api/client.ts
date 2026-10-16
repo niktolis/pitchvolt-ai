@@ -1,4 +1,4 @@
-import type { EvidenceResponse, ReplayMessage, ScenarioCatalog } from "./types";
+import type { EvidenceResponse, NarrativeUpdate, ReplayMessage, ScenarioCatalog } from "./types";
 
 async function readJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -60,4 +60,41 @@ export function openReplayStream(
   };
 
   return () => source.close();
+}
+
+export function openNarrativeStream(
+  scenario: string,
+  audience: NarrativeUpdate["audience"],
+  handlers: {
+    onNarrative: (message: NarrativeUpdate) => void;
+    onError: (message: string) => void;
+  },
+): () => void {
+  const source = new EventSource(
+    `/api/matches/${encodeURIComponent(scenario)}/narratives/stream?audience=${encodeURIComponent(audience)}`,
+  );
+  let active = true;
+  source.addEventListener("narrative_update", (event: MessageEvent<string>) => {
+    if (!active) return;
+    try {
+      const message = JSON.parse(event.data) as NarrativeUpdate;
+      if (message.audience !== audience || !message.insight_id || !message.text) {
+        throw new Error("Invalid narrative update");
+      }
+      handlers.onNarrative(message);
+    } catch {
+      handlers.onError("The narrative stream returned an invalid message.");
+      source.close();
+    }
+  });
+  source.addEventListener("narrative_complete", () => source.close());
+  source.onerror = () => {
+    if (active && source.readyState !== EventSource.CLOSED) {
+      handlers.onError("Narrative stream interrupted; factual replay is unaffected.");
+    }
+  };
+  return () => {
+    active = false;
+    source.close();
+  };
 }
