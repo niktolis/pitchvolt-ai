@@ -232,10 +232,10 @@ export function App() {
 
           {latestInsight ? (
             <InsightCard
-                mode={mode}
-                insight={latestInsight}
-                narrative={narratives[latestInsight.insight_id] ?? null}
-              />
+              mode={mode}
+              insight={latestInsight}
+              narrative={narratives[latestInsight.insight_id] ?? null}
+            />
           ) : (
             <div className="insight-placeholder">
               <strong>Watching the causal sequence…</strong>
