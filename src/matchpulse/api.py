@@ -18,8 +18,8 @@ from pydantic import BaseModel
 
 from matchpulse.events import MatchEvent, MatchMetadata
 from matchpulse.intelligence import MatchProcessor, TacticalInsight, analyze_stream
-from matchpulse.scenarios import SCENARIO_NAMES, scenario
 from matchpulse.narrative_stream import router as narrative_router
+from matchpulse.scenarios import SCENARIO_NAMES, scenario
 
 app = FastAPI(title="MatchPulse AI", version="0.3.0")
 app.include_router(narrative_router)
