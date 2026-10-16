@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { fetchEvidence, fetchScenarios, openNarrativeStream, openReplayStream } from "./api/client";
-import type { EvidenceResponse, MatchEvent, NarrativeUpdate, ReplayMessage, TacticalInsight } from "./api/types";
+import type {
+  EvidenceResponse,
+  MatchEvent,
+  NarrativeUpdate,
+  ReplayMessage,
+  TacticalInsight,
+} from "./api/types";
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
@@ -68,6 +74,7 @@ export function App() {
     });
   }, [scenario, speed, replayNonce]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: replayNonce intentionally restarts the narrative replay together with the match replay.
   useEffect(() => {
     if (!scenario) return undefined;
     setNarratives({});
@@ -224,7 +231,11 @@ export function App() {
           </div>
 
           {latestInsight ? (
-            <InsightCard mode={mode} insight={latestInsight} narrative={narratives[latestInsight.insight_id] ?? null} />
+            <InsightCard
+                mode={mode}
+                insight={latestInsight}
+                narrative={narratives[latestInsight.insight_id] ?? null}
+              />
           ) : (
             <div className="insight-placeholder">
               <strong>Watching the causal sequence…</strong>
@@ -285,7 +296,15 @@ export function App() {
   );
 }
 
-function InsightCard({ mode, insight, narrative }: { mode: AudienceMode; insight: TacticalInsight; narrative: NarrativeUpdate | null }) {
+function InsightCard({
+  mode,
+  insight,
+  narrative,
+}: {
+  mode: AudienceMode;
+  insight: TacticalInsight;
+  narrative: NarrativeUpdate | null;
+}) {
   const duration = insight.metrics.transition_duration_ms;
   const actions = insight.metrics.attacking_actions;
 
@@ -315,7 +334,11 @@ function InsightCard({ mode, insight, narrative }: { mode: AudienceMode; insight
 
       <div className="narrative-status">
         {narrative ? (
-          <><strong>{narrative.headline}</strong><p>{narrative.text}</p><small>Local controlled narrative · No model inference</small></>
+          <>
+            <strong>{narrative.headline}</strong>
+            <p>{narrative.text}</p>
+            <small>Local controlled narrative · No model inference</small>
+          </>
         ) : (
           "Deterministic audience preview · local narrative pending · Foundry disabled"
         )}
