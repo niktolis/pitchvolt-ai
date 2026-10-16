@@ -6,7 +6,7 @@ MatchPulse AI deliberately separates **football truth** from **AI explanation**:
 
 **Ingest → Interpret → Explain → Render → Personalize**
 
-- Synthetic, fictional match events are validated through canonical Pydantic schemas.
+- Synthetic, fictional match events are validated through canonical Pydantic schemas; a strict StatsBomb-shaped synthetic adapter normalizes 120 × 80 provider coordinates to the internal 105 × 68m pitch.
 - Deterministic match logic owns possession, tactical detection, metrics, provenance and evidence.
 - FastAPI publishes replayable Server-Sent Events and immutable evidence endpoints.
 - React renders a live 105 × 68m pitch, event replay, tactical insights and evidence inspection.
@@ -20,7 +20,7 @@ No unauthorized Premier League event data or footage is used.
 The repository currently implements:
 
 - canonical versioned football-event models and validation;
-- deterministic fictional scenarios for high press, counterattack and a sustained-possession negative control;
+- deterministic fictional scenarios for high press, counterattack and a sustained-possession negative control, plus a StatsBomb-shaped synthetic high-press replay;
 - deterministic high-press/counterattack detection with stable source-event IDs;
 - replayable FastAPI/SSE transport with reconnect cursor support;
 - evidence and state HTTP endpoints;
@@ -31,7 +31,7 @@ The repository currently implements:
 - D2 architecture sources with generated Markdown renders;
 - CI for Python, frontend contracts/builds and architecture rendering.
 
-**Not yet implemented:** Microsoft Foundry inference/orchestration, deterministic narrative claim verification, Azure deployment, production telemetry/latency measurements, authentication, persisted live-feed state, multilingual recap.
+**Not yet implemented:** complete historical StatsBomb Open Data import (tracked in #15), Microsoft Foundry inference/orchestration, deterministic narrative claim verification, Azure deployment, production telemetry/latency measurements, authentication, persisted live-feed state, multilingual recap.
 
 ## Run locally
 
@@ -66,6 +66,7 @@ Open http://localhost:8000.
 
 Start with [docs/architecture/README.md](docs/architecture/README.md).
 
+- [Synthetic and StatsBomb-shaped event data](docs/synthetic-data.md)
 - [Tactical business logic](docs/architecture/business-logic.md)
 - [Real-time API](docs/architecture/realtime-api.md)
 - [Live broadcast UI](docs/architecture/frontend.md)

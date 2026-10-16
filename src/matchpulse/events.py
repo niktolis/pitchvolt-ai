@@ -24,11 +24,15 @@ class Outcome(StrEnum):
     NEUTRAL = "neutral"
 
 
+PITCH_LENGTH_M = 105
+PITCH_WIDTH_M = 68
+
+
 class Point(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    x: Annotated[float, Field(ge=0, le=105)]
-    y: Annotated[float, Field(ge=0, le=68)]
+    x: Annotated[float, Field(ge=0, le=PITCH_LENGTH_M)]
+    y: Annotated[float, Field(ge=0, le=PITCH_WIDTH_M)]
 
 
 class Provenance(BaseModel):
@@ -88,8 +92,8 @@ class MatchMetadata(BaseModel):
     match_id: str
     home_team_id: str
     away_team_id: str
-    pitch_length_m: float = 105
-    pitch_width_m: float = 68
+    pitch_length_m: float = PITCH_LENGTH_M
+    pitch_width_m: float = PITCH_WIDTH_M
 
     @model_validator(mode="after")
     def different_teams(self) -> MatchMetadata:

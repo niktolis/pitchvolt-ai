@@ -1,6 +1,6 @@
 # Judging Traceability Matrix
 
-Status: implementation evidence as of 15 October 2026. The five judging criteria are treated as equal priorities; final submission wording must still be checked against the official rules immediately before hand-in.
+Status: implementation evidence as of 16 October 2026. The five judging criteria are treated as equal priorities; final submission wording must still be checked against the official rules immediately before hand-in.
 
 | Criterion | Current evidence | Remaining proof before submission | Tracking |
 |---|---|---|---|
@@ -35,3 +35,7 @@ Status: implementation evidence as of 15 October 2026. The five judging criteria
 - Budget alerts are observability, not a hard kill switch.
 - No Azure provisioning or billable-resource modification without explicit project-owner approval.
 - Reserve sufficient approved trial capacity for the judging window rather than consuming credits during development.
+
+## Provider-compatibility evidence (issue #15)
+
+The originally synthetic `statsbomb_high_press` scenario exercises StatsBomb-shaped JSON with its provider coordinate system, nested event families and validated explicit recovery semantics. It reaches the unchanged processor, SSE and UI. Native/adapted deterministic kind and metrics are checked in tests. This **does not** claim integration with historical StatsBomb Open Data or authorized redistribution of real match records.
