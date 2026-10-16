@@ -91,3 +91,33 @@ def test_role_timeout_falls_back_without_failing_sse(monkeypatch) -> None:
     assert response.status_code == 200
     assert '"source":"deterministic_fallback"' in response.text
     assert "event: narrative_complete" in response.text
+
+
+def test_provider_selection_defaults_to_local(monkeypatch) -> None:
+    from matchpulse import narrative_stream
+    monkeypatch.delenv("MATCHPULSE_NARRATIVE_PROVIDER", raising=False)
+    analyst, storyteller, source = narrative_stream._provider_roles()
+    assert isinstance(analyst, narrative_stream.LocalAnalyst)
+    assert isinstance(storyteller, narrative_stream.LocalStoryteller)
+    assert source == "local_controlled"
+
+
+def test_foundry_mode_remains_blocked_even_with_valid_settings(monkeypatch) -> None:
+    monkeypatch.setenv("MATCHPULSE_NARRATIVE_PROVIDER", "foundry")
+    monkeypatch.setenv(
+        "MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT",
+        "https://example.services.ai.azure.com/api/projects/sample",
+    )
+    monkeypatch.setenv("MATCHPULSE_FOUNDRY_MODEL", "not-deployed")
+    response = client.get("/api/matches/high_press/narratives/stream")
+    assert response.status_code == 200
+    assert '"source":"deterministic_fallback"' in response.text
+    assert "event: narrative_complete" in response.text
+
+
+def test_unknown_narrative_provider_fails_closed(monkeypatch) -> None:
+    monkeypatch.setenv("MATCHPULSE_NARRATIVE_PROVIDER", "unexpected")
+    response = client.get("/api/matches/high_press/narratives/stream")
+    assert response.status_code == 200
+    assert '"source":"deterministic_fallback"' in response.text
+    assert "event: narrative_complete" in response.text
