@@ -38,3 +38,12 @@ export function visibleNarrativeIds(
       .map((item) => item.payload.insight_id),
   );
 }
+
+/** Evidence is never visible before its source insight is published. */
+export function isEvidenceVisible(
+  messages: readonly ReplayMessage[],
+  cursorMs: number,
+  insightId: string,
+): boolean {
+  return visibleNarrativeIds(messages, cursorMs).has(insightId);
+}
