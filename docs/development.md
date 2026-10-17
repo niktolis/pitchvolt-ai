@@ -67,6 +67,8 @@ docker run --rm -p 8000:8000 matchpulse-runtime:test
 
 The multi-stage build compiles React and copies the static bundle into the non-root FastAPI runtime. FastAPI serves the UI same-origin after explicit API routes. This deliberately gives the hackathon one deployable workload while keeping Python and React source boundaries separate.
 
+For the non-billable Azure Container Apps rollout plan, see [deployment readiness](azure-container-apps.md). This does not create cloud resources or enable Foundry inference.
+
 ## Reproducibility
 
 - `uv.lock` fixes Python transitive versions and hashes; CI uses `uv lock --check` and `uv sync --frozen`.
