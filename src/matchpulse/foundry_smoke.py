@@ -8,27 +8,23 @@ import os
 from dataclasses import asdict
 
 from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles, RoleSettings
+from matchpulse.foundry_config import SMOKE_SETTINGS, NARRATIVE_ROLE_CALLS
 from matchpulse.narrative import Audience, InMemoryEvidenceTool
 from matchpulse.narrative_stream import _bundles
 from matchpulse.scenarios import scenario
 from matchpulse.workflow import Orchestrator
-
-ANALYST_DEPLOYMENT = "matchpulse-gpt5-mini"
-STORYTELLER_DEPLOYMENT = "matchpulse-gpt4o"
-SMOKE_ANALYST_OUTPUT_TOKENS = 4096
-SMOKE_HTTP_MAX_RETRIES = 2
 
 
 def create_smoke_project_client(endpoint: str, credential: object):
     """Use SDK transient transport retries; no role-level replay."""
     from azure.ai.projects.aio import AIProjectClient
 
-    class NoRetryAsyncProjectClient(AIProjectClient):
+    class ConfiguredRetryAsyncProjectClient(AIProjectClient):
         def get_openai_client(self, *, agent_name=None, **kwargs):
-            kwargs["max_retries"] = SMOKE_HTTP_MAX_RETRIES
+            kwargs["max_retries"] = SMOKE_SETTINGS.http_max_retries
             return super().get_openai_client(agent_name=agent_name, **kwargs)
 
-    return NoRetryAsyncProjectClient(endpoint=endpoint, credential=credential)
+    return ConfiguredRetryAsyncProjectClient(endpoint=endpoint, credential=credential)
 
 
 def _validation_diagnostics(exc: Exception) -> list[dict[str, object]]:
@@ -92,7 +88,7 @@ def sanitized_failure(exc: Exception) -> dict[str, object]:
 
 def fixture():
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
-    match, events = scenario("high_press")
+    match, events = scenario(SMOKE_SETTINGS.scenario)
     bundles = _bundles(match, events)
     if not bundles:
         raise RuntimeError("Smoke fixture did not produce a tactical insight")
@@ -124,15 +120,15 @@ async def run(argv: list[str] | None = None) -> int:
     bundle = fixture()
     description = {
         "mode": "LIVE" if args.execute else "DRY_RUN",
-        "scenario": "high_press",
+        "scenario": SMOKE_SETTINGS.scenario,
         "insight_id": bundle.insight.insight_id,
         "evidence_event_ids": list(bundle.insight.evidence_event_ids),
-        "analyst_deployment": ANALYST_DEPLOYMENT,
-        "storyteller_deployment": STORYTELLER_DEPLOYMENT,
-        "maximum_role_invocations": 2,
-        "http_max_retries": SMOKE_HTTP_MAX_RETRIES,
-        "role_level_retries": 0,
-        "analyst_max_output_tokens": SMOKE_ANALYST_OUTPUT_TOKENS,
+        "analyst_deployment": SMOKE_SETTINGS.analyst_deployment,
+        "storyteller_deployment": SMOKE_SETTINGS.storyteller_deployment,
+        "maximum_role_invocations": NARRATIVE_ROLE_CALLS,
+        "http_max_retries": SMOKE_SETTINGS.http_max_retries,
+        "role_level_retries": SMOKE_SETTINGS.role_level_retries,
+        "analyst_max_output_tokens": SMOKE_SETTINGS.analyst_output_tokens,
         "shadow_model_prose_requested": True,
         "unverified_text_display_enabled": args.show_unverified_prose,
         "note": "SDK may retry transient HTTP failures, with extra billable requests; no hard monetary cap. No role-level replay.",
@@ -145,12 +141,12 @@ async def run(argv: list[str] | None = None) -> int:
         raise SystemExit("Refusing live inference: add --acknowledge-billable-inference")
     config = FoundryConfig(
         project_endpoint=args.project_endpoint,
-        model_deployment=ANALYST_DEPLOYMENT,
-        storyteller_model_deployment=STORYTELLER_DEPLOYMENT,
+        model_deployment=SMOKE_SETTINGS.analyst_deployment,
+        storyteller_model_deployment=SMOKE_SETTINGS.storyteller_deployment,
         inference_explicitly_approved=True,  # isolated CLI ONLY, never SSE application
-        max_tool_calls_per_analyst=min(12, len(bundle.events)),
-        timeout_seconds_per_role=15.0,
-        analyst_settings=RoleSettings(max_output_tokens=SMOKE_ANALYST_OUTPUT_TOKENS),
+        max_tool_calls_per_analyst=min(FoundryConfig.__dataclass_fields__["max_tool_calls_per_analyst"].default, len(bundle.events)),
+        timeout_seconds_per_role=SMOKE_SETTINGS.timeout_seconds_per_role,
+        analyst_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.analyst_output_tokens),
     )
     # Workstation-specific credential avoids Managed Identity probing on macOS.
     # No token or credential content is logged or stored.
@@ -166,7 +162,7 @@ async def run(argv: list[str] | None = None) -> int:
         tool = InMemoryEvidenceTool(lambda insight_id: bundle)
         orchestrator = Orchestrator(tool, roles, roles)
         try:
-            result = await orchestrator.narrate(bundle.insight.insight_id, Audience.ANALYST)
+            result = await orchestrator.narrate(bundle.insight.insight_id, Audience(SMOKE_SETTINGS.audience))
             print('RESULT: role orchestration returned', flush=True)
             report = {
                 "source": result.source,
