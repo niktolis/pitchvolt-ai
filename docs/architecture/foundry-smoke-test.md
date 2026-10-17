@@ -110,3 +110,37 @@ async execution path. A real installed-SDK constructor test runs offline in
 Python CI and verifies **both** role clients, transport type and retry setting.
 Production construction and the 20,000 TPM Azure capacity are unchanged. No
 inference is authorized or run by the offline test.
+
+### Manual application/SSE integration preview
+
+The existing public `/api/matches/{name}/narratives/stream` remains locally
+deterministic. A **separate, non-OpenAPI, localhost-only** route is provided for
+an explicitly authorized operator demonstration:
+
+`GET /api/matches/high_press/narratives/foundry-preview/stream?audience=analyst`
+
+No production, CI, or normal application request enables this path.
+The operator must separately set
+`MATCHPULSE_FOUNDRY_PREVIEW_ENABLED=true`, a random, private
+`MATCHPULSE_FOUNDRY_PREVIEW_TOKEN` (at least 32 characters), and the
+existing `MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT`. The HTTP request must
+originate from localhost and carry `X-MatchPulse-Inference-Token` with
+the exact value. Keep the token outside shell history, source control,
+logs, URLs and screenshots. A fresh local server process accepts at most
+**one** authorized HTTP preview request; concurrent/repeated requests
+return HTTP 429. Restarting, scaling or running additional processes
+resets the per-process guard: **this is not a global financial cap**.
+Do not expose this demonstration endpoint through a proxy or deploy it
+with its opt-in environment setting enabled.
+
+The authorized route runs at most one tactical insight through the same
+async Azure CLI credential / Foundry client and two-role orchestrator
+validated in the standalone smoke test. HTTP transport retries are
+disabled, the Analyst output cap remains 512, and each role is limited
+to one invocation (SDK tool rounds may still consume additional requests).
+The existing deterministic verifier produces the publishable narrative;
+provider failure returns evidence-backed fallback, not unverified prose.
+Async resources are closed on exit. This is only an integration milestone:
+normal SSE and replay are unchanged, no general production inference
+switch has been granted, and any more general service deployment needs
+an independently reviewed abuse-resistance and cost-control design.
