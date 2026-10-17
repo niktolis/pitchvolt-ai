@@ -97,7 +97,7 @@ class FoundryRoles:
         settings = self._config.settings_for(role)
         options: dict[str, object] = {
             "response_format": schema,
-            "max_output_tokens": settings.max_output_tokens,
+            "max_tokens": settings.max_output_tokens,
         }
         # GPT-5-specific reasoning options must be verified against the
         # installed SDK before being sent to Foundry. Fail closed for now.
