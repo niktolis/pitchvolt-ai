@@ -72,3 +72,26 @@ validated lineup/metadata source.
 
 Related implementation issues: #63 replay clock; #64 historical importer;
 #65 longer calibrated synthetic fixtures; #66 unified loader; #58-61 UI.
+
+## Explicit historical file acquisition
+
+Use the [official Open Data repository](https://github.com/hudl/open-data) to select a
+numeric match ID and a **full 40-character upstream commit SHA**, and review
+attribution/licensing before using its data in any distributed demo.
+
+```shell
+uv run --frozen python -m matchpulse.statsbomb_acquire \\
+  --commit <40-character-commit> --match-id <numeric-id> \\
+  --output-dir .local-statsbomb/<match-id>
+```
+
+This prints the exact download URL without fetching. Append
+`--execute-download` to opt in to the download. The command stores the exact
+source bytes alongside a JSON manifest containing the SHA-256 and official
+commit-pinned source link, then validates the original records with the strict
+historical loader. It refuses to overwrite an existing acquisition. Keep these
+large external records outside Git until licensing and redistribution review.
+A census of original event families is not yet full domain semantic support.
+
+This acquisition path does not download automatically in tests/CI and does not
+enable Foundry, Azure billing or historical match display in the public UI.
