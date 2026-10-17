@@ -54,5 +54,28 @@ def test_missing_player_and_destination_omitted():
     missing = event("Pass", 1, 1)
     missing["player"] = None
     result = project_historical_actions(fixture([missing, event("Shot", 2, 2)]))
-    assert result.actions == ()
-    assert result.omitted_by_type == {"Pass": 1, "Shot": 1}
+    assert len(result.actions) == 1
+    assert result.actions[0].kind == "shot"
+    assert result.actions[0].destination_x is None
+    assert result.omitted_by_type == {"Pass": 1}
+
+
+def test_goal_outcome_recorded_only_from_explicit_source() -> None:
+    goal = event("Shot", 1, 1, shot={"outcome": {"name": "Goal"}})
+    saved = event("Shot", 2, 2, shot={"outcome": {"name": "Saved"}})
+    projected = project_historical_actions(fixture([goal, saved]))
+    assert [action.is_goal for action in projected.actions] == [True, False]
+    assert projected.actions[0].source_outcome == "Goal"
+    assert projected.actions[0].destination_x is None
+    assert projected.complete
+
+
+def test_unreviewed_event_cannot_hide_clock_regression() -> None:
+    from pytest import raises
+
+    events = [
+        event("Pass", 1, 10, **{"pass": {"end_location": [61, 41]}}),
+        event("Foul Committed", 2, 9),
+    ]
+    with raises(ValueError, match="out of match clock order"):
+        project_historical_actions(fixture(events))
