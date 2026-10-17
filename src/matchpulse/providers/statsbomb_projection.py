@@ -47,7 +47,7 @@ def _name(value: Any) -> str | None:
     return None
 
 
-def _clock(event: dict[str, Any]) -> int:
+def historical_clock_ms(event: dict[str, Any]) -> int:
     minute, second = event.get("minute"), event.get("second")
     timestamp = event.get("timestamp")
     if (type(minute) is not int or minute < 0 or type(second) is not int
@@ -77,7 +77,7 @@ def project_historical_actions(fixture: HistoricalFixture) -> HistoricalProjecti
     for event in fixture.records:
         kind = _name(event["type"])
         assert kind is not None  # validated by historical fixture loader
-        clock = _clock(event)
+        clock = historical_clock_ms(event)
         period = event["period"]
         if period < previous_period or (period == previous_period and clock < previous_clock):
             raise ValueError("Historical projected events out of match clock order")
