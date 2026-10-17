@@ -1,0 +1,47 @@
+name: Temporary StatsBomb reference probe
+
+on:
+  push:
+    branches:
+      - feat/statsbomb-real-reference
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - run: uv sync --frozen --extra dev
+      - name: Probe pinned historical match
+        run: |
+          set -euo pipefail
+          uv run --frozen python -m matchpulse.statsbomb_acquire \
+            --commit 4b73468fc5b0f1950f9f66fada70ad3a4f9327cb \
+            --match-id 9880 --output-dir /tmp/statsbomb-9880 \
+            --execute-download
+          uv run --frozen python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          from matchpulse.fixture_manifest import FixtureManifest
+          from matchpulse.providers.statsbomb_historical import load_historical_fixture
+          from matchpulse.providers.statsbomb_projection import project_historical_actions
+          path = Path("/tmp/statsbomb-9880")
+          manifest = FixtureManifest.model_validate_json((path/"9880.manifest.json").read_text())
+          fixture = load_historical_fixture(path/"9880.json",manifest)
+          projection = project_historical_actions(fixture)
+          print("REFERENCE_EVENT_SHA256", manifest.event_sha256)
+          print("REFERENCE_COUNT", manifest.event_count)
+          print("REFERENCE_COVERAGE", manifest.event_coverage)
+          print("REFERENCE_PROJECTED_COUNT", len(projection.actions))
+          print("REFERENCE_OMISSION_CENSUS", json.dumps(projection.omitted_by_type, sort_keys=True))
+          print("REFERENCE_EVENT_CENSUS", json.dumps(fixture.event_counts, sort_keys=True))
+          PY
