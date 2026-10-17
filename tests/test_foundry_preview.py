@@ -49,8 +49,8 @@ def test_preview_requires_private_token_endpoint_and_is_single_use(monkeypatch) 
         first = client.get(url, headers={"X-MatchPulse-Inference-Token": token})
         assert first.status_code == 200
         assert first.headers["content-type"].startswith("text/event-stream")
-        assert "event: narrative_update\\ndata: " in first.text
-        assert "\\n\\nevent: narrative_complete\\ndata: {}\\n\\n" in first.text
+        assert "event: narrative_update\ndata: " in first.text
+        assert "\n\nevent: narrative_complete\ndata: {}\n\n" in first.text
         assert "\\\\n" not in first.text
         data_line = next(line for line in first.text.splitlines() if line.startswith("data: {") and line != "data: {}")
         assert json.loads(data_line.removeprefix("data: "))["source"] == "foundry_controlled"
