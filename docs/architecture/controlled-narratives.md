@@ -21,3 +21,9 @@ Source: https://learn.microsoft.com/en-us/agent-framework/agents/providers/micro
 - Evaluate conditional Editorial role only on measured necessity.
 
 No cloud execution or billable resources authorized in this PR.
+
+## Verified fact composition (incremental issue #4 slice)
+
+The Storyteller may optionally provide `fact_order`: a permutation of `team`, `tactic`, `transition`, and `actions`. The server checks that each canonical fact appears exactly once, maps the slots to validated insight values, and renders the text locally. Missing, duplicated, and unknown slots fail closed. Omitting `fact_order` retains the earlier audience-specific sentence templates for backward compatibility.
+
+This permits model-selected **information ordering**, not free-form AI-authored prose or arbitrary tactical explanations. The existing `NarrativeCandidate` publication verifier intentionally continues to reject unbounded generated text. The optional Foundry provider remains behind the existing explicit inference-approval gate; tests use no Azure calls. Full model-authored natural-language generation would require an additional reviewed semantic-grounding and publication policy before enabling it. No production inference, model deployment or cost approval is implied by this slice.
