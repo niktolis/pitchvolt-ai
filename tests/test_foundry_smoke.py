@@ -10,6 +10,7 @@ def test_smoke_dry_run_requires_no_sdk_or_endpoint(capsys) -> None:
     assert asyncio.run(foundry_smoke.run([])) == 0
     output = capsys.readouterr().out
     assert '"mode": "DRY_RUN"' in output
+    assert '"http_max_retries": 0' in output
     assert "No Azure credentials loaded" in output
     assert "\"analyst_max_output_tokens\": 512" in output
 
@@ -33,7 +34,9 @@ def test_live_smoke_explicitly_uses_azure_cli_credential_source() -> None:
     adapter = Path(foundry_smoke.__file__).with_name("foundry_adapter.py").read_text()
     smoke = Path(foundry_smoke.__file__).read_text()
     assert "credential: object | None = None" in adapter
-    assert "credential=AzureCliCredential()" in smoke
+    assert "credential = AzureCliCredential()" in smoke
+    assert 'kwargs["max_retries"] = 0' in smoke
+    assert "project_client=project_client" in smoke
     assert "DefaultAzureCredential()" not in smoke
 
 

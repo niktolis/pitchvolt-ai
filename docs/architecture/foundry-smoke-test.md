@@ -87,3 +87,13 @@ The 17 Oct Analyst request returned in ~5.3 seconds without a structured value o
 ### Isolated Analyst budget experiment (not a live-test approval)
 
 For a future separately approved smoke attempt, the CLI now specifies 512 output tokens for the GPT-5 mini Analyst instead of the default 256, while the Storyteller and production defaults remain at 256. The previous Analyst returned no structured value and no tool calls, but token exhaustion has **not** been proven. GPT-5 reasoning tokens may consume part of the response budget. The larger cap may increase cost or encounter the deployment's 1,000 TPM throughput constraints; do not increase Azure quota or execute inference without separate operator approval. The CLI dry run displays the proposed budget without Azure requests.
+
+### Local OpenAI HTTP retry policy
+
+The explicitly invoked smoke harness injects an `AIProjectClient` whose
+`get_openai_client()` passes `max_retries=0` to the OpenAI SDK. This removes
+transparent HTTP retries (normally two) for this test only. The ordinary
+application adapter continues to use default SDK client construction. Model
+function/tool rounds can still cause multiple HTTP requests, and removing
+retries does not guarantee that Azure will cease issuing HTTP 429 responses.
+No production quota, inference permission, or monetary cap is changed.

@@ -207,3 +207,41 @@ def test_response_metadata_unknown_status_and_missing_usage() -> None:
     assert metadata["finish_reason"] is None
     assert metadata["input_tokens"] is None
     assert metadata["message_count"] == 0
+
+
+def test_injected_project_client_only_when_requested(monkeypatch) -> None:
+    from types import ModuleType
+
+    seen: list[dict[str, object]] = []
+
+    class FakeAgent:
+        def __init__(self, **kwargs: object) -> None:
+            pass
+
+    class FakeClient:
+        def __init__(self, **kwargs: object) -> None:
+            seen.append(kwargs)
+
+    framework = ModuleType("agent_framework")
+    framework.Agent = FakeAgent  # type: ignore[attr-defined]
+    foundry = ModuleType("agent_framework.foundry")
+    foundry.FoundryChatClient = FakeClient  # type: ignore[attr-defined]
+    azure = ModuleType("azure")
+    identity = ModuleType("azure.identity")
+    identity.DefaultAzureCredential = lambda: object()  # type: ignore[attr-defined]
+    for name, module in (("agent_framework", framework),
+                         ("agent_framework.foundry", foundry),
+                         ("azure", azure), ("azure.identity", identity)):
+        monkeypatch.setitem(sys.modules, name, module)
+    config = FoundryConfig(
+        project_endpoint="https://example.services.ai.azure.com/api/projects/sample",
+        model_deployment="test-model", inference_explicitly_approved=True,
+    )
+    injected = object()
+    FoundryRoles(config, credential=object(), project_client=injected)
+    assert len(seen) == 2
+    assert all(call["project_client"] is injected for call in seen)
+    seen.clear()
+    FoundryRoles(config, credential=object())
+    assert len(seen) == 2
+    assert all("project_client" not in call for call in seen)
