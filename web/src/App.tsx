@@ -456,8 +456,9 @@ function InsightCard({
   insight: TacticalInsight;
   narrative: NarrativeUpdate | null;
 }) {
-  const duration = insight.metrics.transition_duration_ms;
-  const actions = insight.metrics.attacking_actions;
+  const possession = insight.kind === "sustained_possession";
+  const duration = insight.metrics[possession ? "sequence_duration_ms" : "transition_duration_ms"];
+  const actions = insight.metrics[possession ? "passes" : "attacking_actions"];
 
   return (
     <article className="insight-card">
@@ -470,11 +471,11 @@ function InsightCard({
 
       <div className="metric-grid">
         <div>
-          <span>Transition</span>
+          <span>{possession ? "Possession" : "Transition"}</span>
           <strong>{typeof duration === "number" ? `${(duration / 1000).toFixed(1)}s` : "—"}</strong>
         </div>
         <div>
-          <span>Actions</span>
+          <span>{possession ? "Passes" : "Actions"}</span>
           <strong>{typeof actions === "number" ? actions : "—"}</strong>
         </div>
         <div>
