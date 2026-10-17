@@ -114,6 +114,7 @@ async def run(argv: list[str] | None = None) -> int:
             "model_initiated_evidence_tool_calls": list(roles.last_evidence_tool_calls),
             "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
             "invocations": [asdict(item) for item in roles.invocations],
+            "last_model_response_metadata": roles.last_response_metadata,
             "trace": [asdict(item) for item in result.trace],
             "verified_narrative": result.narrative.model_dump(mode="json"),
         }
