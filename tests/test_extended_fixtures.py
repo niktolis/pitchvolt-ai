@@ -4,7 +4,11 @@ from fastapi.testclient import TestClient
 from matchpulse.api import app
 from matchpulse.events import EventType, validate_stream
 from matchpulse.scenarios import scenario
-from matchpulse.statsbomb_reference import REFERENCE_ACTION_COUNTS, REFERENCE_PROJECTED_COUNT, calibrated_action_quotas
+from matchpulse.statsbomb_reference import (
+    REFERENCE_ACTION_COUNTS,
+    REFERENCE_PROJECTED_COUNT,
+    calibrated_action_quotas,
+)
 
 
 def test_long_fixture_is_deterministic_across_requests():
