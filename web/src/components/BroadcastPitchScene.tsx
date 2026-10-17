@@ -85,10 +85,7 @@ function ActiveActor({ event }: { event: MatchEvent }) {
         <meshStandardMaterial color="#f2f4e9" roughness={0.65} />
       </mesh>
       {destination && distance > 0 ? (
-        <mesh
-          position={[dx / 2, 0.08, dz / 2]}
-          rotation={[-Math.PI / 2, 0, -angle]}
-        >
+        <mesh position={[dx / 2, 0.08, dz / 2]} rotation={[-Math.PI / 2, 0, -angle]}>
           <planeGeometry args={[0.21, distance]} />
           <meshBasicMaterial color="#b6e64b" side={THREE.DoubleSide} />
         </mesh>
@@ -99,7 +96,7 @@ function ActiveActor({ event }: { event: MatchEvent }) {
 
 export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
   return (
-    <div className="broadcast-webgl" aria-label="Three-dimensional tactical pitch">
+    <div className="broadcast-webgl" role="img" aria-label="Three-dimensional tactical pitch">
       <Canvas
         orthographic
         camera={{ position: [0, 105, 24], zoom: 5.2, near: 0.1, far: 260 }}
@@ -109,14 +106,19 @@ export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
       >
         <color attach="background" args={["#061409"]} />
         <ambientLight intensity={1.7} />
-        <directionalLight position={[-25, 75, -22]} intensity={3.2} castShadow shadow-mapSize={[1024, 1024]} />
+        <directionalLight
+          position={[-25, 75, -22]}
+          intensity={3.2}
+          castShadow
+          shadow-mapSize={[1024, 1024]}
+        />
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <planeGeometry args={[105, 68]} />
           <meshStandardMaterial color="#21502b" roughness={1} />
         </mesh>
-        {Array.from({ length: 8 }, (_, index) => (
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
           <mesh
-            key={index}
+            key={`stripe-${index * 13.125}`}
             rotation={[-Math.PI / 2, 0, 0]}
             position={[-45.94 + index * 13.125, 0.012, 0]}
           >
