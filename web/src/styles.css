@@ -1060,3 +1060,50 @@ body {
     grid-template-columns:1fr;
   }
 }
+
+/* PitchVolt approved stadium and three-dimensional pitch refinement. */
+.broadcast-top {
+  background: linear-gradient(180deg, #030b08, #07170f);
+}
+.broadcast-scoreboard {
+  background:
+    radial-gradient(ellipse at 0% 20%, rgba(151, 229, 71, 0.27), transparent 32%),
+    radial-gradient(ellipse at 100% 20%, rgba(151, 229, 71, 0.25), transparent 32%),
+    repeating-linear-gradient(100deg, transparent 0 48px, rgba(255, 255, 255, 0.014) 49px 50px),
+    linear-gradient(180deg, #030b08, #0b2013 75%, #03100a);
+}
+.pitch-panel {
+  background: linear-gradient(180deg, #0b1c12, #030d08);
+  overflow: hidden;
+}
+.pitch {
+  position: relative;
+  border: 5px solid #071c10;
+  outline: 1px solid rgba(152, 219, 107, 0.35);
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(171, 231, 88, 0.18), transparent 70%),
+    repeating-linear-gradient(90deg, #173f21 0 12.5%, #1b4826 12.5% 25%);
+  box-shadow: 0 0 0 8px #071810, 0 22px 38px rgba(0, 0, 0, 0.6), inset 0 0 42px #020e08;
+}
+.pitch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(165deg, rgba(225, 255, 193, 0.08), transparent 35%, rgba(0, 0, 0, 0.17));
+}
+.pitch svg {
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.3));
+}
+.event-path {
+  stroke: #b6e64b;
+  stroke-width: 0.58;
+  stroke-dasharray: 1.8 1.1;
+  filter: drop-shadow(0 0 1.5px #b6e64b);
+}
+.key-moment-scene {
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(180, 247, 124, 0.16), transparent 45%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 12.5%, transparent 12.5% 25%),
+    linear-gradient(145deg, #214d29, #0d2b19);
+}
