@@ -153,24 +153,39 @@ export function App() {
 
   return (
     <main className="app-shell">
-      <header className="hero">
-        <div>
-          <div className="brand-line">
-            <img className="brand-logo" src="/pitchvolt-mark.svg" alt="PitchVolt AI logo" />
-            <span className="eyebrow">Microsoft AI Hackathon · synthetic data</span>
+      <section className="broadcast-top" aria-label="PitchVolt broadcast header">
+        <header className="broadcast-navigation">
+          <div className="broadcast-brand">
+            <img className="brand-logo" src="/pitchvolt-mark.svg" alt="" />
+            <strong>PITCHVOLT <span>AI</span></strong>
           </div>
-          <h1>PitchVolt AI</h1>
-          <p>Deterministic football intelligence first. Evidence-backed storytelling second.</p>
+          <nav className="broadcast-primary-nav" aria-label="Product navigation">
+            <span className="current" aria-current="page">Live</span>
+            <span>Matches</span>
+            <span>Analysis</span>
+            <span>Teams</span>
+          </nav>
+          <span className="broadcast-preview-label">SYNTHETIC REPLAY</span>
+        </header>
+        <div className="broadcast-scoreboard">
+          <span className={`broadcast-live state-${streamState}`}><span className="live-light" /> {streamState}</span>
+          <div className="broadcast-score-content">
+            <strong>Synthetic match</strong>
+            <div className="broadcast-score-center">
+              <span className="broadcast-score-unavailable" aria-label="Score unavailable">– : –</span>
+              <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
+            </div>
+            <strong>Event replay</strong>
+          </div>
         </div>
-
-        <div className="live-cluster">
-          <span className={`live-pill state-${streamState}`}>
-            <span className="live-light" />
-            {streamState}
-          </span>
-          <strong>{clockLabel(matchClock)}</strong>
-        </div>
-      </header>
+        <nav className="broadcast-tabs" aria-label="Match sections">
+          <span className="selected" aria-current="page">Overview</span>
+          <span>Tactical View</span>
+          <span>Player Focus</span>
+          <span>AI Commentary</span>
+          <span>Key Moments</span>
+        </nav>
+      </section>
 
       <section className="control-bar" aria-label="Replay controls">
         <label>
@@ -225,15 +240,12 @@ export function App() {
       {narrativeError ? <div className="error-banner">{narrativeError}</div> : null}
 
       <section className="broadcast-grid">
-        <Pitch event={selectedEvent} />
-
         <section className="panel insight-panel">
           <div className="panel-heading">
             <div>
-              <span className="eyebrow">Interpret</span>
-              <h2>Tactical insight</h2>
+              <h2>AI Insights</h2>
             </div>
-            <span className="proof-badge">verified facts</span>
+            <span className="proof-badge">Evidence-backed</span>
           </div>
 
           {latestInsight ? (
@@ -258,6 +270,23 @@ export function App() {
           )}
         </section>
 
+        <Pitch event={selectedEvent} />
+        <section className="panel key-moment-panel">
+          <div className="panel-heading"><h2>Key Moment</h2></div>
+          <div className="key-moment-scene" aria-hidden="true"><span className="key-moment-ball" /></div>
+          {selectedEvent ? (
+            <div className="key-moment-copy">
+              <strong>{clockLabel(selectedEvent.clock_ms)} · {eventLabel(selectedEvent)}</strong>
+              <p>{displayName(selectedEvent.player_id)} · {displayName(selectedEvent.team_id)}</p>
+              <span>Source-backed synthetic match event</span>
+            </div>
+          ) : <p className="empty-state">Waiting for the next verified match event.</p>}
+          <button className="key-moment-button" type="button" onClick={() => {
+            const message = messages.find((item) => isTacticalInsight(item));
+            if (message) void inspect(message);
+          }} disabled={!messages.some(isTacticalInsight)}>View Analysis →</button>
+        </section>
+        <div className="broadcast-detail-panels">
         <EventTimeline messages={messages} selectedId={selectedId} onSelect={inspect} />
 
         <section className="panel evidence-panel">
@@ -298,6 +327,7 @@ export function App() {
             </p>
           )}
         </section>
+        </div>
       </section>
 
       <footer>
