@@ -61,3 +61,28 @@ def test_valid_disabled_foundry_configuration_has_zero_side_effects() -> None:
     assert config.max_inference_calls_per_narrative == 2
     with pytest.raises(FoundryDisabled, match="cost approval"):
         FoundryRoles(config)
+
+
+def test_independent_deployments_validate_without_enabling_inference() -> None:
+    config = FoundryConfig(
+        "https://example.services.ai.azure.com/api/projects/sample",
+        "analyst-gpt5-mini",
+        storyteller_model_deployment="storyteller-gpt4o-mini",
+        editorial_model_deployment="editorial-not-enabled",
+    )
+    assert config.role_deployments == {
+        "analyst": "analyst-gpt5-mini",
+        "storyteller": "storyteller-gpt4o-mini",
+        "editorial": "editorial-not-enabled",
+    }
+    with pytest.raises(FoundryDisabled, match="cost approval"):
+        FoundryRoles(config)
+
+
+def test_empty_optional_role_deployment_rejected() -> None:
+    with pytest.raises(ValueError, match="deployment"):
+        FoundryConfig("https://example.services.ai.azure.com", "analyst",
+                      storyteller_model_deployment=" ")
+    with pytest.raises(ValueError, match="deployment"):
+        FoundryConfig("https://example.services.ai.azure.com", "analyst",
+                      editorial_model_deployment="")

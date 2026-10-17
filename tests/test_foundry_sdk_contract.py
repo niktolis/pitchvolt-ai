@@ -67,10 +67,11 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
         inference_explicitly_approved=True,
         max_output_tokens_per_role=192,
     ))
-    assert [kind for kind, _ in calls] == ["credential", "client", "agent", "agent"]
+    assert [kind for kind, _ in calls] == ["credential", "client", "client", "agent", "agent"]
     client_kwargs = calls[1][1]
     assert isinstance(client_kwargs, dict)
     assert client_kwargs["model"] == "test-model"
+    assert calls[2][1]["model"] == "test-model"
 
     async def exercise() -> None:
         # These are fake SDK calls, not Azure requests or deployed models.
@@ -114,3 +115,57 @@ def test_missing_sdk_fails_only_after_explicit_opt_in(monkeypatch) -> None:
             "not-deployed",
             inference_explicitly_approved=True,
         ))
+
+
+def test_heterogeneous_clients_and_optional_editorial_are_isolated(monkeypatch) -> None:
+    import sys
+    from types import ModuleType
+
+    created: list[tuple[str, object]] = []
+
+    class Credential:
+        pass
+
+    class Client:
+        def __init__(self, **kwargs: object) -> None:
+            created.append(("client", kwargs))
+
+    class Agent:
+        def __init__(self, **kwargs: object) -> None:
+            created.append(("agent", kwargs["name"]))
+
+    framework = ModuleType("agent_framework")
+    framework.Agent = Agent  # type: ignore[attr-defined]
+    foundry = ModuleType("agent_framework.foundry")
+    foundry.FoundryChatClient = Client  # type: ignore[attr-defined]
+    azure = ModuleType("azure")
+    identity = ModuleType("azure.identity")
+    identity.DefaultAzureCredential = Credential  # type: ignore[attr-defined]
+    for name, module in (
+        ("agent_framework", framework),
+        ("agent_framework.foundry", foundry),
+        ("azure", azure),
+        ("azure.identity", identity),
+    ):
+        monkeypatch.setitem(sys.modules, name, module)
+
+    config = FoundryConfig(
+        "https://example.services.ai.azure.com/api/projects/sample",
+        "analyst-gpt5-mini",
+        storyteller_model_deployment="storyteller-gpt4o-mini",
+        editorial_model_deployment="editorial-test-only",
+        inference_explicitly_approved=True,
+    )
+    roles = FoundryRoles(config)
+    assert list(config.role_deployments) == ["analyst", "storyteller", "editorial"]
+    clients = [value for kind, value in created if kind == "client"]
+    assert [client["model"] for client in clients] == [
+        "analyst-gpt5-mini", "storyteller-gpt4o-mini", "editorial-test-only",
+    ]
+    assert len({id(client["credential"]) for client in clients}) == 1
+    assert [name for kind, name in created if kind == "agent"] == [
+        "MatchPulseAnalyst", "MatchPulseStoryteller", "MatchPulseEditorial",
+    ]
+    assert roles._analyst is roles._agents["analyst"]
+    assert roles._storyteller is roles._agents["storyteller"]
+    assert config.max_inference_calls_per_narrative == 2

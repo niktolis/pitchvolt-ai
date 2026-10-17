@@ -19,6 +19,8 @@ class FoundryConfig:
     model_deployment: str
     inference_explicitly_approved: bool = False
     max_output_tokens_per_role: int = 256
+    storyteller_model_deployment: str | None = None
+    editorial_model_deployment: str | None = None
     max_inference_calls_per_narrative: int = 2
 
     def __post_init__(self) -> None:
@@ -38,8 +40,26 @@ class FoundryConfig:
             raise ValueError("Per-role output token cap must be between 1 and 1024")
         if self.max_inference_calls_per_narrative != 2:
             raise ValueError("Two-role narrative must have exactly two inference calls")
-        if not self.model_deployment.strip():
-            raise ValueError("Foundry deployment name is required")
+        for deployment in (
+            self.model_deployment,
+            self.storyteller_model_deployment,
+            self.editorial_model_deployment,
+        ):
+            if deployment is not None and not deployment.strip():
+                raise ValueError("Foundry deployment name is required")
+
+    @property
+    def role_deployments(self) -> dict[str, str]:
+        """Configured clients; Editorial is prepared but never scheduled."""
+        return {
+            "analyst": self.model_deployment,
+            "storyteller": self.storyteller_model_deployment or self.model_deployment,
+            **(
+                {"editorial": self.editorial_model_deployment}
+                if self.editorial_model_deployment is not None
+                else {}
+            ),
+        }
 
 
 class FoundryDisabled(RuntimeError):
@@ -61,31 +81,46 @@ class FoundryRoles:
             raise FoundryDisabled(
                 "Install the reviewed agent-framework-foundry SDK before enabling inference"
             ) from exc
-        client = FoundryChatClient(
-            project_endpoint=config.project_endpoint,
-            model=config.model_deployment,
-            credential=DefaultAzureCredential(),
-        )
+        # One credential, independently configured clients per specialist.
+        # Editorial may be constructed for configuration validation, but is not
+        # invoked by the two-role orchestrator or included in the call budget.
+        credential = DefaultAzureCredential()
+        clients = {
+            role: FoundryChatClient(
+                project_endpoint=config.project_endpoint,
+                model=deployment,
+                credential=credential,
+            )
+            for role, deployment in config.role_deployments.items()
+        }
         self._max_output_tokens = config.max_output_tokens_per_role
         self.last_evidence_tool_calls: tuple[str, ...] = ()
-        self._analyst = Agent(
-            client=client,
-            name="MatchPulseAnalyst",
-            instructions=(
-                "Analyze ONLY the provided immutable football evidence. "
-                "Choose a tactical angle and copy the exact insight/evidence IDs. "
-                "Never infer metrics or invent events. Output only the requested schema."
+        instructions = {
+            "analyst": (
+                "Analyze ONLY immutable football evidence. Use provided read-only "
+                "tools to inspect each cited event. Preserve evidence IDs and metrics; "
+                "return only the structured tactical plan."
             ),
-        )
-        self._storyteller = Agent(
-            client=client,
-            name="MatchPulseStoryteller",
-            instructions=(
-                "Select a presentation style for the requested audience using the "
-                "Analyst's validated angle. Copy the insight ID and angle exactly. "
-                "Do not generate prose or football numbers; the application renders text."
+            "storyteller": (
+                "Choose audience-specific style from the validated Analyst plan. "
+                "Preserve insight ID and angle. Never generate football claims or prose."
             ),
-        )
+            "editorial": (
+                "Review only explicitly escalated, already grounded interpretations. "
+                "Never override the deterministic factual verifier."
+            ),
+        }
+        self._agents = {
+            role: Agent(
+                client=clients[role],
+                name=f"MatchPulse{role.title()}",
+                instructions=instructions[role],
+            )
+            for role in clients
+        }
+        self._analyst = self._agents["analyst"]
+        self._storyteller = self._agents["storyteller"]
+        # Intentionally no Editorial invocation or escalation policy yet.
 
     async def analyze(self, evidence: EvidenceBundle) -> AnalystPlan:
         insight = evidence.insight
