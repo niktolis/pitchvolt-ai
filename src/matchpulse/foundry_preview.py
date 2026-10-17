@@ -16,7 +16,9 @@ from fastapi.responses import StreamingResponse
 
 from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles, RoleSettings
 from matchpulse.foundry_smoke import (
-    ANALYST_DEPLOYMENT, SMOKE_ANALYST_OUTPUT_TOKENS, STORYTELLER_DEPLOYMENT,
+    ANALYST_DEPLOYMENT,
+    SMOKE_ANALYST_OUTPUT_TOKENS,
+    STORYTELLER_DEPLOYMENT,
     create_smoke_project_client,
 )
 from matchpulse.narrative import Audience, InMemoryEvidenceTool, bounded_deterministic_fallback
