@@ -16,6 +16,7 @@ from matchpulse.agent_policies import (
     STORYTELLER_INSTRUCTIONS,
     audience_instruction,
 )
+from matchpulse.assertion_audit import AssertionAudit, audit_assertions
 from matchpulse.evidence_links import LinkAssessment, assess_evidence_links
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
@@ -142,6 +143,7 @@ class FoundryRoles:
         self.last_authored_candidate: NarrativeCandidate | None = None
         self.last_grounding_result: GroundingResult | None = None
         self.last_link_assessment: LinkAssessment | None = None
+        self.last_assertion_audit: AssertionAudit | None = None
         instructions = {
             "analyst": ANALYST_INSTRUCTIONS,
             "storyteller": STORYTELLER_INSTRUCTIONS,
@@ -277,6 +279,9 @@ class FoundryRoles:
                 self.last_authored_candidate, evidence
             )
             self.last_grounding_result = assess_grounded_prose(
+                self.last_authored_candidate, evidence
+            )
+            self.last_assertion_audit = audit_assertions(
                 self.last_authored_candidate, evidence
             )
             if selection.evidence_links is not None:
