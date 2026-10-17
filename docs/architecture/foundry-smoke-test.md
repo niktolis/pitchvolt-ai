@@ -79,3 +79,7 @@ than rerunning inference. No new authorization is implied by a diagnostic PR.
 ### Agent Framework ChatOptions compatibility
 
 Installed Agent Framework Core 1.22.0 declares `ChatOptions.max_tokens` and `response_format`, not `ChatOptions.max_output_tokens`. The provider maps the existing configured output budget to the supported `max_tokens` request option. This fixes an offline-confirmed contract mismatch, **not** a confirmed explanation for earlier `ChatClientException` without HTTP metadata. No renewed billable test is authorized by this change.
+
+### Third live smoke and offline response diagnostics
+
+The 17 Oct Analyst request returned in ~5.3 seconds without a structured value or model-initiated evidence tool calls. The deterministic fallback correctly rejected the ungrounded result and the Storyteller was not invoked. SDK response metadata (allowed completion status/finish reason, message count, structured-value presence and optional token counters) is now reported without exposing model output, raw payload or credentials. Absence of usage counters must not be interpreted as zero billing. Inspect this metadata before considering a change to the Analyst token budget. Neither this diagnostics update nor a local dry run authorizes more billable inference.

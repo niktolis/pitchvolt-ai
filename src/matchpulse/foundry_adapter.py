@@ -30,6 +30,32 @@ class FoundryDisabled(RuntimeError):
     """Provider access deliberately blocked until inference opt-in."""
 
 
+def sanitized_response_metadata(response: object) -> dict[str, object]:
+    """Allowlisted response metadata only; no generated text or provider payload."""
+    allowed = {"stop", "length", "tool_calls", "content_filter", "completed", "incomplete", "max_output_tokens", "end_turn"}
+    def reason(value: object) -> str | None:
+        return value if isinstance(value, str) and value in allowed else None
+
+    usage = getattr(response, "usage", None)
+    def tokens(name: str) -> int | None:
+        value = getattr(usage, name, None)
+        return value if isinstance(value, int) and 0 <= value <= 100_000_000 else None
+
+    messages = getattr(response, "messages", None)
+    if not isinstance(messages, (list, tuple)):
+        messages = ()
+    return {
+        "response_type": type(response).__name__,
+        "structured_value_present": getattr(response, "value", None) is not None,
+        "finish_reason": reason(getattr(response, "finish_reason", None)),
+        "response_status": reason(getattr(response, "status", None)),
+        "input_tokens": tokens("input_tokens"),
+        "output_tokens": tokens("output_tokens"),
+        "total_tokens": tokens("total_tokens"),
+        "message_count": min(len(messages), 1000),
+    }
+
+
 class FoundryRoles:
     """Two specialized ephemeral roles; no server-hosted agent resources."""
 
@@ -62,6 +88,7 @@ class FoundryRoles:
         self.invocations: list[RoleInvocation] = []
         self._attempts = {'analyst': 0, 'storyteller': 0}
         self.last_evidence_tool_calls: tuple[str, ...] = ()
+        self.last_response_metadata: dict[str, object] | None = None
         instructions = {
             "analyst": (
                 "Analyze ONLY immutable football evidence. Use provided read-only "
@@ -109,6 +136,7 @@ class FoundryRoles:
             self._agents[role].run(prompt, options=options, **({"tools": tools} if tools is not None else {})),
             timeout=self._config.timeout_seconds_per_role,
         )
+        self.last_response_metadata = sanitized_response_metadata(response)
         usage = getattr(response, "usage", None)
         def token_count(name: str) -> int | None:
             value = getattr(usage, name, None)

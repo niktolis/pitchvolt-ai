@@ -174,3 +174,36 @@ def test_heterogeneous_clients_and_optional_editorial_are_isolated(monkeypatch) 
     assert roles._analyst is roles._agents["analyst"]
     assert roles._storyteller is roles._agents["storyteller"]
     assert config.max_inference_calls_per_narrative == 2
+
+
+def test_sanitized_response_metadata_excludes_payload() -> None:
+    from matchpulse.foundry_adapter import sanitized_response_metadata
+
+    payload = "SECRET generated answer or bearer token"
+    response = SimpleNamespace(
+        value=None, finish_reason="length", status="incomplete",
+        messages=[SimpleNamespace(role="assistant", content=payload)],
+        usage=SimpleNamespace(input_tokens=200, output_tokens=256, total_tokens=456),
+        raw_response=payload,
+    )
+    metadata = sanitized_response_metadata(response)
+    assert metadata["structured_value_present"] is False
+    assert metadata["finish_reason"] == "length"
+    assert metadata["response_status"] == "incomplete"
+    assert metadata["output_tokens"] == 256
+    assert metadata["message_count"] == 1
+    assert payload not in str(metadata)
+
+
+def test_response_metadata_unknown_status_and_missing_usage() -> None:
+    from matchpulse.foundry_adapter import sanitized_response_metadata
+
+    response = SimpleNamespace(
+        value=None, status="PRIVATE_USER_TEXT", finish_reason="PRIVATE_USER_TEXT",
+        usage=None,
+    )
+    metadata = sanitized_response_metadata(response)
+    assert metadata["response_status"] is None
+    assert metadata["finish_reason"] is None
+    assert metadata["input_tokens"] is None
+    assert metadata["message_count"] == 0
