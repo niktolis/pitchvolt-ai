@@ -2,7 +2,8 @@
 from fastapi.testclient import TestClient
 
 from matchpulse.api import app
-from matchpulse.events import EventType, validate_stream
+from matchpulse.events import EventType, Outcome, validate_stream
+from matchpulse.intelligence import InsightKind, analyze_stream
 from matchpulse.scenarios import scenario
 from matchpulse.statsbomb_reference import (
     REFERENCE_ACTION_COUNTS,
@@ -61,3 +62,23 @@ def test_action_family_quota_matches_pinned_reference() -> None:
     assert types[EventType.SHOT] + types[EventType.GOAL] == quotas[EventType.SHOT]
     for kind in (EventType.PASS, EventType.CARRY, EventType.PRESSURE):
         assert types[kind] == quotas[kind]
+
+
+
+def test_scripted_high_press_inside_larger_match_is_evidence_backed() -> None:
+    match, events = scenario("extended_match", 42)
+    insight = next(
+        item for item in analyze_stream(match, events)
+        if item.kind == InsightKind.HIGH_PRESS
+    )
+    window = events[70:78]
+    assert len(window) == 8
+    assert events[73].event_type == EventType.PASS
+    assert events[73].outcome == Outcome.FAILURE
+    assert events[73].evidence["under_pressure"] is True
+    assert events[74].event_type == EventType.TURNOVER
+    assert events[77].event_type == EventType.GOAL
+    assert insight.evidence_event_ids == tuple(event.event_id for event in window)
+    assert insight.metrics["transition_duration_ms"] == 7_500
+    assert insight.metrics["attacking_actions"] == 4
+    assert all(e.evidence["scripted_tactical_window"] for e in window)
