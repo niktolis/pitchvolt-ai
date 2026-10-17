@@ -156,10 +156,10 @@ export function App() {
       <header className="hero">
         <div>
           <div className="brand-line">
-            <span className="brand-mark">MP</span>
+            <img className="brand-logo" src="/pitchvolt-mark.svg" alt="PitchVolt AI logo" />
             <span className="eyebrow">Microsoft AI Hackathon · synthetic data</span>
           </div>
-          <h1>MatchPulse AI</h1>
+          <h1>PitchVolt AI</h1>
           <p>Deterministic football intelligence first. Evidence-backed storytelling second.</p>
         </div>
 

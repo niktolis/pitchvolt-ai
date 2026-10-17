@@ -1,8 +1,8 @@
-# MatchPulse AI
+# PitchVolt AI
 
-Real-time, explainable football intelligence and personalized storytelling for the Microsoft Premier League AI Hackathon.
+Football intelligence. Electrified. Real-time, explainable football intelligence and personalized storytelling for the Microsoft Premier League AI Hackathon.
 
-MatchPulse AI deliberately separates **football truth** from **AI explanation**:
+PitchVolt AI deliberately separates **football truth** from **AI explanation**:
 
 **Ingest → Interpret → Explain → Render → Personalize**
 
