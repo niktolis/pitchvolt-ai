@@ -18,15 +18,47 @@ export function SourceMomentPreview({ event }: { event: MatchEvent | null }) {
         }
       >
         <defs>
-          <marker id="moment-destination-tip" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
+          <marker
+            id="moment-destination-tip"
+            markerWidth="4"
+            markerHeight="4"
+            refX="3"
+            refY="2"
+            orient="auto"
+          >
             <path d="M 0 0 L 4 2 L 0 4 Z" fill="#b6e64b" />
           </marker>
         </defs>
-        <rect x="0.7" y="0.7" width="103.6" height="66.6" rx="1" fill="none" stroke="#d8eed2" strokeWidth=".45" />
+        <rect
+          x="0.7"
+          y="0.7"
+          width="103.6"
+          height="66.6"
+          rx="1"
+          fill="none"
+          stroke="#d8eed2"
+          strokeWidth=".45"
+        />
         <line x1="52.5" y1="0.7" x2="52.5" y2="67.3" stroke="#d8eed2" strokeWidth=".4" />
         <circle cx="52.5" cy="34" r="9.15" fill="none" stroke="#d8eed2" strokeWidth=".4" />
-        <rect x="0.7" y="13.84" width="16.5" height="40.32" fill="none" stroke="#d8eed2" strokeWidth=".4" />
-        <rect x="87.8" y="13.84" width="16.5" height="40.32" fill="none" stroke="#d8eed2" strokeWidth=".4" />
+        <rect
+          x="0.7"
+          y="13.84"
+          width="16.5"
+          height="40.32"
+          fill="none"
+          stroke="#d8eed2"
+          strokeWidth=".4"
+        />
+        <rect
+          x="87.8"
+          y="13.84"
+          width="16.5"
+          height="40.32"
+          fill="none"
+          stroke="#d8eed2"
+          strokeWidth=".4"
+        />
         {actor && destination ? (
           <line
             x1={actor.location.x}
