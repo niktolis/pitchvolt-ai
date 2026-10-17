@@ -14,7 +14,7 @@ from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.narrative import Audience, EvidenceBundle
 from matchpulse.workflow import AnalystPlan, StorytellerSelection
 
-__all__ = ["FoundryConfig", "RoleSettings", "RoleInvocation", "FoundryDisabled", "FoundryRoles"]
+__all__ = ["FoundryConfig", "FoundryDisabled", "FoundryRoles", "RoleInvocation", "RoleSettings"]
 
 
 @dataclass(frozen=True)
