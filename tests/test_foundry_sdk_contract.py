@@ -28,10 +28,11 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
             self.name = kwargs["name"]
             calls.append(("agent", self.name))
 
-        async def run(self, prompt: str, *, options: dict[str, object]) -> object:
+        async def run(self, prompt: str, *, options: dict[str, object], tools=None) -> object:
             calls.append(("run", (self.name, options, prompt)))
+            assert "tools" not in options
             if self.name == "MatchPulseAnalyst":
-                assert options["tools"][0]("event-1")
+                assert tools is not None and tools[0]("event-1")
                 return SimpleNamespace(value={
                     "insight_id": "insight-1",
                     "angle": "tactical",
