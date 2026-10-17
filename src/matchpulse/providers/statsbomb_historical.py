@@ -39,7 +39,7 @@ class HistoricalFixture:
 def _get_event_type(record: dict[str, Any]) -> str:
     value = record.get("type")
     if not isinstance(value, dict) or not isinstance(value.get("name"), str):
-        raise ValueError("Historical event missing type.name")
+        raise TypeError("Historical event missing type.name")
     return value["name"]
 
 
@@ -68,7 +68,7 @@ def load_historical_fixture(path: Path, manifest: FixtureManifest) -> Historical
     ids: set[str] = set()
     for raw_event in decoded:
         if not isinstance(raw_event, dict):
-            raise ValueError("StatsBomb event is not an object")
+            raise TypeError("StatsBomb event is not an object")
         index = raw_event.get("index")
         event_id = raw_event.get("id")
         if type(index) is not int or index <= previous_index:
@@ -79,7 +79,7 @@ def load_historical_fixture(path: Path, manifest: FixtureManifest) -> Historical
         if type(period) is not int or period < 1:
             raise ValueError("Invalid historical event period")
         if not isinstance(raw_event.get("timestamp"), str):
-            raise ValueError("Historical event timestamp missing")
+            raise TypeError("Historical event timestamp missing")
         previous_index = index
         ids.add(event_id)
         types[_get_event_type(raw_event)] += 1
