@@ -2,7 +2,7 @@
 
 ![PitchVolt AI — Football intelligence. Electrified.](docs/assets/pitchvolt-readme-banner.svg)
 
-[![Python checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml) [![Architecture diagrams](https://github.com/niktolis/matchpulse-ai/actions/workflows/architecture-diagrams.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/architecture-diagrams.yml) [![Azure deployment](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml)
+[![Python checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml) [![Azure deployment](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml)
 
 
 Football intelligence. Electrified. Real-time, explainable football intelligence and personalized storytelling for the Microsoft Premier League AI Hackathon.
