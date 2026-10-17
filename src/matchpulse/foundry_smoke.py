@@ -7,7 +7,7 @@ import json
 import os
 from dataclasses import asdict
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles
+from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles, RoleSettings
 from matchpulse.narrative import Audience, InMemoryEvidenceTool
 from matchpulse.narrative_stream import _bundles
 from matchpulse.scenarios import scenario
@@ -15,6 +15,7 @@ from matchpulse.workflow import Orchestrator
 
 ANALYST_DEPLOYMENT = "matchpulse-gpt5-mini"
 STORYTELLER_DEPLOYMENT = "matchpulse-gpt4o"
+SMOKE_ANALYST_OUTPUT_TOKENS = 512
 
 
 def sanitized_failure(exc: Exception) -> dict[str, object]:
@@ -80,6 +81,7 @@ async def run(argv: list[str] | None = None) -> int:
         "analyst_deployment": ANALYST_DEPLOYMENT,
         "storyteller_deployment": STORYTELLER_DEPLOYMENT,
         "maximum_role_invocations": 2,
+        "analyst_max_output_tokens": SMOKE_ANALYST_OUTPUT_TOKENS,
         "note": "Agent SDK can make additional HTTP requests internally; no hard monetary cap",
     }
     print(json.dumps(description, indent=2))
@@ -95,6 +97,7 @@ async def run(argv: list[str] | None = None) -> int:
         inference_explicitly_approved=True,  # isolated CLI ONLY, never SSE application
         max_tool_calls_per_analyst=min(12, len(bundle.events)),
         timeout_seconds_per_role=15.0,
+        analyst_settings=RoleSettings(max_output_tokens=SMOKE_ANALYST_OUTPUT_TOKENS),
     )
     # Workstation-specific credential avoids Managed Identity probing on macOS.
     # No token or credential content is logged or stored.
