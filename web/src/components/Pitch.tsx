@@ -18,8 +18,7 @@ function pctY(value: number): number {
 }
 
 export function Pitch({ event, children }: PitchProps) {
-  const locatedEvent =
-    event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
+  const locatedEvent = event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
   const destination =
     locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
   const [hasWebGL] = useState(() => {
