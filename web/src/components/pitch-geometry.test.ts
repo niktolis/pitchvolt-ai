@@ -29,7 +29,9 @@ describe("source-aligned pitch camera", () => {
         expect(Math.abs(ndc.x)).toBeLessThan(0.96);
         expect(Math.abs(ndc.y)).toBeLessThan(0.96);
         expect(ndc.z).toBeLessThan(1);
-        const head = toWorld({ x, y }).add(new THREE.Vector3(0, 2.8, 0)).project(camera);
+        const head = toWorld({ x, y })
+          .add(new THREE.Vector3(0, 2.8, 0))
+          .project(camera);
         expect(Math.abs(head.x)).toBeLessThan(1);
         expect(Math.abs(head.y)).toBeLessThan(1);
         expect(head.z).toBeLessThan(1);
@@ -57,8 +59,12 @@ describe("source-aligned pitch camera", () => {
     expect(arrow.start.toArray()).toEqual(toWorld(source).toArray());
     expect(arrow.end.toArray()).toEqual(toWorld(destination).toArray());
     const tip = arrow.arrowCenter.clone().addScaledVector(arrow.direction, arrow.arrowLength / 2);
-    const shaftEnd = arrow.shaftCenter.clone().addScaledVector(arrow.direction, arrow.shaftLength / 2);
-    const headStart = arrow.arrowCenter.clone().addScaledVector(arrow.direction, -arrow.arrowLength / 2);
+    const shaftEnd = arrow.shaftCenter
+      .clone()
+      .addScaledVector(arrow.direction, arrow.shaftLength / 2);
+    const headStart = arrow.arrowCenter
+      .clone()
+      .addScaledVector(arrow.direction, -arrow.arrowLength / 2);
     expect(tip.distanceTo(arrow.end)).toBeLessThan(1e-6);
     expect(shaftEnd.distanceTo(headStart)).toBeLessThan(1e-6);
     expect(arrow.shaftLength + arrow.arrowLength).toBeCloseTo(arrow.start.distanceTo(arrow.end));
