@@ -39,3 +39,9 @@ This is provenance for **publication decisions**, not semantic certification of 
 `matchpulse.shadow_validation.assess_candidate` evaluates proposed `NarrativeCandidate` responses **without publishing them**. An invalid evidence/claim manifest returns `invalid_claims`; a valid manifest returns `unverified_prose`, not a success state. The result schema enforces `publishable=false` and records only non-sensitive insight ID and claim/evidence counts, not model-produced wording or exception messages.
 
 This distinction matters: a model can attach valid tactical claims to a sentence that fabricates goals, possession or player actions. Machine-readable claim verification alone cannot establish sentence-level entailment. The existing `verify_narrative` rejection and public narrative renderer stay unchanged. This module enables offline negative-control evaluation for a future, independently reviewed semantic verification strategy; it is not a replacement for one. No SDK calls, inference permission or Azure cost are added.
+
+## Reproducible offline shadow benchmark
+
+Run `uv run --frozen python -m matchpulse.narrative_eval` to print a deterministic JSON report. The scenario corpus is original synthetic football evidence, with valid structured facts, an invalid metric, mismatched evidence, and **plausible structured facts accompanied by fabricated goal/possession text**. Report fields include counts by verdict and an explicit `semantic_verification: not_implemented` marker. All candidates remain `publishable=false`.
+
+This benchmark tests **claim validation and fail-closed publication policy**, not semantic entailment, model quality, inference latency, or hallucination detection within the raw text. It is deliberately no-cost and does not use Foundry. A future real-model benchmark should measure sampled candidate outputs and manual annotations separately, without treating this four-case synthetic fixture as an accuracy estimate.
