@@ -10,7 +10,7 @@ from enum import StrEnum
 from time import perf_counter
 from typing import Protocol
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from matchpulse.narrative import (
     Audience,
@@ -60,6 +60,8 @@ class StorytellerSelection(BaseModel):
     angle: Angle
     style: Style
     fact_order: tuple[FactSlot, ...] | None = None
+    authored_headline: str | None = Field(default=None, max_length=180)
+    authored_text: str | None = Field(default=None, max_length=600)
 
 
 class Analyst(Protocol):

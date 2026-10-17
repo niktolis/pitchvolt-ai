@@ -76,15 +76,17 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
 
     async def exercise() -> None:
         # These are fake SDK calls, not Azure requests or deployed models.
-        plan = await roles.analyze(SimpleNamespace(insight=SimpleNamespace(
+        evidence = SimpleNamespace(insight=SimpleNamespace(
             insight_id="insight-1",
             kind=SimpleNamespace(value="high_press"),
             evidence_event_ids=("event-1",),
-            metrics={"attacking_actions": 3},
-        ), events=(SimpleNamespace(event_id="event-1", model_dump_json=lambda: '{"event_id":"event-1"}'),)))
+            team_id="harbor-fc",
+            metrics={"attacking_actions": 3, "transition_duration_ms": 9000},
+        ), events=(SimpleNamespace(event_id="event-1", model_dump_json=lambda: '{"event_id":"event-1"}'),))
+        plan = await roles.analyze(evidence)
         assert isinstance(plan, AnalystPlan)
         assert plan.evidence_event_ids == ("event-1",)
-        selection = await roles.select(plan, None, Audience.ANALYST)
+        selection = await roles.select(plan, evidence, Audience.ANALYST)
         assert isinstance(selection, StorytellerSelection)
         assert selection.style == "technical"
 
