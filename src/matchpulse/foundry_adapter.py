@@ -101,7 +101,7 @@ class FoundryRoles:
             ),
             "storyteller": (
                 "Choose audience-specific style from the validated Analyst plan. "
-                "Preserve insight ID and angle. Never generate football claims or prose."
+                "Preserve insight ID and angle. You may choose fact_order as a permutation of team, tactic, transition, actions, each exactly once. Never generate football claims or prose."
             ),
             "editorial": (
                 "Review only explicitly escalated, already grounded interpretations. "
@@ -193,7 +193,7 @@ class FoundryRoles:
         response = await self._invoke("storyteller",
             f"Requested audience: {audience.value}\n"
             f"Approved Analyst plan: {plan.model_dump_json()}\n"
-            "Choose an allowed style and preserve the evidence-grounded angle.",
+            "Choose an allowed style and preserve the evidence-grounded angle. Optionally return fact_order to prioritize the four verified fact fragments; never invent a slot.",
             StorytellerSelection,
         )
         if response.value is None:
