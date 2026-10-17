@@ -217,7 +217,11 @@ async def run(argv: list[str] | None = None) -> int:
             return 0
         except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
             # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
-            print("FAIL: " + json.dumps(sanitized_failure(exc), sort_keys=True))
+            report = sanitized_failure(exc)
+            report["last_attempted_role"] = roles.last_attempted_role
+            report["attempted_role_count"] = sum(roles._attempts.values())
+            report["completed_roles"] = [item.role for item in roles.invocations]
+            print("FAIL: " + json.dumps(report, sort_keys=True))
             return 1
     
     finally:
