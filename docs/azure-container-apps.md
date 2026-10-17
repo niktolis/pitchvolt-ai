@@ -40,3 +40,7 @@ The preflight rejects remote inference, mutable image tags, and non-default repl
 3. Build and push the runtime image, record its immutable digest, and perform a clean dependency/vulnerability check.
 4. Provision the minimal Container Apps environment and app using reviewed infrastructure-as-code, with remote inference disabled.
 5. Inspect health, frontend assets, match-event SSE, narrative SSE, diagnostics and rollback/teardown. Measure browser latency before considering any hosted Foundry inference.
+
+## Operator rollout playbook
+
+After selecting a verified subscription, region, resource group, registry name, environment name and app name, set their corresponding `AZURE_*` environment variables and run `bash scripts/aca-rollout-plan.sh`. The script **prints** an ordered Azure CLI procedure, without executing any Azure mutations. This is necessary because the current Foundry integration cannot provision Container Apps, and because public ingress and cloud costs require operator review. The script deliberately stops short of generating a ready-to-run Container App creation command until a digest-pinned image and managed-identity registry-pull RBAC are verified. Use an existing resource group only, and inspect current resources before adding or deleting any. Confirm the credit balance and cost exposure before each chargeable step.
