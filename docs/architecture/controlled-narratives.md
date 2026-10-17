@@ -27,3 +27,9 @@ No cloud execution or billable resources authorized in this PR.
 The Storyteller may optionally provide `fact_order`: a permutation of `team`, `tactic`, `transition`, and `actions`. The server checks that each canonical fact appears exactly once, maps the slots to validated insight values, and renders the text locally. Missing, duplicated, and unknown slots fail closed. Omitting `fact_order` retains the earlier audience-specific sentence templates for backward compatibility.
 
 This permits model-selected **information ordering**, not free-form AI-authored prose or arbitrary tactical explanations. The existing `NarrativeCandidate` publication verifier intentionally continues to reject unbounded generated text. The optional Foundry provider remains behind the existing explicit inference-approval gate; tests use no Azure calls. Full model-authored natural-language generation would require an additional reviewed semantic-grounding and publication policy before enabling it. No production inference, model deployment or cost approval is implied by this slice.
+
+## Narrative SSE audit metadata
+
+The ordinary narrative SSE update now carries optional `verification` and `trace` fields while preserving its existing headline, text, source, audience and evidence IDs. A successful server-owned narrative is `controlled`; a rejected or unavailable provider returns `deterministic_fallback`. Each trace step exposes only the orchestration role, action, elapsed milliseconds and an optional evidence-event ID. Prompts, raw model responses, credentials and exception messages are never serialized into SSE updates.
+
+This is provenance for **publication decisions**, not semantic certification of unrestricted model-authored prose and not proof of paid Foundry inference. Foundry preview remains separately gated. No model deployment or Azure invocation is required for the offline regression tests.
