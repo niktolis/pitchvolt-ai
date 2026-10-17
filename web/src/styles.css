@@ -1254,3 +1254,77 @@ body {
     display: none;
   }
 }
+
+/* Live broadcast replay transport: compact controls are part of the pitch card. */
+.pitch-panel > .control-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 0 10px 12px;
+  padding: 10px 5px 2px;
+  border: 0;
+  border-top: 1px solid rgba(182, 230, 75, 0.18);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.pitch-panel > .control-bar > label {
+  flex: 1 1 116px;
+}
+.pitch-panel > .control-bar select {
+  min-width: 0;
+  width: 100%;
+}
+.pitch-panel > .control-bar .segmented,
+.pitch-panel > .control-bar .replay-button {
+  min-height: 34px;
+  border-color: rgba(182, 230, 75, 0.15);
+  border-radius: 9px;
+  background: #0b1c12;
+}
+.pitch-panel > .control-bar .segmented button {
+  padding: 0 9px;
+  font-size: 11px;
+}
+.pitch-panel > .control-bar .segmented button.active {
+  color: var(--pv-primary);
+  background: rgba(182, 230, 75, 0.13);
+}
+.pitch-panel > .control-bar .replay-button {
+  padding: 0 10px;
+  white-space: nowrap;
+}
+.pitch-panel > .control-bar .replay-seek-controls {
+  flex: 1 1 100%;
+  min-width: 0;
+  order: -1;
+  padding: 0;
+  margin: 0 0 4px;
+  border: 0;
+  gap: 6px;
+}
+.pitch-panel > .control-bar .replay-seek-controls button {
+  padding: 7px 8px;
+  border: 1px solid rgba(182, 230, 75, 0.19);
+  border-radius: 8px;
+  background: #0b1c12;
+}
+.pitch-panel > .control-bar .replay-seek-controls input[type="range"] {
+  accent-color: var(--pv-primary);
+}
+.pitch-panel > .control-bar .audience-switch {
+  margin-left: auto;
+}
+@media (max-width: 720px) {
+  .pitch-panel > .control-bar .replay-seek-controls {
+    order: -1;
+  }
+  .pitch-panel > .control-bar > label {
+    flex: 1 1 100%;
+  }
+  .pitch-panel > .control-bar .audience-switch {
+    margin-left: 0;
+  }
+}
