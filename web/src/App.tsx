@@ -88,6 +88,12 @@ export function App() {
   }, [scenario, replayNonce]);
 
   const bounds = useMemo(() => matchBounds(messages), [messages]);
+  const fixtureTeams = useMemo(
+    () => [...new Set(messages.filter(isMatchEvent).map((message) => message.payload.team_id))].slice(0, 2),
+    [messages],
+  );
+  const homeName = fixtureTeams[0] ? displayName(fixtureTeams[0]) : "Synthetic match";
+  const awayName = fixtureTeams[1] ? displayName(fixtureTeams[1]) : "Event replay";
 
   useEffect(() => {
     if (!playing || messages.length === 0) return;
@@ -183,14 +189,24 @@ export function App() {
             <span className="live-light" /> {streamState}
           </span>
           <div className="broadcast-score-content">
-            <strong>Synthetic match</strong>
+            <div className="broadcast-fixture-team broadcast-fixture-home">
+              <strong>{homeName}</strong>
+              <span className="broadcast-team-shield shield-home" aria-hidden="true">
+                {homeName.slice(0, 1)}
+              </span>
+            </div>
             <div className="broadcast-score-center">
-              <span className="broadcast-score-unavailable" title="Score unavailable">
+              <span className="broadcast-score-unavailable" title="Score not available in event data">
                 – : –
               </span>
               <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
             </div>
-            <strong>Event replay</strong>
+            <div className="broadcast-fixture-team broadcast-fixture-away">
+              <span className="broadcast-team-shield shield-away" aria-hidden="true">
+                {awayName.slice(0, 1)}
+              </span>
+              <strong>{awayName}</strong>
+            </div>
           </div>
         </div>
         <nav className="broadcast-tabs" aria-label="Match sections">
