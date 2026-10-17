@@ -10,7 +10,6 @@ import type {
 } from "./api/types";
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
-import { clampCursor, latestAtCursor, matchBounds } from "./domain/replayClock";
 import { Pitch } from "./components/Pitch";
 import {
   type AudienceMode,
@@ -19,6 +18,7 @@ import {
   eventLabel,
   modeCopy,
 } from "./domain/presentation";
+import { clampCursor, latestAtCursor, matchBounds } from "./domain/replayClock";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -82,7 +82,9 @@ export function App() {
         setError(reason instanceof Error ? reason.message : "Unable to load timeline.");
         setStreamState("error");
       });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [scenario, replayNonce]);
 
   const bounds = useMemo(() => matchBounds(messages), [messages]);
@@ -132,9 +134,8 @@ export function App() {
   const visibleMessages = replay.visible;
   const selected = visibleMessages.find((item) => item.id === selectedId) ?? replay.selected;
   const latestInsight = replay.insight;
-  const selectedEvent: MatchEvent | null = selected && isMatchEvent(selected)
-    ? selected.payload
-    : replay.event;
+  const selectedEvent: MatchEvent | null =
+    selected && isMatchEvent(selected) ? selected.payload : replay.event;
 
   const inspect = useCallback(
     async (message: ReplayMessage) => {
@@ -235,15 +236,55 @@ export function App() {
           Replay scenario
         </button>
 
-        <div className="replay-seek-controls" aria-label="Timeline playback controls">
-          <button type="button" onClick={() => { setPlaying((p) => !p); setStreamState("live"); }} disabled={!messages.length}>
+        <div className="replay-seek-controls" role="group" aria-label="Timeline playback controls">
+          <button
+            type="button"
+            onClick={() => {
+              setPlaying((p) => !p);
+              setStreamState("live");
+            }}
+            disabled={!messages.length}
+          >
             {playing ? "Pause" : "Play"}
           </button>
-          <button type="button" onClick={() => { setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end)); setPlaying(false); }} disabled={!messages.length} aria-label="Back 2 seconds">−2s</button>
-          <label>Match clock
-            <input type="range" min={bounds.start} max={Math.max(bounds.start + 1, bounds.end)} step={100} value={cursorMs} onChange={(event) => { setCursorMs(Number(event.target.value)); setPlaying(false); }} disabled={!messages.length} aria-label="Seek match time" />
+          <button
+            type="button"
+            onClick={() => {
+              setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
+              setPlaying(false);
+            }}
+            disabled={!messages.length}
+            aria-label="Back 2 seconds"
+          >
+            −2s
+          </button>
+          <label>
+            Match clock
+            <input
+              type="range"
+              min={bounds.start}
+              max={Math.max(bounds.start + 1, bounds.end)}
+              step={100}
+              value={cursorMs}
+              onChange={(event) => {
+                setCursorMs(Number(event.target.value));
+                setPlaying(false);
+              }}
+              disabled={!messages.length}
+              aria-label="Seek match time"
+            />
           </label>
-          <button type="button" onClick={() => { setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end)); setPlaying(false); }} disabled={!messages.length} aria-label="Forward 2 seconds">+2s</button>
+          <button
+            type="button"
+            onClick={() => {
+              setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
+              setPlaying(false);
+            }}
+            disabled={!messages.length}
+            aria-label="Forward 2 seconds"
+          >
+            +2s
+          </button>
         </div>
 
         <fieldset className="segmented audience-switch">
