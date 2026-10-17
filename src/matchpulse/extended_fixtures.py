@@ -38,17 +38,25 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
     teams = (match.home_team_id, match.away_team_id)
     events: list[MatchEvent] = []
     action_quotas = calibrated_action_quotas(EVENTS_PER_HALF * 2 - 4)
-    # Script one eight-event press-to-goal burst. Subtract every scripted
-    # action from reference quotas to preserve overall action counts.
+    # At 220 events the reference ratio yields only three shots. Four causal
+    # windows need four shots, so move one quota from Carry to Shot explicitly.
+    # This is a documented test coverage override, NOT corpus calibration.
+    if action_quotas[EventType.SHOT] < 4:
+        shortfall = 4 - action_quotas[EventType.SHOT]
+        action_quotas[EventType.SHOT] += shortfall
+        action_quotas[EventType.CARRY] -= shortfall
+    # Four deliberate evidence-backed tactical sequences across both halves.
+    # Broad source-derived action quotas remain fixed; timings and sequences
+    # are synthetic and must not be mistaken for the historical reference.
+    burst_starts = (31, 71, 151, 191)
+    burst_kinds = (
+        EventType.CARRY, EventType.PASS, EventType.PRESSURE, EventType.PASS,
+        EventType.TURNOVER, EventType.CARRY, EventType.PASS, EventType.SHOT,
+    )
     scripted = {
-        71: EventType.CARRY,
-        72: EventType.PASS,
-        73: EventType.PRESSURE,
-        74: EventType.PASS,
-        75: EventType.TURNOVER,
-        76: EventType.CARRY,
-        77: EventType.PASS,
-        78: EventType.SHOT,
+        start + offset: kind
+        for start in burst_starts
+        for offset, kind in enumerate(burst_kinds)
     }
     for kind in scripted.values():
         if kind != EventType.TURNOVER:
@@ -56,8 +64,6 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
     slots: list[EventType | None] = [None] * (EVENTS_PER_HALF * 2)
     for index, kind in scripted.items():
         slots[index - 1] = kind
-    for index in (20, 145, 200):
-        slots[index - 1] = EventType.TURNOVER
     remaining = [kind for kind, count in action_quotas.items() for _ in range(count)]
     rng.shuffle(remaining)
     pending = iter(remaining)
@@ -69,11 +75,14 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             index = len(events) + 1
             # Include sparse time windows and two stable halves. Every event is
             # grounded in the synthetic generation seed and absolute match clock.
-            offset = (position * HALF_DURATION_MS) // EVENTS_PER_HALF
+            offset = (position * HALF_DURATION_MS) // (EVENTS_PER_HALF - 1)
             clock = (half - 1) * HALF_DURATION_MS + offset
-            if 71 <= index <= 78:
-                # All eight causal events fit the detector's 45-second window.
-                clock = (69 * HALF_DURATION_MS) // EVENTS_PER_HALF + (index - 70) * 2_500
+            if any(start <= index <= start + 7 for start in burst_starts):
+                # Compress a full eight-action causal window within 20 seconds.
+                start_index = next(start for start in burst_starts if start <= index <= start + 7)
+                first_half_index = (start_index - 1) % EVENTS_PER_HALF
+                start_clock = (half - 1) * HALF_DURATION_MS + (first_half_index * HALF_DURATION_MS) // (EVENTS_PER_HALF - 1)
+                clock = start_clock + (index - start_index) * 2_500
             phase = position % 8
             kind = planned[index - 1]
             if kind == EventType.TURNOVER:
@@ -101,10 +110,10 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             }
             if kind == EventType.TURNOVER:
                 evidence["possession_change"] = True
-            if index == 74:
+            if any(index == start + 3 for start in burst_starts):
                 outcome = Outcome.FAILURE
                 evidence["under_pressure"] = True
-            if 71 <= index <= 78:
+            if index in scripted:
                 evidence["scripted_tactical_window"] = True
             events.append(MatchEvent(
                 match_id=match.match_id,
