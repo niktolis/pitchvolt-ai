@@ -32,7 +32,7 @@ def test_foundry_endpoint_must_be_project_scoped_and_secret_free(endpoint: str) 
         FoundryConfig(endpoint, "model")
 
 
-@pytest.mark.parametrize("cap", [0, 1025])
+@pytest.mark.parametrize("cap", [0, 8193])
 def test_excessive_or_invalid_output_token_budget_is_rejected(cap: int) -> None:
     with pytest.raises(ValueError, match="token cap"):
         FoundryConfig(
@@ -108,7 +108,7 @@ def test_unsupported_reasoning_setting_rejected_before_cloud() -> None:
     with pytest.raises(ValueError, match="reasoning effort"):
         RoleSettings(reasoning_effort="unsupported")
     with pytest.raises(ValueError, match="token cap"):
-        RoleSettings(max_output_tokens=2048)
+        RoleSettings(max_output_tokens=8193)
 
 
 @pytest.mark.parametrize("field,value", [
