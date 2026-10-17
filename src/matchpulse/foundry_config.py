@@ -36,6 +36,7 @@ class SmokeSettings:
     timeout_seconds_per_role: float = MAX_ROLE_TIMEOUT_SECONDS
     audience: str = "analyst"
     scenario: str = "high_press"
+    preview_total_timeout_seconds: float = 35.0
 
 
 SMOKE_SETTINGS = SmokeSettings()
@@ -122,3 +123,20 @@ class FoundryConfig:
         }
 
 
+
+
+def isolated_foundry_config(
+    endpoint: str, *, evidence_event_count: int, inference_approved: bool = False
+) -> FoundryConfig:
+    """Shared effective configuration for smoke and operator-gated preview."""
+    if evidence_event_count < 1:
+        raise ValueError("A nonempty evidence bundle is required")
+    return FoundryConfig(
+        project_endpoint=endpoint,
+        model_deployment=SMOKE_SETTINGS.analyst_deployment,
+        storyteller_model_deployment=SMOKE_SETTINGS.storyteller_deployment,
+        inference_explicitly_approved=inference_approved,
+        max_tool_calls_per_analyst=min(DEFAULT_TOOL_CALL_LIMIT, evidence_event_count),
+        timeout_seconds_per_role=SMOKE_SETTINGS.timeout_seconds_per_role,
+        analyst_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.analyst_output_tokens),
+    )
