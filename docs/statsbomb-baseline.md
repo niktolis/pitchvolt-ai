@@ -95,3 +95,7 @@ A census of original event families is not yet full domain semantic support.
 
 This acquisition path does not download automatically in tests/CI and does not
 enable Foundry, Azure billing or historical match display in the public UI.
+
+## Historical presentation projection (partial)
+
+`matchpulse.providers.statsbomb_projection.project_historical_actions` converts only fully located Pass, Pressure, Carry and Shot into read-only chronological pitch actions, preserving source IDs/names and converting 120 × 80 coordinates into canonical 105 × 68 metres. Every omitted family or record is counted by source event type. Ball Recovery never implicitly becomes a TURNOVER and a Shot never implicitly becomes a canonical GOAL; scoring, substitutions and tactical detection remain unavailable on this incomplete historical projection. This is **not** the application's canonical `MatchEvent` feed and is not yet wired to the public UI. Source-backed period clocks and complete semantic coverage remain tracked in #64.
