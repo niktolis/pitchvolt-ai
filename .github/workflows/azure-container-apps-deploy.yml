@@ -84,6 +84,7 @@ jobs:
           set -euo pipefail
           docker buildx build --platform linux/amd64 \
             --file docker/backend.Dockerfile --target runtime \
+            --build-arg "PITCHVOLT_BUILD_SHA=${GITHUB_SHA}" \
             --tag "$AZURE_REGISTRY_HOST/matchpulse:git-${GITHUB_SHA}" \
             --metadata-file "$RUNNER_TEMP/matchpulse-image.json" --push .
           digest=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["containerimage.digest"])' "$RUNNER_TEMP/matchpulse-image.json")
@@ -114,6 +115,22 @@ jobs:
           echo "::error::Container App health check failed. Inspect revision; retain previous digest for rollback."
           exit 1
 
+      - name: Wait for exact release on public domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            url="https://pitchvolt.app/?revision=${GITHUB_SHA}&probe=${attempt}"
+            if curl --fail --silent --location --max-time 15 -H 'Cache-Control: no-cache' "$url" | grep -Fq "content=\"${GITHUB_SHA}\""; then
+              echo "Verified pitchvolt.app serves ${GITHUB_SHA}"
+              exit 0
+            fi
+            echo "Public site still on previous revision (attempt ${attempt}/36)"
+            sleep 10
+          done
+          echo "::error::Public site did not converge to expected revision after 6 minutes"
+          exit 1
+
   visual-evidence:
     needs: build-deploy
     if: github.ref == 'refs/heads/main'
@@ -130,7 +147,7 @@ jobs:
           python -m pip install 'playwright==1.58.0'
           python -m playwright install --with-deps chromium
       - name: Capture deployed PitchVolt desktop and mobile
-        run: python scripts/capture-live-visual.py --url https://pitchvolt.app/ --output artifacts/visual
+        run: python scripts/capture-live-visual.py --url https://pitchvolt.app/ --expected-sha "${{ github.sha }}" --output artifacts/visual
       - name: Publish browser screenshots
         if: always()
         uses: actions/upload-artifact@v4

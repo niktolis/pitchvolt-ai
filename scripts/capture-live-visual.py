@@ -18,6 +18,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="https://pitchvolt.app/")
     parser.add_argument("--output", type=Path, default=Path("artifacts/visual"))
+    parser.add_argument("--expected-sha", default=None)
     args = parser.parse_args()
     if not args.url.startswith("https://"):
         raise SystemExit("Refusing non-HTTPS target")
@@ -49,6 +50,13 @@ def main() -> None:
                             if attempt == 6:
                                 raise RuntimeError(f"{label}: application not ready") from error
                             time.sleep(5)
+                    if args.expected_sha:
+                        deployed_sha = page.locator('meta[name="pitchvolt-build"]').get_attribute("content")
+                        if deployed_sha != args.expected_sha:
+                            raise RuntimeError(
+                                f"{label}: deployed SHA {deployed_sha!r} is not "
+                                f"expected SHA {args.expected_sha!r}"
+                            )
                     if "PitchVolt AI" not in page.title():
                         raise RuntimeError(f"{label}: incorrect title {page.title()!r}")
                     page.evaluate("document.fonts.ready")

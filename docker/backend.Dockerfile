@@ -11,7 +11,8 @@ COPY web ./
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 FROM web-development AS web-builder
-RUN npm run build
+ARG PITCHVOLT_BUILD_SHA=local
+RUN npm run build && sed -i "s/__PITCHVOLT_BUILD_SHA__/${PITCHVOLT_BUILD_SHA}/g" dist/index.html
 
 FROM ${PYTHON_IMAGE} AS base
 COPY --from=ghcr.io/astral-sh/uv:0.10.0@sha256:78a7ff97cd27b7124a5f3c2aefe146170793c56a1e03321dd31a289f6d82a04f /uv /uvx /usr/local/bin/
