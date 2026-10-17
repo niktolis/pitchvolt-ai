@@ -7,10 +7,11 @@ import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js
 import type { MatchEvent } from "../api/types";
 import {
   broadcastCameraPosition,
-  eventPath,
   FIELD_HEIGHT,
   FIELD_WIDTH,
+  isSourcePitchPoint,
   type PitchPoint,
+  sourceArrow,
   toWorld,
 } from "./pitch-geometry";
 
@@ -194,35 +195,32 @@ function PlayerModel({ event }: { event: MatchEvent }) {
           </group>
         ))}
       </group>
-      <mesh position={[0.9, 0.37, 1.1]} castShadow>
-        <sphereGeometry args={[0.32, 12, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.45} />
-      </mesh>
     </group>
   );
 }
 
 function Trajectory({ event }: { event: MatchEvent }) {
-  const path = eventPath(event.location, event.destination);
-  if (!path) return null;
-  const start = path.start.clone().setY(0.18);
-  const end = path.end.clone().setY(0.18);
-  const direction = end.clone().sub(start).normalize();
-  const rotation = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-  const center = start.clone().add(end).multiplyScalar(0.5);
+  const arrow = sourceArrow(event.location, event.destination);
+  if (!arrow) return null;
+  const rotation = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    arrow.direction,
+  );
+  const shaftCenter = arrow.shaftCenter.clone().setY(0.17);
+  const arrowCenter = arrow.arrowCenter.clone().setY(0.17);
 
   return (
     <group>
-      <mesh position={center} quaternion={rotation}>
-        <cylinderGeometry args={[0.15, 0.15, path.length, 10]} />
+      <mesh position={shaftCenter} quaternion={rotation}>
+        <cylinderGeometry args={[0.14, 0.14, arrow.shaftLength, 10]} />
         <meshBasicMaterial color="#c4ff56" toneMapped={false} />
       </mesh>
-      <mesh position={[center.x, 0.12, center.z]} quaternion={rotation}>
-        <cylinderGeometry args={[0.38, 0.38, path.length, 10]} />
-        <meshBasicMaterial color="#9aff24" transparent opacity={0.17} depthWrite={false} />
+      <mesh position={shaftCenter} quaternion={rotation}>
+        <cylinderGeometry args={[0.38, 0.38, arrow.shaftLength, 10]} />
+        <meshBasicMaterial color="#b6e64b" transparent opacity={0.14} depthWrite={false} />
       </mesh>
-      <mesh position={end} quaternion={rotation}>
-        <coneGeometry args={[0.52, 1.45, 12]} />
+      <mesh position={arrowCenter} quaternion={rotation}>
+        <coneGeometry args={[0.57, arrow.arrowLength, 12]} />
         <meshBasicMaterial color="#c4ff56" toneMapped={false} />
       </mesh>
     </group>
@@ -260,7 +258,7 @@ export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
         <directionalLight position={[35, 70, -45]} intensity={1.5} color="#c8edb1" />
         <Turf />
         <FieldMarkings />
-        {event ? (
+        {event && isSourcePitchPoint(event.location) && event.player_id.trim() ? (
           <>
             <Trajectory event={event} />
             <PlayerModel event={event} />
