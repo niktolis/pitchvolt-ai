@@ -107,3 +107,7 @@ Source events are all checked for chronological consistency, including types tha
 ## Extended synthetic replay baseline (initial deterministic version)
 
 The `extended_match` scenario contains **220 fictional canonical events across two halves** with seeded positions, periods, turnovers, passes, carries, shots and explicitly generated goals. It exercises the existing replay API without introducing a second transport contract. The `seeded_uncalibrated` evidence marker is mandatory: the fixture is **not calibrated to historical StatsBomb distributions** and is not equivalent to a full realistic simulation. Real Open Data ingestion, distribution estimation, validated lineup/staff metadata and referee/substitution state remain outstanding before issue #65 can be closed. Legacy six-event scenarios remain regression fixtures.
+
+## Source-accurate historical lineups (partial)
+
+The separate `statsbomb_lineups.load_historical_lineups` accepts a locally obtained historical `data/lineups/<match_id>.json` file and an exact SHA-256 checksum, validates two teams, unique players, jersey numbers and available source position names. These are source-backed display records only, not a fabricated starting XI, not a substitution timeline, and not a verified link to the event file until the match-bundle validator is complete. Keep lineups distinct from original fictional MatchPulse player metadata.
