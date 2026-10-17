@@ -2,6 +2,7 @@ import { type ReactNode, useState } from "react";
 import type { MatchEvent } from "../api/types";
 import { displayName, eventLabel } from "../domain/presentation";
 import { BroadcastPitchScene } from "./BroadcastPitchScene";
+import { isSourcePitchPoint } from "./pitch-geometry";
 
 interface PitchProps {
   event: MatchEvent | null;
@@ -17,7 +18,8 @@ function pctY(value: number): number {
 }
 
 export function Pitch({ event, children }: PitchProps) {
-  const destination = event?.destination;
+  const locatedEvent = event && event.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
+  const destination = locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
   const [hasWebGL] = useState(() => {
     try {
       const canvas = document.createElement("canvas");
@@ -34,16 +36,16 @@ export function Pitch({ event, children }: PitchProps) {
           <span className="eyebrow">Tactical replay</span>
           <h2>On the pitch</h2>
         </div>
-        <span className="status-dot">{event ? event.event_type : "waiting"}</span>
+        <span className="status-dot">{locatedEvent ? locatedEvent.event_type : "waiting"}</span>
       </div>
 
       <div className="pitch">
-        {hasWebGL ? <BroadcastPitchScene event={event} /> : null}
+        {hasWebGL ? <BroadcastPitchScene event={locatedEvent} /> : null}
         <svg
           className={hasWebGL ? "pitch-svg-fallback" : undefined}
           viewBox="0 0 105 68"
           role="img"
-          aria-label={event ? eventLabel(event) : "Pitch"}
+          aria-label={locatedEvent ? eventLabel(locatedEvent) : "Pitch"}
         >
           <defs>
             <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
@@ -67,18 +69,18 @@ export function Pitch({ event, children }: PitchProps) {
           <rect x="0.7" y="24.84" width="5.5" height="18.32" className="pitch-line" />
           <rect x="98.8" y="24.84" width="5.5" height="18.32" className="pitch-line" />
 
-          {event && destination ? (
+          {locatedEvent && destination ? (
             <line
-              x1={event.location.x}
-              y1={event.location.y}
+              x1={locatedEvent.location.x}
+              y1={locatedEvent.location.y}
               x2={destination.x}
               y2={destination.y}
               className="event-path"
               markerEnd="url(#arrowhead)"
             />
           ) : null}
-          {event ? (
-            <g transform={`translate(${event.location.x} ${event.location.y})`}>
+          {locatedEvent ? (
+            <g transform={`translate(${locatedEvent.location.x} ${locatedEvent.location.y})`}>
               <circle r="4" fill="#b6e64b" opacity=".4" filter="url(#pv-event-glow)" />
               <circle r="3.1" fill="none" stroke="#b6e64b" strokeWidth=".35" />
               <ellipse cx=".65" cy="1.9" rx="1.6" ry=".65" fill="#001b09" opacity=".72" />
@@ -106,23 +108,23 @@ export function Pitch({ event, children }: PitchProps) {
           ) : null}
         </svg>
 
-        {event && !hasWebGL ? (
+        {locatedEvent && !hasWebGL ? (
           <div
             className="pitch-caption"
             style={{
-              left: `${Math.min(86, Math.max(6, pctX(event.location.x)))}%`,
-              top: `${Math.min(82, Math.max(8, pctY(event.location.y)))}%`,
+              left: `${Math.min(86, Math.max(6, pctX(locatedEvent.location.x)))}%`,
+              top: `${Math.min(82, Math.max(8, pctY(locatedEvent.location.y)))}%`,
             }}
           >
-            <strong>{event.event_type}</strong>
-            <span>{displayName(event.player_id)}</span>
+            <strong>{locatedEvent.event_type}</strong>
+            <span>{displayName(locatedEvent.player_id)}</span>
           </div>
         ) : null}
       </div>
 
       <p className="pitch-note">
-        Event coordinates are source-backed. The highlighted player is a stylized active actor, not
-        a reconstructed formation.
+        Only the recorded event actor is positioned on this pitch. No opponent, teammate, ball
+        position, or formation is inferred from missing tracking data.
       </p>
       {children}
     </section>
