@@ -92,7 +92,7 @@ async def run(argv: list[str] | None = None) -> int:
             return 1
         print("PASS: evidence tool, both specialist roles and verifier completed")
         return 0
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
         # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
         print(f"FAIL: {type(exc).__name__}; inspect local logs without sharing credentials")
         return 1
