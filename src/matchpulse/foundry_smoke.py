@@ -15,16 +15,17 @@ from matchpulse.workflow import Orchestrator
 
 ANALYST_DEPLOYMENT = "matchpulse-gpt5-mini"
 STORYTELLER_DEPLOYMENT = "matchpulse-gpt4o"
-SMOKE_ANALYST_OUTPUT_TOKENS = 512
+SMOKE_ANALYST_OUTPUT_TOKENS = 1024
+SMOKE_HTTP_MAX_RETRIES = 2
 
 
 def create_smoke_project_client(endpoint: str, credential: object):
-    """Use Azure SDK async project auth and disable only OpenAI HTTP retries."""
+    """Use SDK transient transport retries; no role-level replay."""
     from azure.ai.projects.aio import AIProjectClient
 
     class NoRetryAsyncProjectClient(AIProjectClient):
         def get_openai_client(self, *, agent_name=None, **kwargs):
-            kwargs["max_retries"] = 0
+            kwargs["max_retries"] = SMOKE_HTTP_MAX_RETRIES
             return super().get_openai_client(agent_name=agent_name, **kwargs)
 
     return NoRetryAsyncProjectClient(endpoint=endpoint, credential=credential)
@@ -129,11 +130,12 @@ async def run(argv: list[str] | None = None) -> int:
         "analyst_deployment": ANALYST_DEPLOYMENT,
         "storyteller_deployment": STORYTELLER_DEPLOYMENT,
         "maximum_role_invocations": 2,
-        "http_max_retries": 0,
+        "http_max_retries": SMOKE_HTTP_MAX_RETRIES,
+        "role_level_retries": 0,
         "analyst_max_output_tokens": SMOKE_ANALYST_OUTPUT_TOKENS,
         "shadow_model_prose_requested": True,
         "unverified_text_display_enabled": args.show_unverified_prose,
-        "note": "Agent SDK can make additional HTTP requests internally; no hard monetary cap",
+        "note": "SDK may retry transient HTTP failures, with extra billable requests; no hard monetary cap. No role-level replay.",
     }
     print(json.dumps(description, indent=2))
     if not args.execute:
