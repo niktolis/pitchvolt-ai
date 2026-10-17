@@ -34,3 +34,25 @@ def test_live_smoke_explicitly_uses_azure_cli_credential_source() -> None:
     assert "credential: object | None = None" in adapter
     assert "credential=AzureCliCredential()" in smoke
     assert "DefaultAzureCredential()" not in smoke
+
+
+def test_error_metadata_allowlist_never_exposes_exception_body() -> None:
+    secret = "private-sample-token"
+    underlying = RuntimeError(secret)
+    underlying.status_code = 429
+    underlying.code = "rate_limit_exceeded"
+    try:
+        raise ValueError("Authorization: " + secret) from underlying
+    except ValueError as exc:
+        report = foundry_smoke.sanitized_failure(exc)
+    assert report["http_status"] == 429
+    assert report["safe_error_code"] == "rate_limit_exceeded"
+    assert secret not in str(report)
+
+
+def test_unrecognized_provider_error_code_suppressed() -> None:
+    exc = RuntimeError("sensitive request payload")
+    exc.code = "user-supplied-sensitive-id"
+    report = foundry_smoke.sanitized_failure(exc)
+    assert report["safe_error_code"] is None
+    assert "sensitive" not in str(report)
