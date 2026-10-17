@@ -337,7 +337,9 @@ export function App() {
           )}
         </section>
 
-        <Pitch event={selectedEvent} />
+        <Pitch event={selectedEvent}>
+          <EventTimeline messages={visibleMessages} selectedId={selectedId} onSelect={inspect} />
+        </Pitch>
         <section className="panel key-moment-panel">
           <div className="panel-heading">
             <h2>Key Moment</h2>
@@ -371,8 +373,6 @@ export function App() {
           </button>
         </section>
         <div className="broadcast-detail-panels">
-          <EventTimeline messages={visibleMessages} selectedId={selectedId} onSelect={inspect} />
-
           <section className="panel evidence-panel">
             <div className="panel-heading">
               <div>
