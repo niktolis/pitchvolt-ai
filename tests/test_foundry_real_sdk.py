@@ -9,7 +9,7 @@ from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles
 from matchpulse.foundry_smoke import create_smoke_project_client
 
 
-def test_actual_foundry_sdk_uses_async_zero_retry_clients_for_both_roles() -> None:
+def test_actual_foundry_sdk_uses_async_bounded_retry_clients_for_both_roles() -> None:
     pytest.importorskip("azure.identity.aio")
     from azure.identity.aio import AzureCliCredential
     from openai import AsyncOpenAI
@@ -36,7 +36,7 @@ def test_actual_foundry_sdk_uses_async_zero_retry_clients_for_both_roles() -> No
                 agent = roles._agents[role]
                 client = agent.client.client
                 assert isinstance(client, AsyncOpenAI)
-                assert client.max_retries == 0
+                assert client.max_retries == 2
                 assert client.base_url.host == "example.services.ai.azure.com"
                 assert "/api/projects/offline/openai/v1" in str(client.base_url)
                 assert roles._config.role_deployments[role] == expected_model
