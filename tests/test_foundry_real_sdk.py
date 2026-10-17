@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import asyncio
 
+import pytest
+
 from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles
 from matchpulse.foundry_smoke import create_smoke_project_client
 
 
 def test_actual_foundry_sdk_uses_async_zero_retry_clients_for_both_roles() -> None:
+    pytest.importorskip("azure.identity.aio")
     from azure.identity.aio import AzureCliCredential
     from openai import AsyncOpenAI
 
