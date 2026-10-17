@@ -9,9 +9,10 @@ from dataclasses import asdict
 
 from matchpulse.foundry_adapter import FoundryRoles
 from matchpulse.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
+from matchpulse.intelligence import InsightKind
 from matchpulse.narrative import Audience, InMemoryEvidenceTool
 from matchpulse.narrative_stream import _bundles
-from matchpulse.scenarios import scenario
+from matchpulse.scenarios import SCENARIO_NAMES, scenario
 from matchpulse.workflow import Orchestrator
 
 
@@ -86,18 +87,26 @@ def sanitized_failure(exc: Exception) -> dict[str, object]:
     }
 
 
-def fixture():
+def fixture(name: str | None = None):
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
-    match, events = scenario(SMOKE_SETTINGS.scenario)
+    selected = name if name is not None else SMOKE_SETTINGS.scenario
+    match, events = scenario(selected)
     bundles = _bundles(match, events)
     if not bundles:
         raise RuntimeError("Smoke fixture did not produce a tactical insight")
-    return next(iter(bundles.values()))
+    return next(
+        (item for item in bundles.values() if item.insight.kind == InsightKind.HIGH_PRESS),
+        next(iter(bundles.values())),
+    )
 
 
 def arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execute", action="store_true", help="Allow billable inference")
+    parser.add_argument(
+        "--scenario", default=SMOKE_SETTINGS.scenario, choices=SCENARIO_NAMES,
+        help="Synthetic replay fixture (default remains small high_press)",
+    )
     parser.add_argument(
         "--show-unverified-prose", action="store_true",
         help="Display model-generated SHADOW-ONLY prose locally (never publish it)",
@@ -117,10 +126,10 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
 
 async def run(argv: list[str] | None = None) -> int:
     args = arguments(argv)
-    bundle = fixture()
+    bundle = fixture(args.scenario)
     description = {
         "mode": "LIVE" if args.execute else "DRY_RUN",
-        "scenario": SMOKE_SETTINGS.scenario,
+        "scenario": args.scenario,
         "insight_id": bundle.insight.insight_id,
         "evidence_event_ids": list(bundle.insight.evidence_event_ids),
         "analyst_deployment": SMOKE_SETTINGS.analyst_deployment,
