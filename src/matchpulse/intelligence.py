@@ -81,8 +81,8 @@ class MatchProcessor:
         if (
             EventType.TURNOVER not in kinds
             and all(e.possession_team_id == current.team_id for e in window)
-            and sum(k == EventType.PASS for k in kinds) >= 4
-            and len(window) >= 6
+            and sum(k == EventType.PASS for k in kinds) >= 5
+            and len(window) == 8
         ):
             return [TacticalInsight(
                 insight_id=f"{current.event_id}:{InsightKind.SUSTAINED_POSSESSION.value}",
