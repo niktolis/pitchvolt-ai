@@ -70,6 +70,10 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execute", action="store_true", help="Allow billable inference")
     parser.add_argument(
+        "--show-unverified-prose", action="store_true",
+        help="Display model-generated SHADOW-ONLY prose locally (never publish it)",
+    )
+    parser.add_argument(
         "--acknowledge-billable-inference",
         action="store_true",
         help="Confirm the approved one-Analyst/one-Storyteller budget",
@@ -95,6 +99,8 @@ async def run(argv: list[str] | None = None) -> int:
         "maximum_role_invocations": 2,
         "http_max_retries": 0,
         "analyst_max_output_tokens": SMOKE_ANALYST_OUTPUT_TOKENS,
+        "shadow_model_prose_requested": True,
+        "unverified_text_display_enabled": args.show_unverified_prose,
         "note": "Agent SDK can make additional HTTP requests internally; no hard monetary cap",
     }
     print(json.dumps(description, indent=2))
@@ -135,6 +141,27 @@ async def run(argv: list[str] | None = None) -> int:
                 "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
                 "invocations": [asdict(item) for item in roles.invocations],
                 "last_model_response_metadata": roles.last_response_metadata,
+                "validated_role_decisions": roles.role_decisions,
+                "shadow_assessment": (
+                    roles.last_shadow_assessment.model_dump(mode="json")
+                    if roles.last_shadow_assessment is not None else None
+                ),
+                "model_authored_shadow": (
+                    {
+                        "headline": roles.last_authored_candidate.headline,
+                        "text": roles.last_authored_candidate.text,
+                        "warning": "UNVERIFIED: not published or semantically certified",
+                    }
+                    if args.show_unverified_prose and roles.last_authored_candidate is not None
+                    else None
+                ),
+                "token_usage_status": (
+                    "complete"
+                    if len(roles.invocations) == 2
+                    and all(inv.input_tokens is not None and inv.output_tokens is not None
+                            for inv in roles.invocations)
+                    else "unavailable_or_partial"
+                ),
                 "trace": [asdict(item) for item in result.trace],
                 "verified_narrative": result.narrative.model_dump(mode="json"),
             }
@@ -146,6 +173,11 @@ async def run(argv: list[str] | None = None) -> int:
                 print("FAIL: structured tool-enabled narrative not confirmed")
                 return 1
             print("PASS: evidence tool, both specialist roles and verifier completed")
+            if roles.last_shadow_assessment is None:
+                print("NOTE: Storyteller did not provide a complete shadow prose candidate")
+            if any(inv.input_tokens is None or inv.output_tokens is None
+                   for inv in roles.invocations):
+                print("NOTE: SDK usage unavailable; null is NOT zero billed tokens")
             return 0
         except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
             # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
