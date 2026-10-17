@@ -44,6 +44,7 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
         planned.insert(index - 1, EventType.TURNOVER)
     assert len(planned) == EVENTS_PER_HALF * 2
     goal_recorded = False
+    possession = teams[0]
     for half in (1, 2):
         for position in range(EVENTS_PER_HALF):
             index = len(events) + 1
@@ -51,9 +52,13 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             # grounded in the synthetic generation seed and absolute match clock.
             offset = (position * HALF_DURATION_MS) // EVENTS_PER_HALF
             clock = (half - 1) * HALF_DURATION_MS + offset
-            team = teams[(position // 8 + half - 1) % 2]
             phase = position % 8
             kind = planned[index - 1]
+            if kind == EventType.TURNOVER:
+                possession = teams[1] if possession == teams[0] else teams[0]
+            team = (
+                teams[1] if possession == teams[0] else teams[0]
+            ) if kind == EventType.PRESSURE else possession
             outcome = Outcome.SUCCESS
             if kind == EventType.SHOT:
                 if not goal_recorded:
@@ -88,7 +93,7 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
                 outcome=outcome,
                 location=Point(x=x, y=y),
                 destination=destination,
-                possession_team_id=team,
+                possession_team_id=possession,
                 evidence=evidence,
                 provenance=provenance,
             ))
