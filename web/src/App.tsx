@@ -11,7 +11,13 @@ import type {
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
-import { type AudienceMode, clockLabel, displayName, eventLabel, modeCopy } from "./domain/presentation";
+import {
+  type AudienceMode,
+  clockLabel,
+  displayName,
+  eventLabel,
+  modeCopy,
+} from "./domain/presentation";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -238,7 +244,11 @@ export function App() {
             />
           ) : (
             <div className="insight-placeholder" aria-live="polite">
-              <strong>{selectedEvent ? "Live action · " + eventLabel(selectedEvent) : "Waiting for kickoff data…"}</strong>
+              <strong>
+                {selectedEvent
+                  ? `Live action · ${eventLabel(selectedEvent)}`
+                  : "Waiting for kickoff data…"}
+              </strong>
               <span>
                 {selectedEvent
                   ? `Observed ${selectedEvent.event_type.replaceAll("_", " ")} by ${displayName(selectedEvent.player_id)}. Tactical insight appears only after a verified sequence completes.`
