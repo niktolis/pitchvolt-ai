@@ -11,7 +11,13 @@ import type {
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
-import { type AudienceMode, clockLabel, displayName, modeCopy } from "./domain/presentation";
+import {
+  type AudienceMode,
+  clockLabel,
+  displayName,
+  eventLabel,
+  modeCopy,
+} from "./domain/presentation";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -237,10 +243,16 @@ export function App() {
               narrative={narratives[latestInsight.insight_id] ?? null}
             />
           ) : (
-            <div className="insight-placeholder">
-              <strong>Watching the causal sequence…</strong>
+            <div className="insight-placeholder" aria-live="polite">
+              <strong>
+                {selectedEvent
+                  ? `Live action · ${eventLabel(selectedEvent)}`
+                  : "Waiting for kickoff data…"}
+              </strong>
               <span>
-                The detector waits for a qualifying turnover-to-shot window before it publishes.
+                {selectedEvent
+                  ? `Observed ${selectedEvent.event_type.replaceAll("_", " ")} by ${displayName(selectedEvent.player_id)}. Tactical insight appears only after a verified sequence completes.`
+                  : "The detector publishes tactical interpretation after a qualifying turnover-to-shot sequence."}
               </span>
             </div>
           )}
