@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { BroadcastPitchScene } from "./BroadcastPitchScene";
 import type { MatchEvent } from "../api/types";
 import { displayName, eventLabel } from "../domain/presentation";
 
@@ -17,6 +18,14 @@ function pctY(value: number): number {
 
 export function Pitch({ event, children }: PitchProps) {
   const destination = event?.destination;
+  const [hasWebGL] = useState(() => {
+    try {
+      const canvas = document.createElement("canvas");
+      return Boolean(canvas.getContext("webgl2"));
+    } catch {
+      return false;
+    }
+  });
 
   return (
     <section className="panel pitch-panel" aria-label="Interactive football pitch">
@@ -29,7 +38,8 @@ export function Pitch({ event, children }: PitchProps) {
       </div>
 
       <div className="pitch">
-        <svg viewBox="0 0 105 68" role="img" aria-label={event ? eventLabel(event) : "Pitch"}>
+        {hasWebGL ? <BroadcastPitchScene event={event} /> : null}
+        <svg className={hasWebGL ? "pitch-svg-fallback" : undefined} viewBox="0 0 105 68" role="img" aria-label={event ? eventLabel(event) : "Pitch"}>
           <defs>
             <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
               <path d="M0,0 L4,2 L0,4 Z" className="pitch-arrow" />
