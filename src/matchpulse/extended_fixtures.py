@@ -38,6 +38,13 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
     teams = (match.home_team_id, match.away_team_id)
     events: list[MatchEvent] = []
     action_quotas = calibrated_action_quotas(EVENTS_PER_HALF * 2 - 4)
+    # At 220 events the reference ratio yields only three shots. Four causal
+    # windows need four shots, so move one quota from Carry to Shot explicitly.
+    # This is a documented test coverage override, NOT corpus calibration.
+    if action_quotas[EventType.SHOT] < 4:
+        shortfall = 4 - action_quotas[EventType.SHOT]
+        action_quotas[EventType.SHOT] += shortfall
+        action_quotas[EventType.CARRY] -= shortfall
     # Four deliberate evidence-backed tactical sequences across both halves.
     # Broad source-derived action quotas remain fixed; timings and sequences
     # are synthetic and must not be mistaken for the historical reference.
