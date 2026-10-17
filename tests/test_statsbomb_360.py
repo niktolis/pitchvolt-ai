@@ -93,7 +93,6 @@ def test_exact_twenty_two_requires_eleven_on_each_side(tmp_path):
     (lambda a: a.update({"visible_area": [1, 2, 3]}), "polygon"),
     (lambda a: a["freeze_frame"].append(observation(actor=True)), "Multiple"),
     (lambda a: a["freeze_frame"][0].update({"teammate": False}), "event team"),
-    (lambda a: a["freeze_frame"][0].update({"location": [121, 40]}), "outside"),
     (lambda a: a["freeze_frame"][0].update({"keeper": 1}), "boolean"),
     (lambda a: a["freeze_frame"][0].update({"location": [float("nan"), 40]}), "Invalid"),
 ])
@@ -134,3 +133,12 @@ def test_origin_and_match_filename_must_agree(tmp_path):
         load_historical_360(
             tmp_path / "wrong-name.json", source, expected_sha256="0" * 64
         )
+
+
+def test_genuine_off_pitch_source_position_is_preserved_not_clamped(tmp_path):
+    frames = sample()
+    frames[0]["freeze_frame"][0]["location"] = [120.4, -0.2]
+    observation = load(tmp_path, frames).frames[0].observations[0]
+    assert observation.position is None
+    assert observation.source_location == (120.4, -0.2)
+    assert observation.actor
