@@ -1,0 +1,44 @@
+name: Temporary StatsBomb 9880 Bundle Audit
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - run: uv sync --frozen --extra dev
+      - name: Fetch approved upstream source with pinned commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen python -m matchpulse.statsbomb_bundle_acquire \
+            --commit 4b73468fc5b0f1950f9f66fada70ad3a4f9327cb \
+            --match-id 9880 \
+            --output-dir .local-statsbomb/9880 --execute-download
+          uv run --frozen python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from matchpulse.statsbomb_bundle_report import load_verified_historical_bundle
+          root=Path(".local-statsbomb/9880")
+          actual=hashlib.sha256((root/"9880.lineups.json").read_bytes()).hexdigest()
+          bundle=load_verified_historical_bundle(root,match_id="9880",lineup_sha256=actual)
+          assert bundle.fixture.manifest.event_sha256=="515986eb6fc6084d3559860ab23ee47c9999c1ad476aa5fd35f693115519e4e8"
+          assert bundle.fixture.manifest.event_count==3947
+          print("REAL_9880_LINEUP_SHA256",actual)
+          print("REAL_9880_TEAM_IDS",bundle.identity.team_ids)
+          print("REAL_9880_REFERENCED_PLAYER_COUNT",bundle.identity.referenced_player_count)
+          print("REAL_9880_UNKNOWN_PLAYERS",bundle.identity.unknown_player_ids)
+          print("REAL_9880_SUBSTITUTIONS",len(bundle.state.substitutions))
+          print("REAL_9880_GOALS",len(bundle.state.goals))
+          print("REAL_9880_SCORE",bundle.state.score_by_team)
+          PY
