@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from matchpulse.api import app
 from matchpulse import foundry_preview
+from matchpulse.api import app
 from matchpulse.narrative import Audience
 from matchpulse.narrative_stream import NarrativeUpdate
 
