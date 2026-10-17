@@ -15,7 +15,7 @@ from matchpulse.workflow import Orchestrator
 
 ANALYST_DEPLOYMENT = "matchpulse-gpt5-mini"
 STORYTELLER_DEPLOYMENT = "matchpulse-gpt4o"
-SMOKE_ANALYST_OUTPUT_TOKENS = 1024
+SMOKE_ANALYST_OUTPUT_TOKENS = 4096
 SMOKE_HTTP_MAX_RETRIES = 2
 
 
