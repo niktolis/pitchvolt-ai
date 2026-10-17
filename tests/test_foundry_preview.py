@@ -1,7 +1,6 @@
 """No unexpected billable requests from public application routes."""
 from __future__ import annotations
 
-import json
 from fastapi.testclient import TestClient
 
 from matchpulse.api import app
