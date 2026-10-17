@@ -1,0 +1,28 @@
+name: TEMP Render heterogeneous architecture
+on:
+  push:
+    branches:
+      - docs/heterogeneous-agent-architecture
+permissions:
+  contents: write
+jobs:
+  generate:
+    if: "!contains(github.event.head_commit.message, '[svg-generated]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install D2
+        run: |
+          curl -fsSL https://d2lang.com/install.sh -o /tmp/d2-install.sh
+          sh /tmp/d2-install.sh --version v0.9.0
+      - name: Generate tracked architecture SVG
+        run: bash scripts/render-architecture.sh
+      - name: Commit SVG to this documentation branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/architecture/rendered
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: generate architecture SVGs [svg-generated]"
+            git push origin HEAD:docs/heterogeneous-agent-architecture
+          fi
