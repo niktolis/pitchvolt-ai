@@ -102,8 +102,8 @@ async def run(argv: list[str] | None = None) -> int:
     )
     # Workstation-specific credential avoids Managed Identity probing on macOS.
     # No token or credential content is logged or stored.
-    from azure.identity import AzureCliCredential
     from azure.ai.projects import AIProjectClient
+    from azure.identity import AzureCliCredential
 
     class NoRetryProjectClient(AIProjectClient):
         """Apply zero OpenAI transport retries to the manual smoke test only."""
