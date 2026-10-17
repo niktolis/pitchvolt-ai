@@ -17,7 +17,9 @@ from typing import Any
 from matchpulse.events import Point
 from matchpulse.fixture_manifest import FixtureOrigin
 from matchpulse.providers.statsbomb import (
-    STATSBOMB_LENGTH, STATSBOMB_WIDTH, statsbomb_to_point,
+    STATSBOMB_LENGTH,
+    STATSBOMB_WIDTH,
+    statsbomb_to_point,
 )
 from matchpulse.providers.statsbomb_historical import HistoricalFixture
 from matchpulse.providers.statsbomb_projection import historical_clock_ms
