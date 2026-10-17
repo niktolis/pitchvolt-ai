@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" role="img" aria-labelledby="title desc">
+<title id="title">PitchVolt AI — Football intelligence. Electrified.</title>
+<desc id="desc">Approved neon-green lightning P brand mark and PitchVolt AI wordmark on pitch-black and stadium-green.</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#060F0B"/><stop offset="1" stop-color="#132318"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#B6E64B" stop-opacity=".24"/><stop offset="1" stop-color="#B6E64B" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="240" rx="18" fill="url(#bg)"/>
+<ellipse cx="1090" cy="10" rx="260" ry="220" fill="url(#glow)"/>
+<g transform="translate(51 29) scale(1.48)">
+<path d="M18 111 L46 17 H94 C112 17 118 27 113 43 C108 59 96 68 78 69 H61 L47 92 L57 56 H78 C91 56 99 50 101 40 C102 35 99 32 91 32 H57 L18 111 Z" fill="#B6E64B"/>
+<path d="M17 30 L63 30 L49 41 L61 41 L35 62 L42 45 Z" fill="#D9FF73"/>
+</g>
+<g font-family="Montserrat,Inter,Arial,sans-serif" font-weight="900" font-size="75" letter-spacing="-2">
+<text x="245" y="113" fill="#F8FAFC">PITCHVOLT</text>
+<text x="751" y="113" fill="#B6E64B">AI</text>
+</g>
+<text x="248" y="166" fill="#F8FAFC" font-size="23" font-family="Inter,Arial,sans-serif" letter-spacing="5">FOOTBALL INTELLIGENCE. ELECTRIFIED.</text>
+<line x1="248" y1="190" x2="1138" y2="190" stroke="#B6E64B" stroke-opacity=".28"/>
+<text x="248" y="216" fill="#9CA3AF" font-size="16" font-family="Inter,Arial,sans-serif">PITCHVOLT.APP  •  REAL-TIME TACTICAL INTELLIGENCE</text>
+</svg>

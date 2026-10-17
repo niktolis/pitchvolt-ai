@@ -5,6 +5,13 @@
   background: #07110d;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  /* Official PitchVolt brand-kit tokens */
+  --pv-bg: #060f0b;
+  --pv-surface: #132318;
+  --pv-primary: #b6e64b;
+  --pv-text: #f8fafc;
+  --pv-muted: #9ca3af;
 }
 
 * {
@@ -661,10 +668,10 @@ footer {
 
 /* Approved PitchVolt AI broadcast-screen composition. Source: brand-kit Application Preview. */
 :root {
-  --pv-volt:#b6e64b;
-  --pv-black:#060f0b;
-  --pv-green:#132318;
-  --pv-slate:#9ca3af;
+  --pv-volt: var(--pv-primary);
+  --pv-black: var(--pv-bg);
+  --pv-green: var(--pv-surface);
+  --pv-slate: var(--pv-muted);
 }
 
 body {

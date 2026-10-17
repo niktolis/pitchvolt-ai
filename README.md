@@ -1,5 +1,10 @@
 # PitchVolt AI
 
+![PitchVolt AI — Football intelligence. Electrified.](docs/assets/pitchvolt-readme-banner.svg)
+
+[![Python checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml) [![Azure deployment](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml)
+
+
 Football intelligence. Electrified. Real-time, explainable football intelligence and personalized storytelling for the Microsoft Premier League AI Hackathon.
 
 PitchVolt AI deliberately separates **football truth** from **AI explanation**:
@@ -31,7 +36,7 @@ The repository currently implements:
 - D2 architecture sources with generated Markdown renders;
 - CI for Python, frontend contracts/builds and architecture rendering.
 
-**Not yet implemented:** complete historical StatsBomb Open Data import (tracked in #15), Microsoft Foundry inference/orchestration, deterministic narrative claim verification, Azure deployment, production telemetry/latency measurements, authentication, persisted live-feed state, multilingual recap.
+**Implementation boundaries:** historical StatsBomb Open Data ingestion is incremental, not a complete catalog; live Foundry model inference is disabled until explicitly approved; production telemetry/latency measurements, authentication, persisted live-feed state and multilingual recap remain planned. The approved Azure Container Apps deployment uses locally controlled narratives. See the architecture documents and current GitHub issues for per-feature status.
 
 ## Run locally
 
@@ -76,4 +81,4 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 
 ## Cost and deployment guardrail
 
-Azure Container Apps Consumption is the approved deployment target, but no Azure resource may be provisioned or changed without an explicit cost review and project-owner approval. The project has a strict zero-out-of-pocket requirement.
+PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources, inference charges or increased spending require explicit approval. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend.
