@@ -109,3 +109,19 @@ def test_unsupported_reasoning_setting_rejected_before_cloud() -> None:
         RoleSettings(reasoning_effort="unsupported")
     with pytest.raises(ValueError, match="token cap"):
         RoleSettings(max_output_tokens=2048)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("max_tool_calls_per_analyst", 0),
+    ("max_tool_calls_per_analyst", 33),
+    ("max_prompt_characters", 100),
+    ("timeout_seconds_per_role", 0),
+    ("timeout_seconds_per_role", 16),
+])
+def test_live_readiness_limits_reject_invalid_config(field: str, value: int) -> None:
+    with pytest.raises(ValueError):
+        FoundryConfig(
+            "https://example.services.ai.azure.com/api/projects/demo",
+            "analyst",
+            **{field: value},
+        )
