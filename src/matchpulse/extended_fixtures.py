@@ -45,19 +45,27 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
         shortfall = 4 - action_quotas[EventType.SHOT]
         action_quotas[EventType.SHOT] += shortfall
         action_quotas[EventType.CARRY] -= shortfall
-    # Four deliberate evidence-backed tactical sequences across both halves.
+    # Two high presses, one sustained-possession phase and one counterattack.
     # Broad source-derived action quotas remain fixed; timings and sequences
     # are synthetic and must not be mistaken for the historical reference.
     burst_starts = (31, 71, 151, 191)
-    burst_kinds = (
+    transition_kinds = (
         EventType.CARRY, EventType.PASS, EventType.PRESSURE, EventType.PASS,
         EventType.TURNOVER, EventType.CARRY, EventType.PASS, EventType.SHOT,
+    )
+    possession_kinds = (
+        EventType.CARRY, EventType.PASS, EventType.PASS, EventType.PASS,
+        EventType.PASS, EventType.CARRY, EventType.PASS, EventType.SHOT,
     )
     scripted = {
         start + offset: kind
         for start in burst_starts
-        for offset, kind in enumerate(burst_kinds)
+        for offset, kind in enumerate(
+            possession_kinds if start == 151 else transition_kinds
+        )
     }
+    # Fourth explicit synthetic turnover outside the possession sequence.
+    scripted[145] = EventType.TURNOVER
     for kind in scripted.values():
         if kind != EventType.TURNOVER:
             action_quotas[kind] -= 1
@@ -110,10 +118,10 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             }
             if kind == EventType.TURNOVER:
                 evidence["possession_change"] = True
-            if any(index == start + 3 for start in burst_starts):
+            if index in (34, 74):
                 outcome = Outcome.FAILURE
                 evidence["under_pressure"] = True
-            if index in scripted:
+            if any(start <= index <= start + 7 for start in burst_starts):
                 evidence["scripted_tactical_window"] = True
             events.append(MatchEvent(
                 match_id=match.match_id,
