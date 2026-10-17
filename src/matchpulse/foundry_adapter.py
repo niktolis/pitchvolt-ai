@@ -125,6 +125,7 @@ class FoundryRoles:
         self._config = config
         self.invocations: list[RoleInvocation] = []
         self._attempts = {'analyst': 0, 'storyteller': 0}
+        self.last_attempted_role: str | None = None
         self.last_evidence_tool_calls: tuple[str, ...] = ()
         self.last_response_metadata: dict[str, object] | None = None
         self.role_decisions: dict[str, dict[str, object]] = {}
@@ -176,6 +177,7 @@ class FoundryRoles:
             raise FoundryDisabled("Reasoning effort requires SDK compatibility validation")
         started = perf_counter()
         self._attempts[role] += 1
+        self.last_attempted_role = role
         response = await asyncio.wait_for(
             self._agents[role].run(prompt, options=options, **({"tools": tools} if tools is not None else {})),
             timeout=self._config.timeout_seconds_per_role,
