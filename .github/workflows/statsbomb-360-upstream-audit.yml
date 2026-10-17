@@ -1,0 +1,71 @@
+name: StatsBomb 360 pinned upstream audit (temporary)
+on:
+  pull_request:
+    paths:
+      - .github/workflows/statsbomb-360-upstream-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - name: Install reproducibly
+        run: uv sync --frozen --extra dev
+      - name: Acquire and analyze original immutable StatsBomb 360 bundle
+        run: |
+          uv run --frozen python - <<'PY'
+          import json
+          from pathlib import Path
+          from tempfile import TemporaryDirectory
+          from matchpulse.statsbomb_bundle_acquire import (
+              _read_pinned, pinned_three_sixty_urls, prepare_historical_bundle
+          )
+          from matchpulse.statsbomb_bundle_report import load_verified_historical_bundle
+          from matchpulse.providers.statsbomb_360 import load_historical_360
+
+          commit = "4b73468fc5b0f1950f9f66fada70ad3a4f9327cb"
+          match_id = "3764440"
+          urls = pinned_three_sixty_urls(commit, match_id)
+          source = [_read_pinned(url) for url in urls]
+          with TemporaryDirectory() as directory:
+              root = Path(directory)
+              result = prepare_historical_bundle(
+                  source[0], source[1], three_sixty=source[2],
+                  commit=commit, match_id=match_id, directory=root
+              )
+              verified = load_verified_historical_bundle(
+                  root, match_id=match_id, lineup_sha256=result["lineup_sha256"]
+              )
+              frames = load_historical_360(
+                  root / f"{match_id}.360.json", verified.fixture,
+                  expected_sha256=result["frame_sha256"]
+              )
+              coverage = [len(frame.observations) for frame in frames.frames]
+              summary = {
+                  "source": "hudl/open-data",
+                  "commit": commit,
+                  "match_id": match_id,
+                  "event_sha256": result["event_sha256"],
+                  "lineup_sha256": result["lineup_sha256"],
+                  "frame_sha256": result["frame_sha256"],
+                  "source_events": result["event_count"],
+                  "source_frames": result["frame_count"],
+                  "full_xi_frames": result["full_xi_frame_count"],
+                  "max_observed_players": max(coverage),
+                  "min_observed_players": min(coverage),
+                  "anonymous_players": sum(
+                      not observation.actor
+                      for frame in frames.frames for observation in frame.observations
+                  ),
+              }
+              print("STATSBOMB_360_AUDIT=" + json.dumps(summary, sort_keys=True))
+          PY
