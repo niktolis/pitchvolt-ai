@@ -142,3 +142,63 @@ def test_genuine_off_pitch_source_position_is_preserved_not_clamped(tmp_path):
     assert observation.position is None
     assert observation.source_location == (120.4, -0.2)
     assert observation.actor
+
+
+def test_replay_moment_exact_source_event_never_reuses_future_or_prior_frame(tmp_path):
+    from matchpulse.providers.statsbomb_360_replay import historical_moment_at_event
+
+    source = fixture()
+    frames = load(tmp_path, sample())
+    first = historical_moment_at_event(source, frames, "source-action-1")
+    assert first.match_id == "3764440"
+    assert first.clock_ms == 1250
+    assert first.event_sha256 == source.manifest.event_sha256
+    assert first.frame_sha256 == frames.frame_sha256
+    assert len(first.observed) == len(first.renderable) == 3
+    assert first.observed[0].player_id == 99
+    assert first.observed[1].player_id is None
+    assert not first.full_xi
+
+    # Same source match; different event: must not inherit the prior 360 frame.
+    second = historical_moment_at_event(source, frames, "source-action-2")
+    assert second.clock_ms == 2000
+    assert second.frame is None
+    assert second.observed == ()
+    assert second.renderable == ()
+    assert historical_moment_at_event(source, frames, "source-action-1") == first
+
+
+def test_replay_moment_keeps_off_field_source_evidence_without_drawing_it(tmp_path):
+    from matchpulse.providers.statsbomb_360_replay import historical_moment_at_event
+
+    frame = sample()
+    frame[0]["freeze_frame"][1]["location"] = [-2, 82]
+    moment = historical_moment_at_event(fixture(), load(tmp_path, frame), "source-action-1")
+    assert len(moment.observed) == 3
+    assert len(moment.renderable) == 2
+    assert moment.observed[1].source_location == (-2, 82)
+    assert moment.observed[1].position is None
+
+
+def test_replay_rejects_wrong_match_fingerprint_or_event_id(tmp_path):
+    from matchpulse.providers.statsbomb_360_replay import historical_moment_at_event
+
+    source = fixture()
+    frames = load(tmp_path, sample())
+    mismatched = source.manifest.model_copy(update={"match_id": "another"})
+    wrong_match = HistoricalFixture(
+        manifest=mismatched, records=source.records, event_counts={},
+        supported_count=0, presentation_count=0, unreviewed_count=0,
+    )
+    with pytest.raises(ValueError, match="match identity"):
+        historical_moment_at_event(wrong_match, frames, "source-action-1")
+
+    fingerprint = source.manifest.model_copy(update={"event_sha256": "c" * 64})
+    wrong_hash = HistoricalFixture(
+        manifest=fingerprint, records=source.records, event_counts={},
+        supported_count=0, presentation_count=0, unreviewed_count=0,
+    )
+    with pytest.raises(ValueError, match="fingerprint"):
+        historical_moment_at_event(wrong_hash, frames, "source-action-1")
+    with pytest.raises(ValueError, match="event UUID absent"):
+        historical_moment_at_event(source, frames, "unknown")
