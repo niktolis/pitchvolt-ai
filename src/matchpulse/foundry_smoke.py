@@ -141,6 +141,7 @@ async def run(argv: list[str] | None = None) -> int:
                 "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
                 "invocations": [asdict(item) for item in roles.invocations],
                 "last_model_response_metadata": roles.last_response_metadata,
+                "role_response_metadata": roles.role_response_metadata,
                 "validated_role_decisions": roles.role_decisions,
                 "shadow_assessment": (
                     roles.last_shadow_assessment.model_dump(mode="json")
