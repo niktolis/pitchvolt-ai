@@ -49,7 +49,7 @@ export function Pitch({ event, children }: PitchProps) {
           aria-label={locatedEvent ? eventLabel(locatedEvent) : "Pitch"}
         >
           <defs>
-            <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
+            <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto">
               <path d="M0,0 L4,2 L0,4 Z" className="pitch-arrow" />
             </marker>
             <radialGradient id="pv-active-kit" cx="30%" cy="20%" r="75%">
@@ -104,7 +104,6 @@ export function Pitch({ event, children }: PitchProps) {
                 strokeLinecap="round"
               />
               <circle cy="-2.95" r=".63" fill="#f1c9a1" stroke="#5d4231" strokeWidth=".12" />
-              <circle cx="1.9" cy="1.1" r=".64" fill="#effff0" stroke="#223329" strokeWidth=".13" />
             </g>
           ) : null}
         </svg>
