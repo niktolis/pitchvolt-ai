@@ -416,7 +416,6 @@ export function App() {
         </div>
       </section>
 
-
       <footer>
         <span>Ingest → Interpret → Explain → Render → Personalize</span>
         <span>Local controlled narratives · Foundry inference disabled</span>
