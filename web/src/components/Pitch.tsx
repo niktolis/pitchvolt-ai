@@ -63,47 +63,26 @@ export function Pitch({ event }: PitchProps) {
           {event ? (
             <g transform={`translate(${event.location.x} ${event.location.y})`}>
               <circle r="4" fill="#b6e64b" opacity=".4" filter="url(#pv-event-glow)" />
-              <circle r="3.1" fill="none" stroke="#b6e64b"
-                strokeWidth=".35" />
+              <circle r="3.1" fill="none" stroke="#b6e64b" strokeWidth=".35" />
               <ellipse cx=".65" cy="1.9" rx="1.6" ry=".65" fill="#001b09" opacity=".72" />
               <path
                 d="M -0.6 -0.7 L -1.15 1.4 M .55 -.7 L 1.3 1.25"
-                stroke="#163849" strokeWidth=".65"
-                strokeLinecap="round" />
+                stroke="#163849"
+                strokeWidth=".65"
+                strokeLinecap="round"
+              />
               <path
                 d="M -1.1 -2.25 L 1 -2.25 L .65 -.5 L -.7 -.5 Z"
-                fill="url(#pv-active-kit)" stroke="#defaff"
-                strokeWidth=".12" />
+                fill="url(#pv-active-kit)"
+                stroke="#defaff"
+                strokeWidth=".12"
+              />
               <path
                 d="M -1 -2 L -1.65 -.95 M .95 -2 L 1.6 -1.15"
-                stroke="#65c3ea" strokeWidth=".5"
-                strokeLinecap="round" />
-              <circle cy="-2.95" r=".63" fill="#f1c9a1" stroke="#5d4231"
-                strokeWidth=".12" />
-              <circle cx="1.9" cy="1.1" r=".64" fill="#effff0" stroke="#223329"
-                strokeWidth=".13" />
-            </g>
-          ) : null}
-        </svg>
+                stroke="#65c3ea"
+                strokeWidth=".5"
+                strokeLinecap="round"
+              />
+              <circle cy="-2.95" r=".63" fill="#f1c9a1" stroke="#5d4231" strokeWidth=".12" />
+              <circle cx="1.9" cy="1.1" r=".64" fill="#effff0" stroke="#223329" strokeWidth=".13" />
 
-        {event ? (
-          <div
-            className="pitch-caption"
-            style={{
-              left: `${Math.min(86, Math.max(6, pctX(event.location.x)))}%`,
-              top: `${Math.min(82, Math.max(8, pctY(event.location.y)))}%`,
-            }}
-          >
-            <strong>{event.event_type}</strong>
-            <span>{displayName(event.player_id)}</span>
-          </div>
-        ) : null}
-      </div>
-
-      <p className="pitch-note">
-        Event coordinates are source-backed. The highlighted player is a stylized active actor, not
-        a reconstructed formation.
-      </p>
-    </section>
-  );
-}
