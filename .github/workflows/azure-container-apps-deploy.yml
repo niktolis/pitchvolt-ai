@@ -1,0 +1,115 @@
+name: Deploy Azure Container App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matchpulse-production-deploy
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.0'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: uv lock --check
+      - run: uv sync --frozen --extra dev
+      - run: npm ci --prefix web
+      - run: uv run --frozen bash scripts/check.sh
+      - run: uv run --frozen bash scripts/check-web.sh
+
+  build-deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_RG: rg-matchpulse-dev
+      AZURE_ACR: matchpulsea433a4e04d
+      AZURE_APP: matchpulse-web
+      AZURE_REGISTRY_HOST: matchpulsea433a4e04d.azurecr.io
+      MATCHPULSE_NARRATIVE_PROVIDER: local
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail closed without approved identity configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in AZURE_SUBSCRIPTION_ID AZURE_TENANT_ID AZURE_CLIENT_ID; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing repository variable $name. Follow docs/github-azure-oidc.md."
+              exit 1
+            fi
+          done
+          [[ "$AZURE_SUBSCRIPTION_ID" == "98d4eb09-a320-4b90-aa9c-e561835357af" ]]
+          [[ "$MATCHPULSE_NARRATIVE_PROVIDER" == "local" ]]
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+      - name: Validate existing infrastructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          az containerapp show -g "$AZURE_RG" -n "$AZURE_APP" --query "name" -o tsv | grep -Fx "$AZURE_APP"
+          az acr show -n "$AZURE_ACR" --query "loginServer" -o tsv | grep -Fx "$AZURE_REGISTRY_HOST"
+      - uses: docker/setup-buildx-action@v3
+      - name: Login to existing ACR with short-lived Azure identity
+        run: az acr login --name "$AZURE_ACR"
+      - name: Build AMD64 image and publish immutable digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker buildx build --platform linux/amd64 \
+            --file docker/backend.Dockerfile --target runtime \
+            --tag "$AZURE_REGISTRY_HOST/matchpulse:git-${GITHUB_SHA}" \
+            --metadata-file "$RUNNER_TEMP/matchpulse-image.json" --push .
+          digest=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["containerimage.digest"])' "$RUNNER_TEMP/matchpulse-image.json")
+          [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          echo "IMAGE=$AZURE_REGISTRY_HOST/matchpulse@$digest" >> "$GITHUB_ENV"
+          echo "Published digest: $digest"
+      - name: Update existing Container App only
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$IMAGE" == "$AZURE_REGISTRY_HOST/matchpulse@sha256:"* ]]
+          az containerapp update --resource-group "$AZURE_RG" --name "$AZURE_APP" \
+            --image "$IMAGE" --min-replicas 0 --max-replicas 1 \
+            --set-env-vars MATCHPULSE_NARRATIVE_PROVIDER=local --output none
+      - name: Verify deployed health endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          fqdn=$(az containerapp show -g "$AZURE_RG" -n "$AZURE_APP" --query "properties.configuration.ingress.fqdn" -o tsv)
+          [[ -n "$fqdn" ]]
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error --max-time 15 "https://$fqdn/health"; then
+              echo "Deployment health check passed."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Container App health check failed. Inspect revision; retain previous digest for rollback."
+          exit 1
