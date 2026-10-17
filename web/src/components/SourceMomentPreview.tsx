@@ -22,7 +22,7 @@ export function SourceMomentPreview({ event }: { event: MatchEvent | null }) {
             id="moment-destination-tip"
             markerWidth="4"
             markerHeight="4"
-            refX="3"
+            refX="4"
             refY="2"
             orient="auto"
           >
