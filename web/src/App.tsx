@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { fetchEvidence, fetchScenarios, openNarrativeStream, openReplayStream } from "./api/client";
+import { fetchEvidence, fetchScenarios, fetchTimeline, openNarrativeStream } from "./api/client";
 import type {
   EvidenceResponse,
   MatchEvent,
@@ -18,6 +18,7 @@ import {
   eventLabel,
   modeCopy,
 } from "./domain/presentation";
+import { clampCursor, latestAtCursor, matchBounds } from "./domain/replayClock";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -37,6 +38,8 @@ export function App() {
   );
   const [error, setError] = useState<string | null>(null);
   const [replayNonce, setReplayNonce] = useState(0);
+  const [playing, setPlaying] = useState(true);
+  const [cursorMs, setCursorMs] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -56,29 +59,54 @@ export function App() {
     };
   }, []);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: replayNonce intentionally restarts the finite EventSource replay.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: replayNonce restarts the snapshot.
   useEffect(() => {
-    if (!scenario) return undefined;
-
+    if (!scenario) return;
+    let active = true;
     setMessages([]);
     setSelectedId(null);
     setEvidence(null);
     setError(null);
+    setPlaying(true);
+    setCursorMs(0);
     setStreamState("connecting");
-
-    return openReplayStream(scenario, speed, {
-      onMessage: (message) => {
-        setMessages((current) => [...current, message]);
-        setSelectedId(message.id);
-        setStreamState("live");
-      },
-      onComplete: () => setStreamState("complete"),
-      onError: (message) => {
-        setError(message);
+    void fetchTimeline(scenario)
+      .then((loaded) => {
+        if (!active) return;
+        setMessages(loaded);
+        setCursorMs(matchBounds(loaded).start);
+        setStreamState(loaded.length ? "live" : "complete");
+      })
+      .catch((reason: unknown) => {
+        if (!active) return;
+        setError(reason instanceof Error ? reason.message : "Unable to load timeline.");
         setStreamState("error");
-      },
-    });
-  }, [scenario, speed, replayNonce]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [scenario, replayNonce]);
+
+  const bounds = useMemo(() => matchBounds(messages), [messages]);
+
+  useEffect(() => {
+    if (!playing || messages.length === 0) return;
+    let previous = performance.now();
+    const timer = window.setInterval(() => {
+      const now = performance.now();
+      const elapsed = Math.max(0, now - previous);
+      previous = now;
+      setCursorMs((current) => Math.min(bounds.end, current + elapsed * speed));
+    }, 50);
+    return () => window.clearInterval(timer);
+  }, [playing, speed, messages.length, bounds.end]);
+
+  useEffect(() => {
+    if (messages.length > 0 && cursorMs >= bounds.end) {
+      setPlaying(false);
+      setStreamState("complete");
+    }
+  }, [cursorMs, bounds.end, messages.length]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: replayNonce intentionally restarts the narrative replay together with the match replay.
   useEffect(() => {
@@ -102,39 +130,16 @@ export function App() {
     };
   }, [scenario, mode, replayNonce]);
 
-  const selected = useMemo(
-    () => messages.find((message) => message.id === selectedId) ?? messages.at(-1) ?? null,
-    [messages, selectedId],
-  );
-
-  const latestInsight = useMemo(() => {
-    for (let index = messages.length - 1; index >= 0; index -= 1) {
-      const candidate = messages[index];
-      if (candidate && isTacticalInsight(candidate)) return candidate.payload;
-    }
-    return null;
-  }, [messages]);
-
-  const selectedEvent = useMemo<MatchEvent | null>(() => {
-    if (selected && isMatchEvent(selected)) return selected.payload;
-    if (selected && isTacticalInsight(selected)) {
-      const ids = new Set(selected.payload.evidence_event_ids);
-      for (let index = messages.length - 1; index >= 0; index -= 1) {
-        const candidate = messages[index];
-        if (candidate && isMatchEvent(candidate) && ids.has(candidate.payload.event_id)) {
-          return candidate.payload;
-        }
-      }
-    }
-    for (let index = messages.length - 1; index >= 0; index -= 1) {
-      const candidate = messages[index];
-      if (candidate && isMatchEvent(candidate)) return candidate.payload;
-    }
-    return null;
-  }, [messages, selected]);
+  const replay = useMemo(() => latestAtCursor(messages, cursorMs), [messages, cursorMs]);
+  const visibleMessages = replay.visible;
+  const selected = visibleMessages.find((item) => item.id === selectedId) ?? replay.selected;
+  const latestInsight = replay.insight;
+  const selectedEvent: MatchEvent | null =
+    selected && isMatchEvent(selected) ? selected.payload : replay.event;
 
   const inspect = useCallback(
     async (message: ReplayMessage) => {
+      setCursorMs(message.payload.clock_ms);
       setSelectedId(message.id);
       if (!isTacticalInsight(message) || !scenario) {
         setEvidence(null);
@@ -149,7 +154,7 @@ export function App() {
     [scenario],
   );
 
-  const matchClock = selectedEvent?.clock_ms ?? latestInsight?.clock_ms ?? 0;
+  const matchClock = cursorMs;
 
   return (
     <main className="app-shell">
@@ -231,6 +236,58 @@ export function App() {
           Replay scenario
         </button>
 
+        <fieldset className="replay-seek-controls">
+          <legend className="visually-hidden">Timeline playback controls</legend>
+          <button
+            type="button"
+            onClick={() => {
+              setPlaying((p) => !p);
+              setStreamState("live");
+            }}
+            disabled={!messages.length}
+          >
+            {playing ? "Pause" : "Play"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
+              setPlaying(false);
+            }}
+            disabled={!messages.length}
+            aria-label="Back 2 seconds"
+          >
+            −2s
+          </button>
+          <label>
+            Match clock
+            <input
+              type="range"
+              min={bounds.start}
+              max={Math.max(bounds.start + 1, bounds.end)}
+              step={100}
+              value={cursorMs}
+              onChange={(event) => {
+                setCursorMs(Number(event.target.value));
+                setPlaying(false);
+              }}
+              disabled={!messages.length}
+              aria-label="Seek match time"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
+              setPlaying(false);
+            }}
+            disabled={!messages.length}
+            aria-label="Forward 2 seconds"
+          >
+            +2s
+          </button>
+        </fieldset>
+
         <fieldset className="segmented audience-switch">
           <legend className="visually-hidden">Audience mode</legend>
           {MODES.map((item) => (
@@ -305,16 +362,16 @@ export function App() {
             className="key-moment-button"
             type="button"
             onClick={() => {
-              const message = messages.find((item) => isTacticalInsight(item));
+              const message = visibleMessages.find((item) => isTacticalInsight(item));
               if (message) void inspect(message);
             }}
-            disabled={!messages.some(isTacticalInsight)}
+            disabled={!visibleMessages.some(isTacticalInsight)}
           >
             View Analysis →
           </button>
         </section>
         <div className="broadcast-detail-panels">
-          <EventTimeline messages={messages} selectedId={selectedId} onSelect={inspect} />
+          <EventTimeline messages={visibleMessages} selectedId={selectedId} onSelect={inspect} />
 
           <section className="panel evidence-panel">
             <div className="panel-heading">
@@ -332,7 +389,7 @@ export function App() {
                     key={event.event_id}
                     type="button"
                     onClick={() => {
-                      const message = messages.find(
+                      const message = visibleMessages.find(
                         (candidate) =>
                           isMatchEvent(candidate) && candidate.payload.event_id === event.event_id,
                       );
