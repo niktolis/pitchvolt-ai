@@ -85,7 +85,6 @@ export function Pitch({ event }: PitchProps) {
               />
               <circle cy="-2.95" r=".63" fill="#f1c9a1" stroke="#5d4231" strokeWidth=".12" />
               <circle cx="1.9" cy="1.1" r=".64" fill="#effff0" stroke="#223329" strokeWidth=".13" />
-
             </g>
           ) : null}
         </svg>
