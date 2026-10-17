@@ -11,7 +11,8 @@ from dataclasses import dataclass
 from time import perf_counter
 
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
-from matchpulse.narrative import Audience, EvidenceBundle
+from matchpulse.narrative import Audience, EvidenceBundle, NarrativeCandidate, Claim, ClaimKind
+from matchpulse.shadow_validation import ShadowAssessment, assess_candidate
 from matchpulse.workflow import AnalystPlan, StorytellerSelection
 
 __all__ = ["FoundryConfig", "FoundryDisabled", "FoundryRoles", "RoleInvocation", "RoleSettings"]
@@ -26,6 +27,42 @@ class RoleInvocation:
     output_tokens: int | None
 
 
+def usage_counts(response: object) -> tuple[int | None, int | None]:
+    """Read allowlisted usage fields, never prompts or raw model text."""
+    def get(obj: object, name: str) -> object:
+        return obj.get(name) if isinstance(obj, dict) else getattr(obj, name, None)
+
+    containers = [response]
+    for name in ("usage", "usage_details", "raw_response"):
+        item = get(response, name)
+        if item is not None:
+            containers.append(item)
+            nested = get(item, "usage")
+            if nested is not None:
+                containers.append(nested)
+    messages = get(response, "messages")
+    if isinstance(messages, (tuple, list)):
+        for message in messages:
+            for name in ("usage", "usage_details"):
+                item = get(message, name)
+                if item is not None:
+                    containers.append(item)
+
+    def count(obj: object, names: tuple[str, ...]) -> int | None:
+        for name in names:
+            value = get(obj, name)
+            if isinstance(value, int) and not isinstance(value, bool) and 0 <= value <= 100_000_000:
+                return value
+        return None
+
+    for container in containers:
+        input_count = count(container, ("input_tokens", "prompt_tokens"))
+        output_count = count(container, ("output_tokens", "completion_tokens"))
+        if input_count is not None or output_count is not None:
+            return input_count, output_count
+    return None, None
+
+
 class FoundryDisabled(RuntimeError):
     """Provider access deliberately blocked until inference opt-in."""
 
@@ -36,10 +73,7 @@ def sanitized_response_metadata(response: object) -> dict[str, object]:
     def reason(value: object) -> str | None:
         return value if isinstance(value, str) and value in allowed else None
 
-    usage = getattr(response, "usage", None)
-    def tokens(name: str) -> int | None:
-        value = getattr(usage, name, None)
-        return value if isinstance(value, int) and 0 <= value <= 100_000_000 else None
+    input_count, output_count = usage_counts(response)
 
     messages = getattr(response, "messages", None)
     if not isinstance(messages, (list, tuple)):
@@ -49,9 +83,9 @@ def sanitized_response_metadata(response: object) -> dict[str, object]:
         "structured_value_present": getattr(response, "value", None) is not None,
         "finish_reason": reason(getattr(response, "finish_reason", None)),
         "response_status": reason(getattr(response, "status", None)),
-        "input_tokens": tokens("input_tokens"),
-        "output_tokens": tokens("output_tokens"),
-        "total_tokens": tokens("total_tokens"),
+        "input_tokens": input_count,
+        "output_tokens": output_count,
+        "total_tokens": input_count + output_count if input_count is not None and output_count is not None else None,
         "message_count": min(len(messages), 1000),
     }
 
@@ -93,6 +127,9 @@ class FoundryRoles:
         self._attempts = {'analyst': 0, 'storyteller': 0}
         self.last_evidence_tool_calls: tuple[str, ...] = ()
         self.last_response_metadata: dict[str, object] | None = None
+        self.role_decisions: dict[str, dict[str, object]] = {}
+        self.last_shadow_assessment: ShadowAssessment | None = None
+        self.last_authored_candidate: NarrativeCandidate | None = None
         instructions = {
             "analyst": (
                 "Analyze ONLY immutable football evidence. Use provided read-only "
@@ -101,7 +138,9 @@ class FoundryRoles:
             ),
             "storyteller": (
                 "Choose audience-specific style from the validated Analyst plan. "
-                "Preserve insight ID and angle. You may choose fact_order as a permutation of team, tactic, transition, actions, each exactly once. Never generate football claims or prose."
+                "Preserve insight ID and angle. Choose a valid fact_order if useful. "
+                "Propose authored_headline and authored_text as your own grounded, concise SHADOW-ONLY commentary. "
+                "These fields will not be published. Never invent goals, possession, player names or unsupported statistics."
             ),
             "editorial": (
                 "Review only explicitly escalated, already grounded interpretations. "
@@ -141,14 +180,11 @@ class FoundryRoles:
             timeout=self._config.timeout_seconds_per_role,
         )
         self.last_response_metadata = sanitized_response_metadata(response)
-        usage = getattr(response, "usage", None)
-        def token_count(name: str) -> int | None:
-            value = getattr(usage, name, None)
-            return value if isinstance(value, int) and value >= 0 else None
+        input_count, output_count = usage_counts(response)
         self.invocations.append(RoleInvocation(
             role, self._config.role_deployments[role],
             (perf_counter() - started) * 1000,
-            token_count("input_tokens"), token_count("output_tokens"),
+            input_count, output_count,
         ))
         return response
 
@@ -185,6 +221,7 @@ class FoundryRoles:
             raise ValueError("Analyst supplied unverified evidence IDs")
         if set(observed) != set(insight.evidence_event_ids):
             raise ValueError("Analyst did not retrieve all verified evidence events")
+        self.role_decisions["analyst"] = plan.model_dump(mode="json")
         return plan
 
     async def select(
@@ -193,9 +230,37 @@ class FoundryRoles:
         response = await self._invoke("storyteller",
             f"Requested audience: {audience.value}\n"
             f"Approved Analyst plan: {plan.model_dump_json()}\n"
-            "Choose an allowed style and preserve the evidence-grounded angle. Optionally return fact_order to prioritize the four verified fact fragments; never invent a slot.",
+            f"Verified team: {evidence.insight.team_id}; tactic: {evidence.insight.kind.value}; "
+            f"duration_ms: {evidence.insight.metrics['transition_duration_ms']}; "
+            f"attacking_actions: {evidence.insight.metrics['attacking_actions']}. "
+            "Select a supported style and fact_order; separately propose authored_headline and "
+            "authored_text using ONLY these verified facts. This proposal will NOT be published.",
             StorytellerSelection,
         )
         if response.value is None:
             raise ValueError("Storyteller returned no structured output")
-        return StorytellerSelection.model_validate(response.value)
+        selection = StorytellerSelection.model_validate(response.value)
+        self.role_decisions["storyteller"] = selection.model_dump(
+            mode="json", exclude={"authored_headline", "authored_text"}
+        )
+        if selection.authored_headline and selection.authored_text:
+            insight = evidence.insight
+            self.last_authored_candidate = NarrativeCandidate(
+                insight_id=insight.insight_id,
+                audience=audience,
+                headline=selection.authored_headline,
+                text=selection.authored_text,
+                evidence_event_ids=insight.evidence_event_ids,
+                claims=(
+                    Claim(kind=ClaimKind.INSIGHT_KIND, key="kind", value=insight.kind.value),
+                    Claim(kind=ClaimKind.TEAM_ID, key="team_id", value=insight.team_id),
+                    Claim(kind=ClaimKind.METRIC, key="transition_duration_ms",
+                          value=insight.metrics["transition_duration_ms"]),
+                    Claim(kind=ClaimKind.METRIC, key="attacking_actions",
+                          value=insight.metrics["attacking_actions"]),
+                ),
+            )
+            self.last_shadow_assessment = assess_candidate(
+                self.last_authored_candidate, evidence
+            )
+        return selection
