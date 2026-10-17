@@ -3,11 +3,17 @@ import pytest
 
 from matchpulse.foundry_smoke import fixture
 from matchpulse.grounded_prose import (
-    GroundingStatus, approved_phrasings, assess_grounded_prose,
+    GroundingStatus,
+    approved_phrasings,
+    assess_grounded_prose,
     publish_eligible_candidate,
 )
 from matchpulse.narrative import (
-    Audience, Claim, ClaimKind, NarrativeCandidate, NarrativeRejection,
+    Audience,
+    Claim,
+    ClaimKind,
+    NarrativeCandidate,
+    NarrativeRejection,
 )
 
 
