@@ -27,3 +27,7 @@ python scripts/capture-live-visual.py --url https://pitchvolt.app/ --output arti
 ```
 
 The local script requires network access to the public site. Browser capture doesn't mutate Azure resources or use Foundry inference. The live-domain workflow requires the Azure managed certificate and DNS binding to remain valid.
+
+## Exact production-revision gating
+
+Production HTML has a `pitchvolt-build` meta tag populated from the immutable Git commit at container image build time. Following `/health`, the deployment workflow polls the public `pitchvolt.app` homepage with a cache-busting query until the tag matches `GITHUB_SHA`; a stale previous revision is not considered deployed. Browser screenshot capture independently checks the same exact SHA before writing evidence. If the public hostname fails to converge, the deployment fails visibly and no screenshot job runs. This verifies revision identity, **not** visual fidelity or complete correctness.
