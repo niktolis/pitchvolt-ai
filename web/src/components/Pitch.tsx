@@ -86,3 +86,28 @@ export function Pitch({ event }: PitchProps) {
               <circle cy="-2.95" r=".63" fill="#f1c9a1" stroke="#5d4231" strokeWidth=".12" />
               <circle cx="1.9" cy="1.1" r=".64" fill="#effff0" stroke="#223329" strokeWidth=".13" />
 
+            </g>
+          ) : null}
+        </svg>
+
+        {event ? (
+          <div
+            className="pitch-caption"
+            style={{
+              left: `${Math.min(86, Math.max(6, pctX(event.location.x)))}%`,
+              top: `${Math.min(82, Math.max(8, pctY(event.location.y)))}%`,
+            }}
+          >
+            <strong>{event.event_type}</strong>
+            <span>{displayName(event.player_id)}</span>
+          </div>
+        ) : null}
+      </div>
+
+      <p className="pitch-note">
+        Event coordinates are source-backed. The highlighted player is a stylized active actor, not
+        a reconstructed formation.
+      </p>
+    </section>
+  );
+}
