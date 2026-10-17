@@ -81,6 +81,7 @@ async def run(argv: list[str] | None = None) -> int:
         "analyst_deployment": ANALYST_DEPLOYMENT,
         "storyteller_deployment": STORYTELLER_DEPLOYMENT,
         "maximum_role_invocations": 2,
+        "http_max_retries": 0,
         "analyst_max_output_tokens": SMOKE_ANALYST_OUTPUT_TOKENS,
         "note": "Agent SDK can make additional HTTP requests internally; no hard monetary cap",
     }
@@ -101,10 +102,20 @@ async def run(argv: list[str] | None = None) -> int:
     )
     # Workstation-specific credential avoids Managed Identity probing on macOS.
     # No token or credential content is logged or stored.
+    from azure.ai.projects import AIProjectClient
     from azure.identity import AzureCliCredential
 
+    class NoRetryProjectClient(AIProjectClient):
+        """Apply zero OpenAI transport retries to the manual smoke test only."""
+
+        def get_openai_client(self, *, agent_name=None, **kwargs):
+            kwargs["max_retries"] = 0
+            return super().get_openai_client(agent_name=agent_name, **kwargs)
+
     print('AUTH: using Azure CLI credential for isolated smoke test', flush=True)
-    roles = FoundryRoles(config, credential=AzureCliCredential())
+    credential = AzureCliCredential()
+    project_client = NoRetryProjectClient(endpoint=config.project_endpoint, credential=credential)
+    roles = FoundryRoles(config, credential=credential, project_client=project_client)
     print('ANALYST: starting first approved role invocation', flush=True)
     tool = InMemoryEvidenceTool(lambda insight_id: bundle)
     orchestrator = Orchestrator(tool, roles, roles)

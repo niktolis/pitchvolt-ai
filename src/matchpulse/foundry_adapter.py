@@ -59,7 +59,10 @@ def sanitized_response_metadata(response: object) -> dict[str, object]:
 class FoundryRoles:
     """Two specialized ephemeral roles; no server-hosted agent resources."""
 
-    def __init__(self, config: FoundryConfig, *, credential: object | None = None) -> None:
+    def __init__(
+        self, config: FoundryConfig, *, credential: object | None = None,
+        project_client: object | None = None,
+    ) -> None:
         if not config.inference_explicitly_approved:
             raise FoundryDisabled("Model inference is disabled pending cost approval")
         # Imports and credential construction occur only in approved runtime mode.
@@ -81,6 +84,7 @@ class FoundryRoles:
                 project_endpoint=config.project_endpoint,
                 model=deployment,
                 credential=credential,
+                **({"project_client": project_client} if project_client is not None else {}),
             )
             for role, deployment in config.role_deployments.items()
         }
