@@ -18,6 +18,9 @@ def test_long_fixture_is_deterministic_across_requests():
     assert match == same_match
     assert [e.model_dump_json() for e in events] == [e.model_dump_json() for e in same_events]
     assert len(events) == 220
+    assert events[0].clock_ms == 0
+    assert events[-1].clock_ms == 5_400_000
+    assert events[-1].period == 2
     assert {e.period for e in events} == {1, 2}
     assert all(e.provenance.source == "synthetic" for e in events)
     validate_stream(events, match)
@@ -67,10 +70,10 @@ def test_action_family_quota_matches_pinned_reference() -> None:
 
 def test_scripted_high_press_inside_larger_match_is_evidence_backed() -> None:
     match, events = scenario("extended_match", 42)
-    insight = next(
-        item for item in analyze_stream(match, events)
-        if item.kind == InsightKind.HIGH_PRESS
-    )
+    insights = analyze_stream(match, events)
+    assert len(insights) == 4
+    assert all(item.kind == InsightKind.HIGH_PRESS for item in insights)
+    insight = next(item for item in insights if item.evidence_event_ids[0] == events[70].event_id)
     window = events[70:78]
     assert len(window) == 8
     assert events[73].event_type == EventType.PASS
@@ -82,3 +85,31 @@ def test_scripted_high_press_inside_larger_match_is_evidence_backed() -> None:
     assert insight.metrics["transition_duration_ms"] == 7_500
     assert insight.metrics["attacking_actions"] == 4
     assert all(e.evidence["scripted_tactical_window"] for e in window)
+
+
+def test_multiple_grounded_insights_distributed_across_halves() -> None:
+    match, events = scenario("extended_match", 42)
+    insights = analyze_stream(match, events)
+    expected_windows = (31, 71, 151, 191)
+    assert len(insights) == len(expected_windows)
+    for insight, start in zip(insights, expected_windows, strict=True):
+        window = events[start - 1:start + 7]
+        assert insight.evidence_event_ids == tuple(e.event_id for e in window)
+        assert insight.metrics["transition_duration_ms"] == 7_500
+        assert insight.metrics["attacking_actions"] == 4
+        assert all(e.evidence["scripted_tactical_window"] for e in window)
+    assert {i.period for i in insights} == {1, 2}
+
+
+def test_offline_extended_smoke_scenario_without_inference(capsys) -> None:
+    import asyncio
+
+    from matchpulse import foundry_smoke
+
+    assert asyncio.run(foundry_smoke.run(["--scenario", "extended_match"])) == 0
+    output = capsys.readouterr().out
+    assert '"scenario": "extended_match"' in output
+    assert "No Azure credentials loaded" in output
+    bundle = foundry_smoke.fixture("extended_match")
+    assert bundle.insight.kind == InsightKind.HIGH_PRESS
+    assert len(bundle.events) == 8
