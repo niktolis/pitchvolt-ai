@@ -1,7 +1,11 @@
 """Do not invent historical scorelines or substitutions from partial files."""
 from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
 from matchpulse.providers.statsbomb_historical import HistoricalFixture
-from matchpulse.providers.statsbomb_lineups import HistoricalLineups, HistoricalPlayer, HistoricalTeam
+from matchpulse.providers.statsbomb_lineups import (
+    HistoricalLineups,
+    HistoricalPlayer,
+    HistoricalTeam,
+)
 from matchpulse.providers.statsbomb_state import historical_event_state
 
 
@@ -26,7 +30,8 @@ def case(*, coverage="full_match", own_goal=False):
         attribution="StatsBomb Open Data",
     )
     fixture = HistoricalFixture(manifest, tuple(records), {}, 0, 0, 0)
-    player = lambda num: HistoricalPlayer(num, f"Player {num}", None, num, ())
+    def player(num: int) -> HistoricalPlayer:
+        return HistoricalPlayer(num, f"Player {num}", None, num, ())
     lineup = HistoricalLineups((
         HistoricalTeam(1, "Home", (player(10),)),
         HistoricalTeam(2, "Away", (player(20), player(21))),
