@@ -1107,3 +1107,26 @@ body {
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 12.5%, transparent 12.5% 25%),
     linear-gradient(145deg, #214d29, #0d2b19);
 }
+
+/* Playback controls inherit the approved PitchVolt broadcast visual language. */
+.replay-seek-controls {
+  display: flex;
+  flex: 1 1 320px;
+  min-width: 230px;
+  align-items: center;
+  gap: 8px;
+}
+.replay-seek-controls button {
+  padding: 9px;
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 10px;
+  background: #0b1712;
+  color: #eaf5ef;
+}
+.replay-seek-controls button:disabled { opacity: 0.4; }
+.replay-seek-controls label { flex: 1; min-width: 75px; }
+.replay-seek-controls input[type="range"] { width: 100%; accent-color: #76ffb8; cursor: pointer; }
+@media (max-width: 900px) {
+  .control-bar { flex-wrap: wrap; }
+  .replay-seek-controls { flex-basis: 100%; order: 2; }
+}
