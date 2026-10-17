@@ -24,6 +24,8 @@ def test_role_policy_contracts() -> None:
     assert "Do not invent" in ANALYST_INSTRUCTIONS
     assert "SHADOW" in STORYTELLER_INSTRUCTIONS
     assert "verbatim" in STORYTELLER_INSTRUCTIONS
+    assert "null or a permutation" in STORYTELLER_INSTRUCTIONS
+    assert "a subset is invalid" in STORYTELLER_INSTRUCTIONS
     assert "never override" in EDITORIAL_INSTRUCTIONS.lower()
 
 
