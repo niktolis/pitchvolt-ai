@@ -18,7 +18,7 @@ import {
   eventLabel,
   modeCopy,
 } from "./domain/presentation";
-import { clampCursor, latestAtCursor, matchBounds } from "./domain/replayClock";
+import { clampCursor, isEvidenceVisible, latestAtCursor, matchBounds } from "./domain/replayClock";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -134,6 +134,8 @@ export function App() {
   const visibleMessages = replay.visible;
   const selected = visibleMessages.find((item) => item.id === selectedId) ?? replay.selected;
   const latestInsight = replay.insight;
+  const displayEvidence =
+    evidence && isEvidenceVisible(messages, cursorMs, evidence.insight_id) ? evidence : null;
   const selectedEvent: MatchEvent | null =
     selected && isMatchEvent(selected) ? selected.payload : replay.event;
 
@@ -273,6 +275,7 @@ export function App() {
               }}
               disabled={!messages.length}
               aria-label="Seek match time"
+              aria-valuetext={clockLabel(cursorMs)}
             />
           </label>
           <button
@@ -379,12 +382,12 @@ export function App() {
                 <span className="eyebrow">Evidence</span>
                 <h2>Why this claim exists</h2>
               </div>
-              <span className="count-badge">{evidence?.events.length ?? 0}</span>
+              <span className="count-badge">{displayEvidence?.events.length ?? 0}</span>
             </div>
 
-            {evidence ? (
+            {displayEvidence ? (
               <div className="evidence-list">
-                {evidence.events.map((event) => (
+                {displayEvidence.events.map((event) => (
                   <button
                     key={event.event_id}
                     type="button"
