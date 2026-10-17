@@ -34,6 +34,18 @@ class Style(StrEnum):
     TECHNICAL = "technical"
 
 
+class FactSlot(StrEnum):
+    """Canonical fact fragments the model may reorder but never invent."""
+
+    TEAM = "team"
+    TACTIC = "tactic"
+    TRANSITION = "transition"
+    ACTIONS = "actions"
+
+
+FACT_SLOTS = frozenset(FactSlot)
+
+
 class AnalystPlan(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     insight_id: str
@@ -47,6 +59,7 @@ class StorytellerSelection(BaseModel):
     audience: Audience
     angle: Angle
     style: Style
+    fact_order: tuple[FactSlot, ...] | None = None
 
 
 class Analyst(Protocol):
@@ -88,11 +101,23 @@ def publish_controlled(
         raise NarrativeRejection("Analyst failed to cite exact evidence")
     if selection.angle not in Angle or selection.style not in Style:
         raise NarrativeRejection("Unsupported narrative selection")
+    if selection.fact_order is not None:
+        if len(selection.fact_order) != len(FACT_SLOTS) or set(selection.fact_order) != FACT_SLOTS:
+            raise NarrativeRejection("Composition must use each canonical fact exactly once")
     seconds = insight.metrics["transition_duration_ms"] / 1000
     count = insight.metrics["attacking_actions"]
     tactic = insight.kind.value.replace("_", " ")
     team = insight.team_id
-    if selection.style == Style.TECHNICAL:
+    if selection.fact_order is not None:
+        # Rendering is server-owned: only ordering is model-controlled.
+        fragments = {
+            FactSlot.TEAM: f"Team: {team}",
+            FactSlot.TACTIC: f"Tactic: {tactic}",
+            FactSlot.TRANSITION: f"Turnover-to-shot: {seconds:.3f}s",
+            FactSlot.ACTIONS: f"Attacking actions: {count}",
+        }
+        text = " · ".join(fragments[slot] for slot in selection.fact_order) + "."
+    elif selection.style == Style.TECHNICAL:
         text = (
             f"{team} — {tactic}: turnover-to-shot transition "
             f"{seconds:.3f} seconds across {count} attacking actions."
