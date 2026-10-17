@@ -93,3 +93,11 @@ Policy references (retrieved October 2026):
 - Microsoft Foundry evaluators, groundedness, relevance, task adherence and abstention: https://github.com/MicrosoftDocs/azure-ai-docs/blob/main/articles/foundry/concepts/evaluation-evaluators/agent-evaluators.md
 
 Future expansion: separate free-form creativity/evidence-linked atomic claim extraction from the bounded publishing mode, then evaluate precision, groundedness, abstention, latency, and hallucination rate on a frozen fixture set before enabling public model prose. Do not confuse passing the finite grammar with semantic entailment.
+
+## Live Analyst exhaustion and retry policy
+
+The fourth authorized smoke attempt retrieved six events but GPT-5 mini finished with `finish_reason=length` and `AgentResponse.value=None` under the 512-token Analyst output cap; the Storyteller was never called and the deterministic fallback remained correct. In reasoning models, hidden reasoning tokens count toward the output budget. This is evidence of output truncation, not evidence of faulty input facts. The exact token count remains unknown until SDK usage extraction is fixed.
+
+The isolated live smoke now budgets **4096 Analyst output tokens** and leaves Storyteller at its configured 256-token default. The configurable `RoleSettings` validation ceiling is **8192 tokens**, but general application defaults stay unchanged. No additional inference was made during development. The smoke restores the OpenAI Python SDK default of **two retries** for eligible transport/HTTP errors (network, 408, 409, 429, 5xx), with backoff; there are **zero role-level retries** after a `length` finish or invalid schema. See https://github.com/openai/openai-python#retries and https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/reasoning for the SDK retry policy and reasoning-token behavior.
+
+Retries are not free: one logical agent run can perform multiple tool/model requests; each retry can increase billing, and the maximum role count is not a hard cap on HTTP requests or euros spent. Available trial credits are not a spending authorization. An operator must separately approve the next one-time billable execution after reviewing this change. Timeout remains 15 seconds per role; `length` is explicitly not auto-retried.
