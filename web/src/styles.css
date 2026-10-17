@@ -1374,3 +1374,28 @@ body {
 .pitch-panel .broadcast-webgl canvas {
   touch-action: pan-y;
 }
+
+/* Broadcast v2: the field is framed to the actual canvas viewport in 3D.
+   Preserve the approved central card and leave replay controls immediately below. */
+.pitch-panel .broadcast-webgl {
+  aspect-ratio: 105 / 68;
+  width: 100%;
+  isolation: isolate;
+  background: #092113;
+  border: 1px solid rgba(155, 214, 105, 0.25);
+  box-shadow: inset 0 0 28px rgba(0, 12, 7, 0.5);
+}
+.pitch-illumination {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(199, 252, 144, 0.16), transparent 36%),
+    radial-gradient(ellipse at 90% 0%, rgba(199, 252, 144, 0.13), transparent 36%),
+    linear-gradient(180deg, rgba(1, 10, 6, 0.14), transparent 20%, transparent 78%, rgba(1, 10, 6, 0.25));
+  box-shadow: inset 0 0 17px rgba(0, 12, 5, 0.46);
+}
+.pitch-panel .pitch-note {
+  color: #91a594;
+}

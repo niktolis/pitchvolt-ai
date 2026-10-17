@@ -106,7 +106,7 @@ export function Pitch({ event, children }: PitchProps) {
           ) : null}
         </svg>
 
-        {event ? (
+        {event && !hasWebGL ? (
           <div
             className="pitch-caption"
             style={{
