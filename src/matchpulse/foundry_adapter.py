@@ -33,7 +33,7 @@ class FoundryDisabled(RuntimeError):
 class FoundryRoles:
     """Two specialized ephemeral roles; no server-hosted agent resources."""
 
-    def __init__(self, config: FoundryConfig) -> None:
+    def __init__(self, config: FoundryConfig, *, credential: object | None = None) -> None:
         if not config.inference_explicitly_approved:
             raise FoundryDisabled("Model inference is disabled pending cost approval")
         # Imports and credential construction occur only in approved runtime mode.
@@ -48,7 +48,8 @@ class FoundryRoles:
         # One credential, independently configured clients per specialist.
         # Editorial may be constructed for configuration validation, but is not
         # invoked by the two-role orchestrator or included in the call budget.
-        credential = DefaultAzureCredential()
+        if credential is None:
+            credential = DefaultAzureCredential()
         clients = {
             role: FoundryChatClient(
                 project_endpoint=config.project_endpoint,

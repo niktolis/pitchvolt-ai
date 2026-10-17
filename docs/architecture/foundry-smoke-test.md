@@ -32,7 +32,7 @@ set -x MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT 'https://<account>.services.ai.azure.
 ```
 
 No secrets belong in source, CLI history, screenshots, PR comments or test reports.
-`DefaultAzureCredential` uses your existing local identity; use `az login` if necessary.
+The isolated smoke harness uses **`AzureCliCredential`**, which relies on `az login` and does not probe local Managed Identity endpoints. General application credentials are unchanged. A hanging Azure CLI token request or SDK network call may still need manual interruption.
 Do not invoke the live command twice without separate authorization: an SDK failure,
 timeout or fallback can still incur token charges, even when the report shows no usage.
 
@@ -61,3 +61,7 @@ Dry run prints `"mode": "DRY_RUN"` and makes no Azure calls.
 Live run prints two invocations, a nonempty `model_initiated_evidence_tool_calls`
 matching the expected IDs, `"source": "controlled"`, and `PASS`.
 A fallback, structured-output failure, SDK or auth error returns nonzero.
+
+### First live attempt diagnostic (17 Oct 2026)
+
+The first test was interrupted inside `DefaultAzureCredential` -> Managed Identity IMDS token acquisition, before a confirmed model response. Azure CLI independently obtained an access token, and the project endpoint was correct. **Do not rerun billable inference automatically** after updating this branch: inspect Azure model metrics/usage and confirm a new invocation is explicitly authorized. The fix scopes Azure CLI authentication to this workstation smoke harness only.
