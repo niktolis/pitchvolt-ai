@@ -31,6 +31,7 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
         async def run(self, prompt: str, *, options: dict[str, object]) -> object:
             calls.append(("run", (self.name, options, prompt)))
             if self.name == "MatchPulseAnalyst":
+                assert options["tools"][0]("event-1")
                 return SimpleNamespace(value={
                     "insight_id": "insight-1",
                     "angle": "tactical",
@@ -78,7 +79,7 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
             kind=SimpleNamespace(value="high_press"),
             evidence_event_ids=("event-1",),
             metrics={"attacking_actions": 3},
-        )))
+        ), events=(SimpleNamespace(event_id="event-1", model_dump_json=lambda: '{"event_id":"event-1"}'),)))
         assert isinstance(plan, AnalystPlan)
         assert plan.evidence_event_ids == ("event-1",)
         selection = await roles.select(plan, None, Audience.ANALYST)
@@ -90,6 +91,7 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
     assert len(run_calls) == 2
     for _, options, _ in run_calls:
         assert options["max_output_tokens"] == 192
+    assert roles.last_evidence_tool_calls == ("event-1",)
     assert run_calls[0][1]["response_format"] is AnalystPlan
     assert run_calls[1][1]["response_format"] is StorytellerSelection
 

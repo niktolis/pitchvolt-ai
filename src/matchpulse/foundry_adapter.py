@@ -67,6 +67,7 @@ class FoundryRoles:
             credential=DefaultAzureCredential(),
         )
         self._max_output_tokens = config.max_output_tokens_per_role
+        self.last_evidence_tool_calls: tuple[str, ...] = ()
         self._analyst = Agent(
             client=client,
             name="MatchPulseAnalyst",
@@ -88,6 +89,18 @@ class FoundryRoles:
 
     async def analyze(self, evidence: EvidenceBundle) -> AnalystPlan:
         insight = evidence.insight
+        observed: list[str] = []
+        allowed = {event.event_id: event for event in evidence.events}
+
+        def get_evidence_event(event_id: str) -> str:
+            """Retrieve a validated synthetic event by ID from this insight only."""
+            event = allowed.get(event_id)
+            if event is None:
+                raise ValueError("Event is not evidence for this insight")
+            observed.append(event_id)
+            return event.model_dump_json()
+
+        self.last_evidence_tool_calls = ()
         response = await self._analyst.run(
             f"Insight: {insight.insight_id}\n"
             f"Kind: {insight.kind.value}\n"
@@ -97,11 +110,18 @@ class FoundryRoles:
             options={
                 "response_format": AnalystPlan,
                 "max_output_tokens": self._max_output_tokens,
+                "tools": [get_evidence_event],
             },
         )
+        self.last_evidence_tool_calls = tuple(observed)
         if response.value is None:
             raise ValueError("Analyst returned no structured output")
-        return AnalystPlan.model_validate(response.value)
+        plan = AnalystPlan.model_validate(response.value)
+        if plan.evidence_event_ids != insight.evidence_event_ids:
+            raise ValueError("Analyst supplied unverified evidence IDs")
+        if set(observed) != set(insight.evidence_event_ids):
+            raise ValueError("Analyst did not retrieve all verified evidence events")
+        return plan
 
     async def select(
         self, plan: AnalystPlan, evidence: EvidenceBundle, audience: Audience
