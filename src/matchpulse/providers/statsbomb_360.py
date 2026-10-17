@@ -16,7 +16,11 @@ from typing import Any
 
 from matchpulse.events import Point
 from matchpulse.fixture_manifest import FixtureOrigin
-from matchpulse.providers.statsbomb import statsbomb_to_point
+from matchpulse.providers.statsbomb import (
+    STATSBOMB_LENGTH,
+    STATSBOMB_WIDTH,
+    statsbomb_to_point,
+)
 from matchpulse.providers.statsbomb_historical import HistoricalFixture
 from matchpulse.providers.statsbomb_projection import historical_clock_ms
 
@@ -26,7 +30,8 @@ class Observed360Player:
     """Anonymous per-frame detection; player_id known only for the source actor."""
 
     observation_index: int
-    position: Point
+    position: Point | None
+    source_location: tuple[float, float]
     teammate: bool
     actor: bool
     keeper: bool
@@ -99,12 +104,16 @@ def _frame(record: dict[str, Any], event: dict[str, Any]) -> Historical360Frame:
         if not isinstance(location, list) or len(location) != 2:
             raise ValueError("Invalid StatsBomb 360 player location")
         # Reuse the canonical 120x80 -> 105x68 normalization contract.
-        point = statsbomb_to_point([
-            _number(location[0], "x"), _number(location[1], "y")
-        ])
+        x = _number(location[0], "x")
+        y = _number(location[1], "y")
+        # Some genuine camera observations are marginally off the pitch.
+        # Preserve the original measurement. Do NOT clamp to a fake on-field point.
+        on_pitch = 0 <= x <= STATSBOMB_LENGTH and 0 <= y <= STATSBOMB_WIDTH
+        point = statsbomb_to_point([x, y]) if on_pitch else None
         observations.append(Observed360Player(
             observation_index=index,
             position=point,
+            source_location=(x, y),
             teammate=item["teammate"],
             actor=item["actor"],
             keeper=item["keeper"],
