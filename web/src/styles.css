@@ -658,3 +658,405 @@ footer {
 
 /* PitchVolt AI primary identity */
 .brand-logo { display: block; width: 52px; height: 52px; object-fit: contain; }
+
+/* Approved PitchVolt AI broadcast-screen composition. Source: brand-kit Application Preview. */
+:root {
+  --pv-volt:#b6e64b;
+  --pv-black:#060f0b;
+  --pv-green:#132318;
+  --pv-slate:#9ca3af;
+}
+
+body {
+  background: radial-gradient(ellipse at 50% 0,rgba(78,114,46,.26),transparent 65%),#060f0b;
+}
+
+.app-shell {
+  width:min(1560px,calc(100% - 48px));
+  padding-top:24px;
+}
+
+.broadcast-top {
+  border:1px solid rgba(145,198,117,.32);
+  border-radius:15px;
+  background:#06110d;
+  overflow:hidden;
+  box-shadow:0 14px 36px #0008;
+  margin-bottom:16px;
+}
+
+.broadcast-navigation {
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  padding:12px 26px;
+  gap:55px;
+}
+
+.broadcast-brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  white-space:nowrap;
+}
+
+.broadcast-brand strong {
+  font-size:25px;
+  letter-spacing:-.05em;
+}
+
+.broadcast-brand strong span {
+  color:var(--pv-volt);
+}
+
+.broadcast-primary-nav {
+  display:flex;
+  align-items:center;
+  gap:40px;
+  color:#aab3ae;
+  font-size:15px;
+}
+
+.broadcast-primary-nav span {
+  padding:18px 0;
+  border-bottom:2px solid transparent;
+}
+
+.broadcast-primary-nav .current {
+  color:white;
+  border-color:var(--pv-volt);
+}
+
+.broadcast-preview-label {
+  margin-left:auto;
+  color:#839987;
+  font-size:10px;
+  letter-spacing:.16em;
+}
+
+.broadcast-scoreboard {
+  min-height:160px;
+  background:radial-gradient(ellipse at left,rgba(70,143,54,.23),transparent 52%),radial-gradient(ellipse at right,rgba(70,143,54,.25),transparent 52%),linear-gradient(#091810,#04100b);
+  border-block:1px solid #24402d;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px 120px;
+}
+
+.broadcast-score-content {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:40px;
+  width:100%;
+  color:#f5faf6;
+}
+
+.broadcast-score-content>strong {
+  font-size:clamp(16px,2vw,28px);
+  flex:1;
+  text-align:center;
+}
+
+.broadcast-score-center {
+  min-width:130px;
+  display:grid;
+  text-align:center;
+  gap:2px;
+}
+
+.broadcast-score-unavailable {
+  font-size:52px;
+  letter-spacing:-.06em;
+  font-weight:800;
+  line-height:1;
+}
+
+.broadcast-match-clock {
+  font-size:23px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+.broadcast-live {
+  position:absolute;
+  left:28px;
+  bottom:22px;
+  color:var(--pv-volt);
+  font-size:13px;
+  text-transform:uppercase;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.broadcast-tabs {
+  display:flex;
+  justify-content:center;
+  gap:clamp(15px,5vw,70px);
+  color:#a9b5ae;
+  min-height:52px;
+  align-items:stretch;
+}
+
+.broadcast-tabs span {
+  display:grid;
+  place-items:center;
+  white-space:nowrap;
+  border-bottom:3px solid transparent;
+}
+
+.broadcast-tabs .selected {
+  color:white;
+  border-color:var(--pv-volt);
+  font-weight:700;
+}
+
+.control-bar {
+  background:#07140f;
+  border-color:#24412b;
+  border-radius:12px;
+}
+
+.broadcast-grid {
+  display:grid;
+  grid-template-columns:minmax(230px,1fr) minmax(380px,1.85fr) minmax(230px,1fr);
+  align-items:stretch;
+  gap:16px;
+}
+
+.broadcast-grid>.insight-panel {
+  grid-column:1;
+  grid-row:1;
+}
+
+.broadcast-grid>.pitch-panel {
+  grid-column:2;
+  grid-row:1;
+}
+
+.broadcast-grid>.key-moment-panel {
+  grid-column:3;
+  grid-row:1;
+}
+
+.broadcast-detail-panels {
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.panel {
+  background:linear-gradient(150deg,#091810,#050f0b);
+  border:1px solid #31553c;
+  border-radius:14px;
+  box-shadow:0 10px 32px #0008;
+}
+
+.panel-heading h2 {
+  font-size:clamp(20px,2vw,26px);
+  color:#f8faf8;
+  letter-spacing:-.03em;
+}
+
+.insight-panel,.pitch-panel,.key-moment-panel {
+  min-height:370px;
+}
+
+.pitch-panel {
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.pitch-panel .panel-heading {
+  padding:9px 16px;
+}
+
+.pitch {
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.034) 0 12.5%,transparent 12.5% 25%),linear-gradient(160deg,#214d26,#0e331a);
+  box-shadow:0 0 30px #4e9b3130,inset 0 0 40px #0006;
+  border:2px solid #2a5730;
+  border-radius:9px;
+  margin:0 10px;
+}
+
+.pitch-line {
+  stroke:#d6f1d0;
+  stroke-width:.32;
+}
+
+.event-path {
+  stroke:var(--pv-volt);
+  filter:drop-shadow(0 0 2px #b6e64b);
+}
+
+.event-pulse {
+  stroke:var(--pv-volt);
+}
+
+.pitch-caption strong,.insight-title span,.proof-badge,.insight-item strong {
+  color:var(--pv-volt);
+}
+
+.insight-panel .panel-heading {
+  padding-bottom:16px;
+}
+
+.key-moment-panel {
+  padding-bottom:18px;
+  display:flex;
+  flex-direction:column;
+}
+
+.key-moment-scene {
+  margin:0 18px 15px;
+  aspect-ratio:16/7;
+  background:linear-gradient(170deg,transparent 50%,#274b27 51%),radial-gradient(ellipse at 50% 100%,#5a8038,#183b23 65%,#06140f);
+  border-radius:12px;
+  position:relative;
+  overflow:hidden;
+}
+
+.key-moment-scene:after {
+  content:"";
+  position:absolute;
+  inset:18px 10px 5px;
+  border:1px solid #ffffff38;
+  transform:perspective(260px) rotateX(30deg);
+}
+
+.key-moment-ball {
+  position:absolute;
+  width:15px;
+  height:15px;
+  border-radius:50%;
+  background:#f2f9e7;
+  top:58%;
+  left:60%;
+  box-shadow:0 0 19px var(--pv-volt);
+}
+
+.key-moment-copy {
+  padding:0 18px;
+  flex:1;
+}
+
+.key-moment-copy strong {
+  color:var(--pv-volt);
+  font-size:23px;
+}
+
+.key-moment-copy p {
+  margin:10px 0;
+  color:#c5d3cb;
+  font-size:14px;
+}
+
+.key-moment-copy span {
+  font-size:11px;
+  color:#85978a;
+}
+
+.key-moment-button {
+  margin:20px 18px 0;
+  padding:12px;
+  border:1px solid #557d24;
+  border-radius:12px;
+  background:#142811;
+  color:var(--pv-volt);
+  font-weight:800;
+}
+
+.key-moment-button:disabled {
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+@media(max-width:1100px) {
+  .broadcast-grid {
+    grid-template-columns:1fr 1.5fr;
+  }
+  .broadcast-grid>.key-moment-panel {
+    grid-column:1 / -1;
+    grid-row:2;
+  }
+  .broadcast-scoreboard {
+    padding-inline:75px;
+  }
+  .broadcast-navigation {
+    gap:24px;
+  }
+  .broadcast-primary-nav {
+    gap:19px;
+  }
+}
+
+@media(max-width:720px) {
+  .app-shell {
+    width:calc(100% - 20px);
+  }
+  .broadcast-navigation {
+    flex-wrap:wrap;
+    padding:12px;
+    gap:8px;
+  }
+  .broadcast-primary-nav {
+    width:100%;
+    justify-content:space-around;
+    gap:6px;
+  }
+  .broadcast-preview-label {
+    display:none;
+  }
+  .broadcast-scoreboard {
+    padding:45px 10px 20px;
+  }
+  .broadcast-score-content {
+    gap:8px;
+  }
+  .broadcast-score-content>strong {
+    font-size:15px;
+  }
+  .broadcast-score-unavailable {
+    font-size:32px;
+  }
+  .broadcast-match-clock {
+    font-size:17px;
+  }
+  .broadcast-live {
+    top:10px;
+    bottom:auto;
+    left:15px;
+  }
+  .broadcast-tabs {
+    justify-content:start;
+    overflow-x:auto;
+    padding:0 10px;
+    gap:22px;
+    font-size:12px;
+  }
+  .broadcast-grid {
+    grid-template-columns:minmax(0,1fr);
+  }
+  .broadcast-grid>.insight-panel {
+    grid-column:1;
+    grid-row:2;
+  }
+  .broadcast-grid>.pitch-panel {
+    grid-column:1;
+    grid-row:1;
+  }
+  .broadcast-grid>.key-moment-panel {
+    grid-column:1;
+    grid-row:3;
+  }
+  .broadcast-detail-panels {
+    grid-template-columns:1fr;
+  }
+}
