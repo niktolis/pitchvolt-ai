@@ -6,6 +6,7 @@ optional SDK. It is not activated by the application by default.
 """
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from time import perf_counter
 from urllib.parse import urlsplit
@@ -47,6 +48,9 @@ class FoundryConfig:
     analyst_settings: RoleSettings | None = None
     storyteller_settings: RoleSettings | None = None
     editorial_settings: RoleSettings | None = None
+    max_tool_calls_per_analyst: int = 12
+    max_prompt_characters: int = 12000
+    timeout_seconds_per_role: float = 6.0
 
     def __post_init__(self) -> None:
         parsed = urlsplit(self.project_endpoint)
@@ -62,6 +66,12 @@ class FoundryConfig:
         if not parsed.hostname.endswith(".services.ai.azure.com"):
             raise ValueError("Foundry endpoint must target the Foundry project domain")
         RoleSettings(max_output_tokens=self.max_output_tokens_per_role)
+        if not 1 <= self.max_tool_calls_per_analyst <= 32:
+            raise ValueError('Tool-call cap must be between 1 and 32')
+        if not 256 <= self.max_prompt_characters <= 16000:
+            raise ValueError('Prompt cap must be between 256 and 16000')
+        if not 0.1 <= self.timeout_seconds_per_role <= 15:
+            raise ValueError('Role timeout must be between 0.1 and 15 seconds')
         if self.max_inference_calls_per_narrative != 2:
             raise ValueError("Two-role narrative must have exactly two inference calls")
         for deployment in (
@@ -127,6 +137,7 @@ class FoundryRoles:
         }
         self._config = config
         self.invocations: list[RoleInvocation] = []
+        self._attempts = {'analyst': 0, 'storyteller': 0}
         self.last_evidence_tool_calls: tuple[str, ...] = ()
         instructions = {
             "analyst": (
@@ -156,6 +167,10 @@ class FoundryRoles:
         # Intentionally no Editorial invocation or escalation policy yet.
 
     async def _invoke(self, role: str, prompt: str, schema: type, tools: list | None = None) -> object:
+        if role not in self._attempts or self._attempts[role] >= 1:
+            raise FoundryDisabled('Role call budget exhausted or not approved')
+        if len(prompt) > self._config.max_prompt_characters:
+            raise ValueError('Prompt exceeds character cap')
         settings = self._config.settings_for(role)
         options: dict[str, object] = {
             "response_format": schema,
@@ -168,7 +183,11 @@ class FoundryRoles:
         if tools is not None:
             options["tools"] = tools
         started = perf_counter()
-        response = await self._agents[role].run(prompt, options=options)
+        self._attempts[role] += 1
+        response = await asyncio.wait_for(
+            self._agents[role].run(prompt, options=options),
+            timeout=self._config.timeout_seconds_per_role,
+        )
         usage = getattr(response, "usage", None)
         def token_count(name: str) -> int | None:
             value = getattr(usage, name, None)
@@ -187,6 +206,8 @@ class FoundryRoles:
 
         def get_evidence_event(event_id: str) -> str:
             """Retrieve a validated synthetic event by ID from this insight only."""
+            if len(observed) >= self._config.max_tool_calls_per_analyst:
+                raise ValueError("Analyst tool-call cap exceeded")
             event = allowed.get(event_id)
             if event is None:
                 raise ValueError("Event is not evidence for this insight")
