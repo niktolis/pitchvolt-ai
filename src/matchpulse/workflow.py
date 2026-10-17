@@ -101,9 +101,11 @@ def publish_controlled(
         raise NarrativeRejection("Analyst failed to cite exact evidence")
     if selection.angle not in Angle or selection.style not in Style:
         raise NarrativeRejection("Unsupported narrative selection")
-    if selection.fact_order is not None:
-        if len(selection.fact_order) != len(FACT_SLOTS) or set(selection.fact_order) != FACT_SLOTS:
-            raise NarrativeRejection("Composition must use each canonical fact exactly once")
+    if selection.fact_order is not None and (
+        len(selection.fact_order) != len(FACT_SLOTS)
+        or set(selection.fact_order) != FACT_SLOTS
+    ):
+        raise NarrativeRejection("Composition must use each canonical fact exactly once")
     seconds = insight.metrics["transition_duration_ms"] / 1000
     count = insight.metrics["attacking_actions"]
     tactic = insight.kind.value.replace("_", " ")
