@@ -7,6 +7,12 @@ async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
 
+export async function fetchTimeline(scenario: string): Promise<ReplayMessage[]> {
+  return readJson<ReplayMessage[]>(
+    await fetch(`/api/matches/${encodeURIComponent(scenario)}/timeline`),
+  );
+}
+
 export async function fetchScenarios(): Promise<string[]> {
   const result = await readJson<ScenarioCatalog>(await fetch("/api/scenarios"));
   return result.scenarios;
