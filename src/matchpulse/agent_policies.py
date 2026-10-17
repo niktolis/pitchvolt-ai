@@ -89,8 +89,8 @@ AUDIENCE_POLICIES = {
     Audience.CASUAL: AudiencePolicy(
         Audience.CASUAL,
         "Explain the single match moment so a general football viewer understands it.",
-        "High-energy, vivid, spontaneous live-match commentary; one or two punchy spoken sentences.",
-        "Build excitement around the observed press, turnover and rapid attacking sequence.",
+        "Passionate live Premier League-style play-by-play: spontaneous reactions, rising excitement and one or two punchy spoken sentences; never copy a named commentator.",
+        "React to the unfolding observed moment: the press, ball recovery and quick attacking transition, with tempo and emphasis rather than tactical lecturing.",
         "Use common football terms; translate tactical jargon into plain language.",
         "No player names or match outcomes unless evidence supports them; "
         "never infer domination from one sequence.",
