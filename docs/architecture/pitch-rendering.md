@@ -32,10 +32,19 @@ unit-tested transformation**. Preserve replay event selection and
 time-bounded visibility. Do not invent tracked player positions, team
 formations, scorer identities, fixture branding, a match score, or media.
 
-A player model can depict the source-backed active event actor. Additional
-players require independently sourced tracking/formation information;
-otherwise use an explicitly labeled illustrative scene, never fictional
-data masquerading as observation.
+Only the **active event actor** may be positioned using a valid recorded
+`MatchEvent.location`. Never synthesize teammates, opposition, goalkeepers,
+formation shapes, actor positions between two recorded events, or movement paths.
+Additional players may be shown only when genuine per-player spatial data
+for that match time exists in the validated source schema; the current schema
+does not provide it. A source event's optional destination supports only an
+event-specific directional arrow, not an inferred player route or tracked ball
+path. In particular, do not place a ball at any arbitrary offset from the
+active actor: the present event schema lacks an independent ball coordinate.
+
+Synthetic scenario records remain explicitly **synthetic source records**, not
+real-match tracking. The 3D avatar is a presentation of a single recorded
+event position, not an assertion about an actual athlete's pose or uniform.
 
 Use a top-down broadcast camera by default; allow subtle perspective,
 depth, player silhouettes, shadows, realistic grass and lighting without
