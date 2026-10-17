@@ -38,12 +38,31 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
     teams = (match.home_team_id, match.away_team_id)
     events: list[MatchEvent] = []
     action_quotas = calibrated_action_quotas(EVENTS_PER_HALF * 2 - 4)
-    planned = [kind for kind, count in action_quotas.items() for _ in range(count)]
-    rng.shuffle(planned)
-    for index in (20, 75, 145, 200):
-        planned.insert(index - 1, EventType.TURNOVER)
+    # Script one eight-event press-to-goal burst. Subtract every scripted
+    # action from reference quotas to preserve overall action counts.
+    scripted = {
+        71: EventType.CARRY,
+        72: EventType.PASS,
+        73: EventType.PRESSURE,
+        74: EventType.PASS,
+        75: EventType.TURNOVER,
+        76: EventType.CARRY,
+        77: EventType.PASS,
+        78: EventType.SHOT,
+    }
+    for kind in scripted.values():
+        if kind != EventType.TURNOVER:
+            action_quotas[kind] -= 1
+    slots: list[EventType | None] = [None] * (EVENTS_PER_HALF * 2)
+    for index, kind in scripted.items():
+        slots[index - 1] = kind
+    for index in (20, 145, 200):
+        slots[index - 1] = EventType.TURNOVER
+    remaining = [kind for kind, count in action_quotas.items() for _ in range(count)]
+    rng.shuffle(remaining)
+    pending = iter(remaining)
+    planned = [kind if kind is not None else next(pending) for kind in slots]
     assert len(planned) == EVENTS_PER_HALF * 2
-    goal_recorded = False
     possession = teams[0]
     for half in (1, 2):
         for position in range(EVENTS_PER_HALF):
@@ -52,6 +71,9 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             # grounded in the synthetic generation seed and absolute match clock.
             offset = (position * HALF_DURATION_MS) // EVENTS_PER_HALF
             clock = (half - 1) * HALF_DURATION_MS + offset
+            if 71 <= index <= 78:
+                # All eight causal events fit the detector's 45-second window.
+                clock = (69 * HALF_DURATION_MS) // EVENTS_PER_HALF + (index - 70) * 2_500
             phase = position % 8
             kind = planned[index - 1]
             if kind == EventType.TURNOVER:
@@ -61,9 +83,8 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             ) if kind == EventType.PRESSURE else possession
             outcome = Outcome.SUCCESS
             if kind == EventType.SHOT:
-                if not goal_recorded:
+                if index == 78:
                     kind = EventType.GOAL
-                    goal_recorded = True
                 else:
                     outcome = Outcome.FAILURE
             x = rng.randrange(18, 92) if kind not in (EventType.SHOT, EventType.GOAL) else rng.randrange(81, 103)
@@ -80,6 +101,11 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             }
             if kind == EventType.TURNOVER:
                 evidence["possession_change"] = True
+            if index == 74:
+                outcome = Outcome.FAILURE
+                evidence["under_pressure"] = True
+            if 71 <= index <= 78:
+                evidence["scripted_tactical_window"] = True
             events.append(MatchEvent(
                 match_id=match.match_id,
                 event_id=f"{match.match_id}-e{index:04d}",
