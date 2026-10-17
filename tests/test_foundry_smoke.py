@@ -12,7 +12,7 @@ def test_smoke_dry_run_requires_no_sdk_or_endpoint(capsys) -> None:
     assert '"mode": "DRY_RUN"' in output
     assert '"http_max_retries": 2' in output
     assert "No Azure credentials loaded" in output
-    assert "\"analyst_max_output_tokens\": 1024" in output
+    assert "\"analyst_max_output_tokens\": 4096" in output
 
 
 def test_smoke_requires_explicit_two_part_live_opt_in() -> None:
