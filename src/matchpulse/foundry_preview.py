@@ -14,13 +14,9 @@ from collections.abc import AsyncIterator
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles, RoleSettings
-from matchpulse.foundry_smoke import (
-    ANALYST_DEPLOYMENT,
-    SMOKE_ANALYST_OUTPUT_TOKENS,
-    STORYTELLER_DEPLOYMENT,
-    create_smoke_project_client,
-)
+from matchpulse.foundry_adapter import FoundryRoles
+from matchpulse.foundry_config import SMOKE_SETTINGS, isolated_foundry_config
+from matchpulse.foundry_smoke import create_smoke_project_client
 from matchpulse.narrative import Audience, InMemoryEvidenceTool, bounded_deterministic_fallback
 from matchpulse.narrative_stream import NarrativeUpdate, _bundles
 from matchpulse.scenarios import SCENARIO_NAMES, scenario
@@ -43,21 +39,17 @@ async def _one_insight(name: str, audience: Audience) -> AsyncIterator[Narrative
     credential = AzureCliCredential()
     project_client = None
     try:
-        config = FoundryConfig(
-            project_endpoint=os.environ["MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT"],
-            model_deployment=ANALYST_DEPLOYMENT,
-            storyteller_model_deployment=STORYTELLER_DEPLOYMENT,
-            inference_explicitly_approved=True,
-            max_tool_calls_per_analyst=min(12, len(bundle.events)),
-            timeout_seconds_per_role=15.0,
-            analyst_settings=RoleSettings(max_output_tokens=SMOKE_ANALYST_OUTPUT_TOKENS),
+        config = isolated_foundry_config(
+            os.environ["MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT"],
+            evidence_event_count=len(bundle.events),
+            inference_approved=True,
         )
         project_client = create_smoke_project_client(config.project_endpoint, credential)
         roles = FoundryRoles(config, credential=credential, project_client=project_client)
         tool = InMemoryEvidenceTool(lambda _: bundle)
         result = await asyncio.wait_for(
             Orchestrator(tool, roles, roles).narrate(insight_id, audience),
-            timeout=35.0,
+            timeout=SMOKE_SETTINGS.preview_total_timeout_seconds,
         )
         narrative = result.narrative
         source = "foundry_controlled" if result.source == "controlled" else "deterministic_fallback"
