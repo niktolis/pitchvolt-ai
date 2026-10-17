@@ -14,10 +14,11 @@ from matchpulse.events import (
     Provenance,
     validate_stream,
 )
+from matchpulse.extended_fixtures import EXTENDED_SCENARIO, extended_match
 from matchpulse.providers.statsbomb import StatsBombSyntheticSource, synthetic_to_statsbomb
 from matchpulse.simulation import MATCH, high_press_replay
 
-SCENARIO_NAMES = ("high_press", "counterattack", "sustained_possession", "statsbomb_high_press")
+SCENARIO_NAMES = ("high_press", "counterattack", "sustained_possession", "statsbomb_high_press", EXTENDED_SCENARIO)
 
 
 def _scenario(
@@ -80,6 +81,9 @@ def scenario(name: str, seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]
     """Fixtures model causal transitions; not a physics-driven full match simulation."""
     if name not in SCENARIO_NAMES:
         raise ValueError(f"Unknown synthetic scenario: {name}")
+
+    if name == EXTENDED_SCENARIO:
+        return extended_match(seed)
 
     home, away = MATCH.home_team_id, MATCH.away_team_id
     if name == "statsbomb_high_press":

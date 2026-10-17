@@ -3,6 +3,7 @@
 from fastapi.testclient import TestClient
 
 from matchpulse.api import app, timeline
+from matchpulse.scenarios import SCENARIO_NAMES
 
 client = TestClient(app)
 
@@ -10,7 +11,7 @@ client = TestClient(app)
 def test_scenarios_health_state_and_timeline() -> None:
     assert client.get("/health").json() == {"status": "ok"}
     catalog = client.get("/api/scenarios").json()
-    assert catalog["scenarios"] == ["high_press", "counterattack", "sustained_possession", "statsbomb_high_press"]
+    assert catalog["scenarios"] == list(SCENARIO_NAMES)
 
     state = client.get("/api/matches/high_press/state").json()
     assert state["insights"][0]["kind"] == "high_press"
