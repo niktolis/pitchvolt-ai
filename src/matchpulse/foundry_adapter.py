@@ -10,6 +10,11 @@ import asyncio
 from dataclasses import dataclass
 from time import perf_counter
 
+from matchpulse.agent_policies import (
+    ANALYST_INSTRUCTIONS,
+    EDITORIAL_INSTRUCTIONS,
+    STORYTELLER_INSTRUCTIONS,
+)
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
 from matchpulse.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
@@ -135,22 +140,9 @@ class FoundryRoles:
         self.last_authored_candidate: NarrativeCandidate | None = None
         self.last_grounding_result: GroundingResult | None = None
         instructions = {
-            "analyst": (
-                "Analyze ONLY immutable football evidence. Use provided read-only "
-                "tools to inspect each cited event. Preserve evidence IDs and metrics; "
-                "return only the structured tactical plan."
-            ),
-            "storyteller": (
-                "Choose audience-specific style from the validated Analyst plan. "
-                "Preserve insight ID and angle. Choose a valid fact_order if useful. "
-                "Use one exact approved headline/text pair supplied in the task for authored_headline and authored_text. "
-                "These fields are SHADOW-ONLY until the bounded grammar accepts them. "
-                "Never invent goals, possession, player names or unsupported statistics."
-            ),
-            "editorial": (
-                "Review only explicitly escalated, already grounded interpretations. "
-                "Never override the deterministic factual verifier."
-            ),
+            "analyst": ANALYST_INSTRUCTIONS,
+            "storyteller": STORYTELLER_INSTRUCTIONS,
+            "editorial": EDITORIAL_INSTRUCTIONS,
         }
         self._agents = {
             role: Agent(
