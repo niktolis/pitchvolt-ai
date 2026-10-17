@@ -128,6 +128,7 @@ class FoundryRoles:
         self.last_evidence_tool_calls: tuple[str, ...] = ()
         self.last_response_metadata: dict[str, object] | None = None
         self.role_decisions: dict[str, dict[str, object]] = {}
+        self.role_response_metadata: dict[str, dict[str, object]] = {}
         self.last_shadow_assessment: ShadowAssessment | None = None
         self.last_authored_candidate: NarrativeCandidate | None = None
         instructions = {
@@ -180,6 +181,7 @@ class FoundryRoles:
             timeout=self._config.timeout_seconds_per_role,
         )
         self.last_response_metadata = sanitized_response_metadata(response)
+        self.role_response_metadata[role] = self.last_response_metadata
         input_count, output_count = usage_counts(response)
         self.invocations.append(RoleInvocation(
             role, self._config.role_deployments[role],
