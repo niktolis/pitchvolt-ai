@@ -13,6 +13,7 @@ from typing import Protocol
 from pydantic import BaseModel, ConfigDict, Field
 
 from matchpulse.evidence_links import LinkedClaim
+from matchpulse.intelligence import InsightKind
 from matchpulse.narrative import (
     Audience,
     Claim,
@@ -110,8 +111,13 @@ def publish_controlled(
         or set(selection.fact_order) != FACT_SLOTS
     ):
         raise NarrativeRejection("Composition must use each canonical fact exactly once")
-    seconds = insight.metrics["transition_duration_ms"] / 1000
-    count = insight.metrics["attacking_actions"]
+    sustained = insight.kind == InsightKind.SUSTAINED_POSSESSION
+    duration_key = "sequence_duration_ms" if sustained else "transition_duration_ms"
+    count_key = "passes" if sustained else "attacking_actions"
+    seconds = insight.metrics[duration_key] / 1000
+    count = insight.metrics[count_key]
+    duration_label = "Possession sequence" if sustained else "Turnover-to-shot"
+    count_label = "Passes" if sustained else "Attacking actions"
     tactic = insight.kind.value.replace("_", " ")
     team = insight.team_id
     if selection.fact_order is not None:
@@ -119,22 +125,22 @@ def publish_controlled(
         fragments = {
             FactSlot.TEAM: f"Team: {team}",
             FactSlot.TACTIC: f"Tactic: {tactic}",
-            FactSlot.TRANSITION: f"Turnover-to-shot: {seconds:.3f}s",
-            FactSlot.ACTIONS: f"Attacking actions: {count}",
+            FactSlot.TRANSITION: f"{duration_label}: {seconds:.3f}s",
+            FactSlot.ACTIONS: f"{count_label}: {count}",
         }
         text = " · ".join(fragments[slot] for slot in selection.fact_order) + "."
     elif selection.style == Style.TECHNICAL:
         text = (
-            f"{team} — {tactic}: turnover-to-shot transition "
-            f"{seconds:.3f} seconds across {count} attacking actions."
+            f"{team} — {tactic}: {duration_label.lower()} "
+            f"{seconds:.3f} seconds across {count} {count_label.lower()}."
         )
     elif selection.angle == Angle.TRANSITION:
         text = (
-            f"{team} completed a {seconds:.3f}-second transition "
-            f"with {count} attacking actions ({tactic})."
+            f"{team} completed a {seconds:.3f}-second "
+            f"{duration_label.lower()} with {count} {count_label.lower()} ({tactic})."
         )
     else:
-        text = f"{team} produced a {tactic} sequence with {count} attacking actions."
+        text = f"{team} produced a {tactic} sequence with {count} {count_label.lower()}."
     return VerifiedNarrative(
         insight_id=insight.insight_id,
         audience=selection.audience,
@@ -146,12 +152,12 @@ def publish_controlled(
             Claim(kind=ClaimKind.TEAM_ID, key="team_id", value=team),
             Claim(
                 kind=ClaimKind.METRIC,
-                key="transition_duration_ms",
-                value=insight.metrics["transition_duration_ms"],
+                key=duration_key,
+                value=insight.metrics[duration_key],
             ),
             Claim(
                 kind=ClaimKind.METRIC,
-                key="attacking_actions",
+                key=count_key,
                 value=count,
             ),
         ),
