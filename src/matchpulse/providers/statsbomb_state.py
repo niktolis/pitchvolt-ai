@@ -58,6 +58,8 @@ def historical_event_state(
             # Do not double count or infer which one is authoritative.
             unhandled_scoring = True
         elif kind == "Substitution":
+            if not isinstance(event.get("player"), dict):
+                raise ValueError("Historical substitution lacks outgoing player identity")
             substitutions.append(HistoricalSubstitution(
                 event_id=event["id"],
                 team_id=team_id,
