@@ -99,3 +99,7 @@ enable Foundry, Azure billing or historical match display in the public UI.
 ## Historical presentation projection (partial)
 
 `matchpulse.providers.statsbomb_projection.project_historical_actions` converts only fully located Pass, Pressure, Carry and Shot into read-only chronological pitch actions, preserving source IDs/names and converting 120 × 80 coordinates into canonical 105 × 68 metres. Every omitted family or record is counted by source event type. Ball Recovery never implicitly becomes a TURNOVER and a Shot never implicitly becomes a canonical GOAL; scoring, substitutions and tactical detection remain unavailable on this incomplete historical projection. This is **not** the application's canonical `MatchEvent` feed and is not yet wired to the public UI. Source-backed period clocks and complete semantic coverage remain tracked in #64.
+
+## Historical action projection edge cases
+
+Source events are all checked for chronological consistency, including types that are not projected. A historical `Shot` without `shot.end_location` remains a displayable shot with an unknown endpoint, not an invented destination; `shot.outcome.name == Goal` is retained as a source-backed annotation but is **not** yet replay score state or a canonical goal. Other event families remain explicitly counted as omitted. Historical extraction and score reconstruction are separate steps, and real corpus acceptance tests are still needed.
