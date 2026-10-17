@@ -10,6 +10,7 @@ from matchpulse.scenarios import scenario
 from matchpulse.workflow import (
     AnalystPlan,
     Angle,
+    FactSlot,
     Orchestrator,
     StorytellerSelection,
     Style,
@@ -128,3 +129,62 @@ def test_event_tool_failure_prevents_controlled_publication() -> None:
     assert result.source == "fallback"
     assert result.trace[-1].action == "reject"
     assert result.narrative.evidence_event_ids == bundle.insight.evidence_event_ids
+
+
+def test_model_controls_fact_order_but_not_factual_values() -> None:
+    bundle = _bundle()
+    plan = AnalystPlan(
+        insight_id=bundle.insight.insight_id,
+        angle=Angle.TACTICAL,
+        evidence_event_ids=bundle.insight.evidence_event_ids,
+    )
+    decision = StorytellerSelection(
+        insight_id=plan.insight_id,
+        audience=Audience.CASUAL,
+        angle=plan.angle,
+        style=Style.CONCISE,
+        fact_order=(FactSlot.ACTIONS, FactSlot.TEAM, FactSlot.TRANSITION, FactSlot.TACTIC),
+    )
+    narrative = publish_controlled(decision, plan, bundle)
+    assert narrative.text.startswith(
+        f"Attacking actions: {bundle.insight.metrics['attacking_actions']} · "
+        f"Team: {bundle.insight.team_id}"
+    )
+    assert f"Turnover-to-shot: {bundle.insight.metrics['transition_duration_ms'] / 1000:.3f}s" in narrative.text
+    assert narrative.evidence_event_ids == bundle.insight.evidence_event_ids
+
+
+@pytest.mark.parametrize("order", [
+    (),
+    (FactSlot.TEAM, FactSlot.TEAM, FactSlot.TRANSITION, FactSlot.ACTIONS),
+    (FactSlot.TEAM, FactSlot.TACTIC, FactSlot.TRANSITION),
+])
+def test_incomplete_or_duplicate_model_composition_rejected(order) -> None:
+    bundle = _bundle()
+    plan = AnalystPlan(
+        insight_id=bundle.insight.insight_id,
+        angle=Angle.TACTICAL,
+        evidence_event_ids=bundle.insight.evidence_event_ids,
+    )
+    decision = StorytellerSelection(
+        insight_id=plan.insight_id,
+        audience=Audience.ANALYST,
+        angle=plan.angle,
+        style=Style.TECHNICAL,
+        fact_order=order,
+    )
+    with pytest.raises(ValueError, match="each canonical fact exactly once"):
+        publish_controlled(decision, plan, bundle)
+
+
+def test_unknown_model_fact_slot_fails_schema_validation() -> None:
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        StorytellerSelection(
+            insight_id="test",
+            audience=Audience.CASUAL,
+            angle=Angle.TACTICAL,
+            style=Style.CONCISE,
+            fact_order=("invented_goal",),
+        )
