@@ -103,3 +103,7 @@ enable Foundry, Azure billing or historical match display in the public UI.
 ## Historical action projection edge cases
 
 Source events are all checked for chronological consistency, including types that are not projected. A historical `Shot` without `shot.end_location` remains a displayable shot with an unknown endpoint, not an invented destination; `shot.outcome.name == Goal` is retained as a source-backed annotation but is **not** yet replay score state or a canonical goal. Other event families remain explicitly counted as omitted. Historical extraction and score reconstruction are separate steps, and real corpus acceptance tests are still needed.
+
+## Extended synthetic replay baseline (initial deterministic version)
+
+The `extended_match` scenario contains **220 fictional canonical events across two halves** with seeded positions, periods, turnovers, passes, carries, shots and explicitly generated goals. It exercises the existing replay API without introducing a second transport contract. The `seeded_uncalibrated` evidence marker is mandatory: the fixture is **not calibrated to historical StatsBomb distributions** and is not equivalent to a full realistic simulation. Real Open Data ingestion, distribution estimation, validated lineup/staff metadata and referee/substitution state remain outstanding before issue #65 can be closed. Legacy six-event scenarios remain regression fixtures.
