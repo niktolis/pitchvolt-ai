@@ -7,8 +7,8 @@ import json
 import os
 from dataclasses import asdict
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles, RoleSettings
-from matchpulse.foundry_config import DEFAULT_TOOL_CALL_LIMIT, NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS
+from matchpulse.foundry_adapter import FoundryRoles
+from matchpulse.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
 from matchpulse.narrative import Audience, InMemoryEvidenceTool
 from matchpulse.narrative_stream import _bundles
 from matchpulse.scenarios import scenario
@@ -139,14 +139,8 @@ async def run(argv: list[str] | None = None) -> int:
         return 0
     if not args.acknowledge_billable_inference:
         raise SystemExit("Refusing live inference: add --acknowledge-billable-inference")
-    config = FoundryConfig(
-        project_endpoint=args.project_endpoint,
-        model_deployment=SMOKE_SETTINGS.analyst_deployment,
-        storyteller_model_deployment=SMOKE_SETTINGS.storyteller_deployment,
-        inference_explicitly_approved=True,  # isolated CLI ONLY, never SSE application
-        max_tool_calls_per_analyst=min(DEFAULT_TOOL_CALL_LIMIT, len(bundle.events)),
-        timeout_seconds_per_role=SMOKE_SETTINGS.timeout_seconds_per_role,
-        analyst_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.analyst_output_tokens),
+    config = isolated_foundry_config(
+        args.project_endpoint, evidence_event_count=len(bundle.events), inference_approved=True
     )
     # Workstation-specific credential avoids Managed Identity probing on macOS.
     # No token or credential content is logged or stored.
