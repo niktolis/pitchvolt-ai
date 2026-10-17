@@ -29,6 +29,8 @@ class HistoricalAction:
     location_y: float
     destination_x: float | None = None
     destination_y: float | None = None
+    source_outcome: str | None = None
+    is_goal: bool = False
 
 
 @dataclass(frozen=True)
@@ -75,14 +77,14 @@ def project_historical_actions(fixture: HistoricalFixture) -> HistoricalProjecti
     for event in fixture.records:
         kind = _name(event["type"])
         assert kind is not None  # validated by historical fixture loader
-        if kind not in _PROJECTIONS:
-            omitted[kind] = omitted.get(kind, 0) + 1
-            continue
         clock = _clock(event)
         period = event["period"]
         if period < previous_period or (period == previous_period and clock < previous_clock):
             raise ValueError("Historical projected events out of match clock order")
         previous_period, previous_clock = period, clock
+        if kind not in _PROJECTIONS:
+            omitted[kind] = omitted.get(kind, 0) + 1
+            continue
         team, player = _name(event.get("team")), _name(event.get("player"))
         location = event.get("location")
         if not team or not player or not isinstance(location, list):
@@ -91,19 +93,23 @@ def project_historical_actions(fixture: HistoricalFixture) -> HistoricalProjecti
         origin = statsbomb_to_point(location)
         destination = None
         field = _DESTINATIONS.get(kind)
-        if field:
-            detail = event.get(field)
-            if isinstance(detail, dict) and isinstance(detail.get("end_location"), list):
-                destination = statsbomb_to_point(detail["end_location"])
-            else:
-                omitted[kind] = omitted.get(kind, 0) + 1
-                continue
+        detail = event.get(field) if field else None
+        if field and isinstance(detail, dict) and isinstance(detail.get("end_location"), list):
+            destination = statsbomb_to_point(detail["end_location"])
+        elif field and kind != "Shot":
+            omitted[kind] = omitted.get(kind, 0) + 1
+            continue
+        # StatsBomb shots can lack end_location. The source shot still occurred;
+        # omitting it would hide match action. Do not fabricate a target point.
+        source_outcome = _name(detail.get("outcome")) if isinstance(detail, dict) else None
         actions.append(HistoricalAction(
             event_id=event["id"], index=event["index"], period=period,
             clock_ms=clock, team=team, player=player, kind=kind.lower(),
             location_x=origin.x, location_y=origin.y,
             destination_x=destination.x if destination else None,
             destination_y=destination.y if destination else None,
+            source_outcome=source_outcome,
+            is_goal=kind == "Shot" and source_outcome == "Goal",
         ))
     return HistoricalProjection(
         actions=tuple(actions), omitted_by_type=dict(sorted(omitted.items())),
