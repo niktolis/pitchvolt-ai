@@ -14,6 +14,7 @@ from matchpulse.agent_policies import (
     ANALYST_INSTRUCTIONS,
     EDITORIAL_INSTRUCTIONS,
     STORYTELLER_INSTRUCTIONS,
+    audience_instruction,
 )
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
@@ -228,6 +229,7 @@ class FoundryRoles:
     ) -> StorytellerSelection:
         response = await self._invoke("storyteller",
             f"Requested audience: {audience.value}\n"
+            f"Audience editorial profile:\n{audience_instruction(audience)}\n"
             f"Approved Analyst plan: {plan.model_dump_json()}\n"
             f"Verified team: {evidence.insight.team_id}; tactic: {evidence.insight.kind.value}; "
             f"duration_ms: {evidence.insight.metrics['transition_duration_ms']}; "
