@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
-import { BroadcastPitchScene } from "./BroadcastPitchScene";
 import type { MatchEvent } from "../api/types";
 import { displayName, eventLabel } from "../domain/presentation";
+import { BroadcastPitchScene } from "./BroadcastPitchScene";
 
 interface PitchProps {
   event: MatchEvent | null;
@@ -39,7 +39,12 @@ export function Pitch({ event, children }: PitchProps) {
 
       <div className="pitch">
         {hasWebGL ? <BroadcastPitchScene event={event} /> : null}
-        <svg className={hasWebGL ? "pitch-svg-fallback" : undefined} viewBox="0 0 105 68" role="img" aria-label={event ? eventLabel(event) : "Pitch"}>
+        <svg
+          className={hasWebGL ? "pitch-svg-fallback" : undefined}
+          viewBox="0 0 105 68"
+          role="img"
+          aria-label={event ? eventLabel(event) : "Pitch"}
+        >
           <defs>
             <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto">
               <path d="M0,0 L4,2 L0,4 Z" className="pitch-arrow" />
