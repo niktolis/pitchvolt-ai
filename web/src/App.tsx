@@ -201,8 +201,8 @@ export function App() {
             </div>
             <div className="broadcast-score-center">
               <span
-                  className="broadcast-score-unavailable"
-                  title="Score not available in event data"
+                className="broadcast-score-unavailable"
+                title="Score not available in event data"
                 >
                 – : –
               </span>
