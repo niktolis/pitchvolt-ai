@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import os
 from collections.abc import AsyncIterator
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -30,6 +31,15 @@ from matchpulse.workflow import (
 router = APIRouter()
 
 
+class NarrativeAuditStep(BaseModel):
+    """Sanitized orchestration metadata; never includes prompts or model output."""
+
+    role: str
+    action: str
+    duration_ms: float
+    reference: str | None = None
+
+
 class NarrativeUpdate(BaseModel):
     insight_id: str
     audience: Audience
@@ -37,6 +47,8 @@ class NarrativeUpdate(BaseModel):
     text: str
     source: str
     evidence_event_ids: list[str]
+    verification: Literal["controlled", "deterministic_fallback"] | None = None
+    trace: list[NarrativeAuditStep] = []
 
 
 class LocalAnalyst:
@@ -110,6 +122,7 @@ async def narrative_updates(name: str, audience: Audience) -> AsyncIterator[Narr
         else None
     )
     for insight_id in bundles:
+        trace: list[NarrativeAuditStep] = []
         try:
             # A slow or failing role must never break finite SSE completion.
             # Cancellation of a disconnected client is intentionally not swallowed.
@@ -117,6 +130,15 @@ async def narrative_updates(name: str, audience: Audience) -> AsyncIterator[Narr
                 raise FoundryDisabled("Provider is not approved or configured")
             result = await asyncio.wait_for(orchestrator.narrate(insight_id, audience), timeout=2)
             narrative = result.narrative
+            trace = [
+                NarrativeAuditStep(
+                    role=step.role,
+                    action=step.action,
+                    duration_ms=step.duration_ms,
+                    reference=step.reference,
+                )
+                for step in result.trace
+            ]
             source = (
                 controlled_source
                 if result.source == "controlled"
@@ -134,6 +156,12 @@ async def narrative_updates(name: str, audience: Audience) -> AsyncIterator[Narr
             text=narrative.text,
             source=source,
             evidence_event_ids=list(narrative.evidence_event_ids),
+            verification=(
+                "deterministic_fallback"
+                if source == "deterministic_fallback"
+                else "controlled"
+            ),
+            trace=trace,
         )
 
 
