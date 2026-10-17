@@ -9,7 +9,15 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from random import Random
 
-from matchpulse.events import EventType, MatchEvent, MatchMetadata, Outcome, Point, Provenance, validate_stream
+from matchpulse.events import (
+    EventType,
+    MatchEvent,
+    MatchMetadata,
+    Outcome,
+    Point,
+    Provenance,
+    validate_stream,
+)
 from matchpulse.simulation import MATCH
 
 EXTENDED_SCENARIO = "extended_match"
@@ -78,7 +86,7 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
                 outcome=outcome,
                 location=Point(x=x, y=y),
                 destination=destination,
-                possession_team_id=team if kind != EventType.TURNOVER else team,
+                possession_team_id=team,
                 evidence=evidence,
                 provenance=provenance,
             ))
