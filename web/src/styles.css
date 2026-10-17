@@ -1399,3 +1399,146 @@ body {
 .pitch-panel .pitch-note {
   color: #91a594;
 }
+
+/* Source-backed fixture header and restrained stadium atmosphere.
+   The approved reference is the composition; club branding is not invented. */
+body {
+  background: #060f0b;
+}
+body::before {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 300px 240px at 0% 0%, rgba(224, 255, 190, 0.18), transparent 78%),
+    radial-gradient(ellipse 300px 240px at 100% 0%, rgba(224, 255, 190, 0.18), transparent 78%),
+    radial-gradient(ellipse at 50% 116%, rgba(48, 115, 26, 0.46), transparent 63%),
+    linear-gradient(180deg, #030d09 0%, #060f0b 48%, #081a0e 100%);
+}
+body::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 19vh;
+  opacity: 0.28;
+  background:
+    repeating-radial-gradient(ellipse at 50% 120%, transparent 0 2px, rgba(180, 255, 127, 0.13) 3px 4px),
+    radial-gradient(ellipse at 50% 100%, #326128, transparent 73%);
+  mask-image: linear-gradient(transparent, black);
+}
+.app-shell {
+  position: relative;
+  z-index: 1;
+}
+.broadcast-scoreboard {
+  isolation: isolate;
+  min-height: 170px;
+  background:
+    radial-gradient(ellipse at 3% 46%, rgba(162, 255, 73, 0.22), transparent 22%),
+    radial-gradient(ellipse at 97% 46%, rgba(162, 255, 73, 0.23), transparent 22%),
+    linear-gradient(180deg, #010905 0%, #071910 68%, #020c08 100%);
+}
+.broadcast-scoreboard::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  inset: 0;
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse 90px 45px at 4% 70%, rgba(213, 255, 150, 0.75), transparent 78%),
+    radial-gradient(ellipse 110px 54px at 96% 70%, rgba(213, 255, 150, 0.75), transparent 78%),
+    repeating-linear-gradient(101deg, transparent 0 37px, rgba(132, 216, 88, 0.025) 38px 39px, transparent 40px 77px);
+}
+.broadcast-scoreboard::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  opacity: 0.33;
+  pointer-events: none;
+  background:
+    conic-gradient(from 102deg at 3% 72%, transparent 0deg, rgba(179, 255, 105, 0.4) 13deg, transparent 35deg),
+    conic-gradient(from 234deg at 97% 72%, transparent 0deg, rgba(179, 255, 105, 0.4) 13deg, transparent 35deg);
+}
+.broadcast-score-content,
+.broadcast-scoreboard .broadcast-live {
+  position: relative;
+  z-index: 1;
+}
+.broadcast-score-content {
+  gap: 24px;
+}
+.broadcast-fixture-team {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 20px;
+}
+.broadcast-fixture-team > strong {
+  min-width: 0;
+  color: var(--pv-text);
+  font-size: clamp(17px, 2vw, 28px);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.broadcast-fixture-home {
+  justify-content: flex-end;
+  text-align: right;
+}
+.broadcast-fixture-away {
+  justify-content: flex-start;
+  text-align: left;
+}
+.broadcast-team-shield {
+  display: grid;
+  flex: 0 0 auto;
+  width: 54px;
+  height: 61px;
+  place-items: center;
+  color: var(--pv-text);
+  border: 2px solid rgba(244, 255, 236, 0.7);
+  border-radius: 14px 14px 18px 18px;
+  clip-path: polygon(5% 0, 95% 0, 100% 69%, 50% 100%, 0 69%);
+  font-weight: 900;
+  font-size: 23px;
+  box-shadow: 0 0 20px rgba(182, 230, 75, 0.13);
+}
+.shield-home {
+  background: linear-gradient(155deg, #52b9dd, #155071);
+}
+.shield-away {
+  background: linear-gradient(155deg, #dd6446, #8b1b24);
+}
+.broadcast-score-center {
+  flex: 0 0 auto;
+  min-width: 125px;
+}
+@media (max-width: 720px) {
+  .broadcast-fixture-team {
+    gap: 6px;
+  }
+  .broadcast-fixture-team > strong {
+    font-size: 12px;
+  }
+  .broadcast-team-shield {
+    width: 25px;
+    height: 29px;
+    border-width: 1px;
+    font-size: 12px;
+    border-radius: 5px 5px 8px 8px;
+  }
+  .broadcast-score-content {
+    gap: 8px;
+  }
+  .broadcast-score-center {
+    min-width: 72px;
+  }
+}
