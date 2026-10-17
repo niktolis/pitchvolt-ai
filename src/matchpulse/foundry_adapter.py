@@ -16,6 +16,7 @@ from matchpulse.agent_policies import (
     STORYTELLER_INSTRUCTIONS,
     audience_instruction,
 )
+from matchpulse.evidence_links import LinkAssessment, assess_evidence_links
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
 from matchpulse.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
@@ -140,6 +141,7 @@ class FoundryRoles:
         self.last_shadow_assessment: ShadowAssessment | None = None
         self.last_authored_candidate: NarrativeCandidate | None = None
         self.last_grounding_result: GroundingResult | None = None
+        self.last_link_assessment: LinkAssessment | None = None
         instructions = {
             "analyst": ANALYST_INSTRUCTIONS,
             "storyteller": STORYTELLER_INSTRUCTIONS,
@@ -241,14 +243,18 @@ class FoundryRoles:
             "when unsure. Separately propose authored_headline and authored_text using "
             "ONLY these verified facts. This proposal will NOT be published.\n"
             f"Approved headline/text pairs: {approved_phrasings(evidence)!r}. "
-            "Choose one complete pair verbatim; do not add qualifiers or extra sentences.",
+            "For the existing bounded-grammar route, choose one complete pair verbatim. "
+            "Alternatively, write ORIGINAL shadow-only prose; in that case include "
+            "evidence_links for each canonical claim, using exact prose excerpts and "
+            "only the provided event IDs. These links are NOT proof of semantic truth "
+            "and cannot authorize publication.",
             StorytellerSelection,
         )
         if response.value is None:
             raise ValueError("Storyteller returned no structured output")
         selection = StorytellerSelection.model_validate(response.value)
         self.role_decisions["storyteller"] = selection.model_dump(
-            mode="json", exclude={"authored_headline", "authored_text"}
+            mode="json", exclude={"authored_headline", "authored_text", "evidence_links"}
         )
         if selection.authored_headline and selection.authored_text:
             insight = evidence.insight
@@ -273,4 +279,8 @@ class FoundryRoles:
             self.last_grounding_result = assess_grounded_prose(
                 self.last_authored_candidate, evidence
             )
+            if selection.evidence_links is not None:
+                self.last_link_assessment = assess_evidence_links(
+                    self.last_authored_candidate, evidence, selection.evidence_links
+                )
         return selection

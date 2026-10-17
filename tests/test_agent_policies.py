@@ -14,7 +14,7 @@ from matchpulse.narrative import Audience
 
 
 def test_role_policy_contracts() -> None:
-    assert POLICY_VERSION == "grounded-v2"
+    assert POLICY_VERSION == "linked-shadow-v1"
     for policy in (ANALYST_INSTRUCTIONS, STORYTELLER_INSTRUCTIONS, EDITORIAL_INSTRUCTIONS):
         assert len(policy.strip()) > 400
         assert CORE_POLICY in policy

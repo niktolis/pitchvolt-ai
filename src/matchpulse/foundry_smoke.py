@@ -171,6 +171,10 @@ async def run(argv: list[str] | None = None) -> int:
                     asdict(roles.last_grounding_result)
                     if roles.last_grounding_result is not None else None
                 ),
+                "evidence_link_assessment": (
+                    asdict(roles.last_link_assessment)
+                    if roles.last_link_assessment is not None else None
+                ),
                 "shadow_assessment": (
                     roles.last_shadow_assessment.model_dump(mode="json")
                     if roles.last_shadow_assessment is not None else None
