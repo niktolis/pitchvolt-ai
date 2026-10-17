@@ -157,7 +157,9 @@ export function App() {
         <header className="broadcast-navigation">
           <div className="broadcast-brand">
             <img className="brand-logo" src="/pitchvolt-mark.svg" alt="" />
-            <strong>PITCHVOLT <span>AI</span></strong>
+            <strong>
+              PITCHVOLT <span>AI</span>
+            </strong>
           </div>
           <nav className="broadcast-primary-nav" aria-label="Product navigation">
             <span className="current" aria-current="page">Live</span>
@@ -168,11 +170,15 @@ export function App() {
           <span className="broadcast-preview-label">SYNTHETIC REPLAY</span>
         </header>
         <div className="broadcast-scoreboard">
-          <span className={`broadcast-live state-${streamState}`}><span className="live-light" /> {streamState}</span>
+          <span className={`broadcast-live state-${streamState}`}>
+            <span className="live-light" /> {streamState}
+          </span>
           <div className="broadcast-score-content">
             <strong>Synthetic match</strong>
             <div className="broadcast-score-center">
-              <span className="broadcast-score-unavailable" aria-label="Score unavailable">– : –</span>
+              <span className="broadcast-score-unavailable" aria-label="Score unavailable">
+                – : –
+              </span>
               <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
             </div>
             <strong>Event replay</strong>
@@ -272,61 +278,74 @@ export function App() {
 
         <Pitch event={selectedEvent} />
         <section className="panel key-moment-panel">
-          <div className="panel-heading"><h2>Key Moment</h2></div>
-          <div className="key-moment-scene" aria-hidden="true"><span className="key-moment-ball" /></div>
+          <div className="panel-heading">
+            <h2>Key Moment</h2>
+          </div>
+          <div className="key-moment-scene" aria-hidden="true">
+            <span className="key-moment-ball" />
+          </div>
           {selectedEvent ? (
             <div className="key-moment-copy">
               <strong>{clockLabel(selectedEvent.clock_ms)} · {eventLabel(selectedEvent)}</strong>
               <p>{displayName(selectedEvent.player_id)} · {displayName(selectedEvent.team_id)}</p>
               <span>Source-backed synthetic match event</span>
             </div>
-          ) : <p className="empty-state">Waiting for the next verified match event.</p>}
-          <button className="key-moment-button" type="button" onClick={() => {
-            const message = messages.find((item) => isTacticalInsight(item));
-            if (message) void inspect(message);
-          }} disabled={!messages.some(isTacticalInsight)}>View Analysis →</button>
+           ) : (
+            <p className="empty-state">Waiting for the next verified match event.</p>
+          )}
+          <button
+            className="key-moment-button"
+            type="button"
+            onClick={() => {
+              const message = messages.find((item) => isTacticalInsight(item));
+              if (message) void inspect(message);
+            }}
+            disabled={!messages.some(isTacticalInsight)}
+          >
+            View Analysis →
+          </button>
         </section>
         <div className="broadcast-detail-panels">
-        <EventTimeline messages={messages} selectedId={selectedId} onSelect={inspect} />
+          <EventTimeline messages={messages} selectedId={selectedId} onSelect={inspect} />
 
-        <section className="panel evidence-panel">
-          <div className="panel-heading">
-            <div>
-              <span className="eyebrow">Evidence</span>
-              <h2>Why this claim exists</h2>
+          <section className="panel evidence-panel">
+            <div className="panel-heading">
+              <div>
+                <span className="eyebrow">Evidence</span>
+                <h2>Why this claim exists</h2>
+              </div>
+              <span className="count-badge">{evidence?.events.length ?? 0}</span>
             </div>
-            <span className="count-badge">{evidence?.events.length ?? 0}</span>
-          </div>
 
-          {evidence ? (
-            <div className="evidence-list">
-              {evidence.events.map((event) => (
-                <button
-                  key={event.event_id}
-                  type="button"
-                  onClick={() => {
-                    const message = messages.find(
-                      (candidate) =>
-                        isMatchEvent(candidate) && candidate.payload.event_id === event.event_id,
-                    );
-                    if (message) setSelectedId(message.id);
-                  }}
-                >
-                  <span>{clockLabel(event.clock_ms)}</span>
-                  <strong>{event.event_type}</strong>
-                  <small>{displayName(event.player_id)}</small>
-                </button>
-              ))}
-              <p className="evidence-footnote">
-                Source IDs and metrics are returned by the deterministic evidence endpoint.
+            {evidence ? (
+              <div className="evidence-list">
+                {evidence.events.map((event) => (
+                  <button
+                    key={event.event_id}
+                    type="button"
+                    onClick={() => {
+                      const message = messages.find(
+                        (candidate) =>
+                          isMatchEvent(candidate) && candidate.payload.event_id === event.event_id,
+                      );
+                      if (message) setSelectedId(message.id);
+                    }}
+                  >
+                    <span>{clockLabel(event.clock_ms)}</span>
+                    <strong>{event.event_type}</strong>
+                    <small>{displayName(event.player_id)}</small>
+                  </button>
+                ))}
+                <p className="evidence-footnote">
+                  Source IDs and metrics are returned by the deterministic evidence endpoint.
+                </p>
+              </div>
+            ) : (
+              <p className="empty-state">
+                Select a tactical insight in the timeline to inspect its contributing events.
               </p>
-            </div>
-          ) : (
-            <p className="empty-state">
-              Select a tactical insight in the timeline to inspect its contributing events.
-            </p>
-          )}
-        </section>
+            )}
+          </section>
         </div>
       </section>
 
