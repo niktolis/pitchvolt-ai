@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -27,7 +28,7 @@ class ShadowAssessment(BaseModel):
     insight_id: str
     verified_claim_count: int
     evidence_event_count: int
-    publishable: bool = False
+    publishable: Literal[False] = False
 
 
 def assess_candidate(candidate: NarrativeCandidate, evidence: EvidenceBundle) -> ShadowAssessment:
