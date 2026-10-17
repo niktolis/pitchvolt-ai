@@ -95,7 +95,7 @@ def main() -> None:
     if not args.execute_download:
         print("Dry run: would fetch", remote)
         return
-    with urlopen(remote, timeout=30) as response:  # noqa: S310 - exact trusted host
+    with urlopen(remote, timeout=30) as response:
         raw = response.read(30_000_001)
     if len(raw) > 30_000_000:
         raise ValueError("Fixture exceeds bounded 30 MB limit")
