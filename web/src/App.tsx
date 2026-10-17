@@ -167,6 +167,20 @@ export function App() {
     [scenario],
   );
 
+  const togglePlayback = useCallback(() => {
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (cursorMs >= bounds.end) {
+      setCursorMs(bounds.start);
+      setSelectedId(null);
+      setEvidence(null);
+    }
+    setPlaying(true);
+    setStreamState("live");
+  }, [playing, cursorMs, bounds.start, bounds.end]);
+
   const matchClock = cursorMs;
 
   return (
@@ -262,7 +276,12 @@ export function App() {
           )}
         </section>
 
-        <Pitch event={selectedEvent}>
+        <Pitch
+          event={selectedEvent}
+          playing={playing}
+          canReplay={messages.length > 0}
+          onTogglePlayback={togglePlayback}
+        >
           <EventTimeline messages={visibleMessages} selectedId={selectedId} onSelect={inspect} />
           <section className="control-bar" aria-label="Replay controls">
             <label>
@@ -302,10 +321,7 @@ export function App() {
               <legend className="visually-hidden">Timeline playback controls</legend>
               <button
                 type="button"
-                onClick={() => {
-                  setPlaying((p) => !p);
-                  setStreamState("live");
-                }}
+                onClick={togglePlayback}
                 disabled={!messages.length}
               >
                 {playing ? "Pause" : "Play"}
