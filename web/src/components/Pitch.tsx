@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
 import type { MatchEvent } from "../api/types";
 import { displayName, eventLabel } from "../domain/presentation";
 
 interface PitchProps {
   event: MatchEvent | null;
+  children?: ReactNode;
 }
 
 function pctX(value: number): number {
@@ -13,7 +15,7 @@ function pctY(value: number): number {
   return (value / 68) * 100;
 }
 
-export function Pitch({ event }: PitchProps) {
+export function Pitch({ event, children }: PitchProps) {
   const destination = event?.destination;
 
   return (
@@ -107,6 +109,7 @@ export function Pitch({ event }: PitchProps) {
         Event coordinates are source-backed. The highlighted player is a stylized active actor, not
         a reconstructed formation.
       </p>
+      {children}
     </section>
   );
 }
