@@ -13,7 +13,7 @@ from typing import Protocol
 from pydantic import BaseModel, ConfigDict, Field
 
 from matchpulse.events import MatchEvent
-from matchpulse.intelligence import TacticalInsight
+from matchpulse.intelligence import InsightKind, TacticalInsight
 
 
 class Audience(StrEnum):
@@ -166,19 +166,28 @@ def bounded_deterministic_fallback(
 ) -> VerifiedNarrative:
     """Only canonical structured facts are rendered; no model pretence."""
     insight = evidence.insight
-    secs = insight.metrics["transition_duration_ms"] / 1000
-    actions = insight.metrics["attacking_actions"]
+    sustained = insight.kind == InsightKind.SUSTAINED_POSSESSION
+    duration_key = "sequence_duration_ms" if sustained else "transition_duration_ms"
+    count_key = "passes" if sustained else "attacking_actions"
+    secs = insight.metrics[duration_key] / 1000
+    actions = insight.metrics[count_key]
     if audience == Audience.CASUAL:
-        text = f"{insight.team_id}: {insight.kind.value.replace('_', ' ')} after a turnover."
+        text = (
+            f"{insight.team_id}: sustained possession with {actions} passes."
+            if sustained else
+            f"{insight.team_id}: {insight.kind.value.replace('_', ' ')} after a turnover."
+        )
     elif audience == Audience.ANALYST:
         text = (
             f"{insight.team_id}: {insight.kind.value}; "
-            f"turnover-to-shot {secs:.3f}s; attacking actions {actions}."
+            f"{'possession sequence' if sustained else 'turnover-to-shot'} "
+            f"{secs:.3f}s; {'passes' if sustained else 'attacking actions'} {actions}."
         )
     else:
         text = (
             f"{insight.team_id}: {insight.kind.value.replace('_', ' ')}; "
-            f"transition {secs:.3f}s across {actions} attacking actions."
+            f"{'possession sequence' if sustained else 'transition'} {secs:.3f}s "
+            f"across {actions} {'passes' if sustained else 'attacking actions'}."
         )
     return VerifiedNarrative(
         insight_id=insight.insight_id,
@@ -190,12 +199,12 @@ def bounded_deterministic_fallback(
             Claim(kind=ClaimKind.INSIGHT_KIND, key="kind", value=insight.kind.value),
             Claim(kind=ClaimKind.TEAM_ID, key="team_id", value=insight.team_id),
             Claim(
-                kind=ClaimKind.METRIC, key="transition_duration_ms",
-                value=insight.metrics["transition_duration_ms"],
+                kind=ClaimKind.METRIC, key=duration_key,
+                value=insight.metrics[duration_key],
             ),
             Claim(
-                kind=ClaimKind.METRIC, key="attacking_actions",
-                value=insight.metrics["attacking_actions"],
+                kind=ClaimKind.METRIC, key=count_key,
+                value=insight.metrics[count_key],
             ),
         ),
     )
