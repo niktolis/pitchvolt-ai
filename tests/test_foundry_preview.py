@@ -44,7 +44,15 @@ def test_preview_requires_private_token_endpoint_and_is_single_use(monkeypatch) 
     with TestClient(app) as client:
         assert client.get(url).status_code == 403
         assert client.get(url, headers={"X-MatchPulse-Inference-Token": "bad"}).status_code == 403
-        assert client.get(url, headers={"X-MatchPulse-Inference-Token": token}).status_code == 200
+        first = client.get(url, headers={"X-MatchPulse-Inference-Token": token})
+        assert first.status_code == 200
+        assert first.headers["content-type"].startswith("text/event-stream")
+        assert "event: narrative_update\\ndata: " in first.text
+        assert "\\n\\nevent: narrative_complete\\ndata: {}\\n\\n" in first.text
+        assert "\\\\n" not in first.text
+        import json
+        data_line = next(line for line in first.text.splitlines() if line.startswith("data: {") and line != "data: {}")
+        assert json.loads(data_line.removeprefix("data: "))["source"] == "foundry_controlled"
         result = client.get(url, headers={"X-MatchPulse-Inference-Token": token})
         assert result.status_code == 429
     assert observed == [("high_press", Audience.ANALYST)]
