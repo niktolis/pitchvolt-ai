@@ -56,9 +56,12 @@ def prepare_fixture(
         event_sha256=hashlib.sha256(content).hexdigest(),
         event_count=len(parsed),
         match_duration_ms=last_clock,
-        event_coverage="full_match" if any(
-            isinstance(e, dict) and e.get("type", {}).get("name") == "Half End"
-            and e.get("period") == 2 for e in parsed
+        event_coverage="full_match" if all(
+            any(
+                isinstance(e, dict) and isinstance(e.get("type"), dict)
+                and e["type"].get("name") == "Half End" and e.get("period") == period
+                for e in parsed
+            ) for period in (1, 2)
         ) else "excerpt",
         source_url=source,
         attribution=_ATTRIBUTION,
