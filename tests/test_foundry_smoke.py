@@ -24,3 +24,13 @@ def test_smoke_uses_single_real_synthetic_bundle() -> None:
     assert tuple(event.event_id for event in bundle.events) == (
         bundle.insight.evidence_event_ids
     )
+
+
+def test_live_smoke_explicitly_uses_azure_cli_credential_source() -> None:
+    from pathlib import Path
+
+    adapter = Path(foundry_smoke.__file__).with_name("foundry_adapter.py").read_text()
+    smoke = Path(foundry_smoke.__file__).read_text()
+    assert "credential: object | None = None" in adapter
+    assert "credential=AzureCliCredential()" in smoke
+    assert "DefaultAzureCredential()" not in smoke

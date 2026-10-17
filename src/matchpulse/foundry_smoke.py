@@ -69,11 +69,18 @@ async def run(argv: list[str] | None = None) -> int:
         max_tool_calls_per_analyst=min(12, len(bundle.events)),
         timeout_seconds_per_role=15.0,
     )
-    roles = FoundryRoles(config)
+    # Workstation-specific credential avoids Managed Identity probing on macOS.
+    # No token or credential content is logged or stored.
+    from azure.identity import AzureCliCredential
+
+    print('AUTH: using Azure CLI credential for isolated smoke test', flush=True)
+    roles = FoundryRoles(config, credential=AzureCliCredential())
+    print('ANALYST: starting first approved role invocation', flush=True)
     tool = InMemoryEvidenceTool(lambda insight_id: bundle)
     orchestrator = Orchestrator(tool, roles, roles)
     try:
         result = await orchestrator.narrate(bundle.insight.insight_id, Audience.ANALYST)
+        print('RESULT: role orchestration returned', flush=True)
         report = {
             "source": result.source,
             "rejection_reason": result.rejection_reason,
