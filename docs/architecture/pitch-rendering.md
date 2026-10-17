@@ -53,3 +53,21 @@ Do not encode the reference screenshot itself as a fake interactive pitch.
 Acceptance requires desktop and mobile screenshots from the **verified exact
 deployed SHA** compared with the approved Application Preview. Passing CI
 and revision checks is necessary but never sufficient evidence of fidelity.
+
+## Position provenance and 22-player limitation
+
+A replay event contains the reported action actor coordinate, **not an observed
+22-player tracking snapshot**. Fictional roster identities or nominal lineup
+metadata are not a substitute for timestamped positions. Do not distribute
+generated 4-3-3 slots or extrapolate static players as if they were observed.
+Until an independently verified, time-aligned multi-player source (such as a
+StatsBomb 360 freeze-frame) is ingested, show only the event's known actor,
+or no player when no coordinate is available. A freeze-frame may legitimately
+contain fewer than 22 visible players: preserve its actual membership and
+coverage, rather than padding missing players. Its source identifiers, time,
+coordinate system, and availability must remain auditable.
+
+The replay cursor is the single time boundary shared by pitch, tactical cards,
+evidence, and narrative. Snapshot and SSE payload IDs must agree. Seek/rewind
+must not expose events or insights from a future cursor, and synthetic event
+coordinates must never be identified as real-match player tracking.
