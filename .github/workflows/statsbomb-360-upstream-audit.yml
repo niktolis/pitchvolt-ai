@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/statsbomb-360-upstream-audit.yml
+      - src/matchpulse/providers/statsbomb_360.py
   workflow_dispatch:
 permissions:
   contents: read
