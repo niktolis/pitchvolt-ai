@@ -1,8 +1,7 @@
 """Repeatable two-half football-like replay fixtures for navigation testing.
 
-These sequences are fictional test data, not StatsBomb observations or a
-statistically calibrated football simulator. Source calibration is a separate
-acceptance criterion of issue #65.
+These sequences are original fictional test data, not historical observations.
+Only broad action frequencies are calibrated to one pinned StatsBomb match.
 """
 from __future__ import annotations
 
@@ -19,6 +18,7 @@ from matchpulse.events import (
     validate_stream,
 )
 from matchpulse.simulation import MATCH
+from matchpulse.statsbomb_reference import calibrated_action_quotas
 
 EXTENDED_SCENARIO = "extended_match"
 EVENTS_PER_HALF = 110
@@ -37,6 +37,13 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
     start = datetime(2026, 1, 1, tzinfo=UTC)
     teams = (match.home_team_id, match.away_team_id)
     events: list[MatchEvent] = []
+    action_quotas = calibrated_action_quotas(EVENTS_PER_HALF * 2 - 4)
+    planned = [kind for kind, count in action_quotas.items() for _ in range(count)]
+    rng.shuffle(planned)
+    for index in (20, 75, 145, 200):
+        planned.insert(index - 1, EventType.TURNOVER)
+    assert len(planned) == EVENTS_PER_HALF * 2
+    goal_recorded = False
     for half in (1, 2):
         for position in range(EVENTS_PER_HALF):
             index = len(events) + 1
@@ -46,19 +53,14 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             clock = (half - 1) * HALF_DURATION_MS + offset
             team = teams[(position // 8 + half - 1) % 2]
             phase = position % 8
-            kind = (
-                EventType.TURNOVER if phase == 0 else
-                EventType.CARRY if phase in (1, 4) else
-                EventType.SHOT if phase == 7 else EventType.PASS
-            )
-            if kind == EventType.TURNOVER:
-                outcome = Outcome.SUCCESS
-            elif kind == EventType.SHOT:
-                outcome = Outcome.SUCCESS if (index + seed) % 41 == 0 else Outcome.FAILURE
-                if outcome == Outcome.SUCCESS:
+            kind = planned[index - 1]
+            outcome = Outcome.SUCCESS
+            if kind == EventType.SHOT:
+                if not goal_recorded:
                     kind = EventType.GOAL
-            else:
-                outcome = Outcome.SUCCESS
+                    goal_recorded = True
+                else:
+                    outcome = Outcome.FAILURE
             x = rng.randrange(18, 92) if kind not in (EventType.SHOT, EventType.GOAL) else rng.randrange(81, 103)
             y = rng.randrange(8, 61)
             destination = (
@@ -68,7 +70,7 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
                 if kind in (EventType.PASS, EventType.CARRY) else None
             )
             evidence: dict[str, str | int | float | bool] = {
-                "fixture": "seeded_uncalibrated",
+                "fixture": "statsbomb_reference_weighted_actions",
                 "phase": phase,
             }
             if kind == EventType.TURNOVER:
