@@ -4,6 +4,7 @@ import type { ReplayMessage } from "../api/types";
 import {
   atOrBefore,
   clampCursor,
+  isEvidenceVisible,
   latestAtCursor,
   matchBounds,
   visibleNarrativeIds,
@@ -35,6 +36,8 @@ describe("canonical replay cursor", () => {
     expect(back.event?.event_id).toBe("event-1");
     expect(back.insight).toBeNull();
     expect(visibleNarrativeIds(timeline, 3_000).size).toBe(0);
+    expect(isEvidenceVisible(timeline, 3_000, "insight-3")).toBe(false);
+    expect(isEvidenceVisible(timeline, 5_000, "insight-3")).toBe(true);
   });
 
   it("shows tied action and insight only at their exact publication time", () => {
