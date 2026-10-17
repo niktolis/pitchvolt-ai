@@ -55,3 +55,9 @@ The local smoke report now includes allowlisted role decisions, per-role elapsed
 Acceptance after merge: one locally approved run returns exactly two invocations, six evidence tool IDs, the controlled verified narrative, sanitized Analyst/Storyteller decisions, an unpublishable shadow assessment if both optional authored fields are returned, and clear usage availability status. An absent candidate or absent usage must be reported as incomplete evidence, **not** presented as successfully validated. The existing acceptance does not prove prose semantic entailment or production readiness.
 
 Each subsequent product milestone follows one substantial PR → green checks → owner review/merge → independently authorized local live experiment. No inference authorization is implied by merging code.
+
+## Schema failure diagnosis after the second live smoke
+
+The second, explicitly approved live attempt failed in the Analyst SDK path with `ChatClientException` caused by a Pydantic `ValidationError`; it did not confirm a Storyteller invocation or model-authored shadow candidate. The error alone cannot identify a specific invalid field, whether the SDK validated the provider envelope or the generated structured response, or whether tokens were billed. Do not infer those facts from the exception class.
+
+The smoke failure report now records the last attempted role, number of attempted role invocations, completed roles, and only allowlisted Pydantic error type codes plus the number of location segments (not field paths, input values, exception messages or raw responses). An unrecognized SDK validation layout will still produce an empty diagnostic list. This is diagnostic-only; it does not relax schemas, bypass verification, retry, or authorize additional Azure inference. Offline tests verify the diagnostic redaction contract. Any further live test requires separate operator approval and a reviewed PR.
