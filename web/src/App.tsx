@@ -203,7 +203,7 @@ export function App() {
               <span
                 className="broadcast-score-unavailable"
                 title="Score not available in event data"
-                >
+              >
                 – : –
               </span>
               <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
