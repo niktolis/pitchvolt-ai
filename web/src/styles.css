@@ -1328,3 +1328,26 @@ body {
     margin-left: 0;
   }
 }
+
+/* Source-backed WebGL pitch replaces the flat schematic when supported. */
+.broadcast-webgl {
+  width: 100%;
+  aspect-ratio: 105 / 68;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 7px;
+}
+.broadcast-webgl canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pitch > .pitch-svg-fallback {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .broadcast-webgl canvas {
+    animation: none;
+  }
+}
