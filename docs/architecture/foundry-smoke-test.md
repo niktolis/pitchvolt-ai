@@ -83,3 +83,7 @@ Installed Agent Framework Core 1.22.0 declares `ChatOptions.max_tokens` and `res
 ### Third live smoke and offline response diagnostics
 
 The 17 Oct Analyst request returned in ~5.3 seconds without a structured value or model-initiated evidence tool calls. The deterministic fallback correctly rejected the ungrounded result and the Storyteller was not invoked. SDK response metadata (allowed completion status/finish reason, message count, structured-value presence and optional token counters) is now reported without exposing model output, raw payload or credentials. Absence of usage counters must not be interpreted as zero billing. Inspect this metadata before considering a change to the Analyst token budget. Neither this diagnostics update nor a local dry run authorizes more billable inference.
+
+### Isolated Analyst budget experiment (not a live-test approval)
+
+For a future separately approved smoke attempt, the CLI now specifies 512 output tokens for the GPT-5 mini Analyst instead of the default 256, while the Storyteller and production defaults remain at 256. The previous Analyst returned no structured value and no tool calls, but token exhaustion has **not** been proven. GPT-5 reasoning tokens may consume part of the response budget. The larger cap may increase cost or encounter the deployment's 1,000 TPM throughput constraints; do not increase Azure quota or execute inference without separate operator approval. The CLI dry run displays the proposed budget without Azure requests.

@@ -11,6 +11,7 @@ def test_smoke_dry_run_requires_no_sdk_or_endpoint(capsys) -> None:
     output = capsys.readouterr().out
     assert '"mode": "DRY_RUN"' in output
     assert "No Azure credentials loaded" in output
+    assert "\"analyst_max_output_tokens\": 512" in output
 
 
 def test_smoke_requires_explicit_two_part_live_opt_in() -> None:
@@ -56,3 +57,14 @@ def test_unrecognized_provider_error_code_suppressed() -> None:
     report = foundry_smoke.sanitized_failure(exc)
     assert report["safe_error_code"] is None
     assert "sensitive" not in str(report)
+
+
+def test_smoke_token_budget_is_isolated_from_production_defaults() -> None:
+    from matchpulse.foundry_config import FoundryConfig, RoleSettings
+
+    assert foundry_smoke.SMOKE_ANALYST_OUTPUT_TOKENS == 512
+    assert RoleSettings().max_output_tokens == 256
+    assert FoundryConfig(
+        project_endpoint="https://example.services.ai.azure.com/api/projects/sample",
+        model_deployment="example",
+    ).settings_for("analyst").max_output_tokens == 256
