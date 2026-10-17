@@ -9,8 +9,11 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from matchpulse.narrative import (
-    Claim, EvidenceBundle, NarrativeCandidate, NarrativeRejection,
-    VerifiedNarrative, verify_claims,
+    EvidenceBundle,
+    NarrativeCandidate,
+    NarrativeRejection,
+    VerifiedNarrative,
+    verify_claims,
 )
 
 
@@ -39,14 +42,14 @@ def approved_phrasings(bundle: EvidenceBundle) -> tuple[tuple[str, str, str], ..
         (
             "transition_first",
             headline,
-            f"{team} completed a {seconds:g}-second turnover-to-shot transition "
-            f"following a {tactic} sequence with {actions} attacking actions.",
+            (f"{team} completed a {seconds:g}-second turnover-to-shot transition "
+             f"following a {tactic} sequence with {actions} attacking actions."),
         ),
         (
             "actions_first",
             headline,
-            f"{team} produced {actions} attacking actions in a {tactic} sequence, "
-            f"with {seconds:g} seconds from turnover to shot.",
+            (f"{team} produced {actions} attacking actions in a {tactic} sequence, "
+             f"with {seconds:g} seconds from turnover to shot."),
         ),
     )
 
