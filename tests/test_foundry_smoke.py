@@ -75,3 +75,38 @@ def test_smoke_token_budget_is_isolated_from_production_defaults() -> None:
         project_endpoint="https://example.services.ai.azure.com/api/projects/sample",
         model_deployment="example",
     ).settings_for("analyst").max_output_tokens == 256
+
+
+def test_validation_diagnostics_strips_secret_values_and_messages() -> None:
+    from pydantic import BaseModel, ValidationError
+
+    class TestSchema(BaseModel):
+        number: int
+
+    secret = "sensitive-provider-payload"
+    with pytest.raises(ValidationError) as caught:
+        TestSchema.model_validate({"number": secret})
+    report = foundry_smoke.sanitized_failure(caught.value)
+    assert report["validation_diagnostics"] == [
+        {"type": "int_parsing", "location_depth": 1}
+    ]
+    assert secret not in str(report)
+    assert "number" not in str(report)
+
+
+def test_wrapped_pydantic_error_exposes_only_safe_category() -> None:
+    from pydantic import BaseModel, ValidationError
+
+    class TestSchema(BaseModel):
+        count: int
+
+    with pytest.raises(ValidationError) as caught:
+        TestSchema.model_validate({"count": "secret"})
+    try:
+        raise RuntimeError("raw provider response secret") from caught.value
+    except RuntimeError as exc:
+        report = foundry_smoke.sanitized_failure(exc)
+    assert report["exception_type"] == "RuntimeError"
+    assert report["cause_type"] == "ValidationError"
+    assert report["validation_diagnostics"][0]["type"] == "int_parsing"
+    assert "secret" not in str(report)

@@ -30,6 +30,37 @@ def create_smoke_project_client(endpoint: str, credential: object):
     return NoRetryAsyncProjectClient(endpoint=endpoint, credential=credential)
 
 
+def _validation_diagnostics(exc: Exception) -> list[dict[str, object]]:
+    """Only allowlisted Pydantic error codes and schema paths, never input values."""
+    output: list[dict[str, object]] = []
+    for current in (exc, exc.__cause__, exc.__context__):
+        if current is None or not callable(getattr(current, "errors", None)):
+            continue
+        try:
+            errors = current.errors(include_input=False, include_url=False)
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(errors, list):
+            continue
+        for error in errors[:8]:
+            if not isinstance(error, dict):
+                continue
+            kind = error.get("type")
+            location = error.get("loc")
+            if not isinstance(kind, str) or not kind.replace("_", "").isalnum():
+                continue
+            if not isinstance(location, (list, tuple)):
+                location = ()
+            # Do not serialize arbitrary field names: nested paths may contain user data.
+            output.append({
+                "type": kind[:60],
+                "location_depth": min(len(location), 20),
+            })
+        if output:
+            break
+    return output
+
+
 def sanitized_failure(exc: Exception) -> dict[str, object]:
     """Report only allowlisted structured metadata, never provider message bodies."""
     status = None
@@ -53,6 +84,7 @@ def sanitized_failure(exc: Exception) -> dict[str, object]:
         "cause_type": type(exc.__cause__).__name__ if exc.__cause__ else None,
         "http_status": status,
         "safe_error_code": code,
+        "validation_diagnostics": _validation_diagnostics(exc),
         "note": "No exception message, request body, headers, or credentials printed",
     }
 
@@ -185,7 +217,11 @@ async def run(argv: list[str] | None = None) -> int:
             return 0
         except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
             # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
-            print("FAIL: " + json.dumps(sanitized_failure(exc), sort_keys=True))
+            report = sanitized_failure(exc)
+            report["last_attempted_role"] = roles.last_attempted_role
+            report["attempted_role_count"] = sum(roles._attempts.values())
+            report["completed_roles"] = [item.role for item in roles.invocations]
+            print("FAIL: " + json.dumps(report, sort_keys=True))
             return 1
     
     finally:
