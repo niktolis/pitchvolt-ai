@@ -35,8 +35,12 @@ def test_live_smoke_explicitly_uses_azure_cli_credential_source() -> None:
     smoke = Path(foundry_smoke.__file__).read_text()
     assert "credential: object | None = None" in adapter
     assert "credential = AzureCliCredential()" in smoke
+    assert "from azure.identity.aio import AzureCliCredential" in smoke
+    assert "from azure.ai.projects.aio import AIProjectClient" in smoke
     assert 'kwargs["max_retries"] = 0' in smoke
     assert "project_client=project_client" in smoke
+    assert "await project_client.close()" in smoke
+    assert "await credential.close()" in smoke
     assert "DefaultAzureCredential()" not in smoke
 
 
