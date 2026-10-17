@@ -67,9 +67,7 @@ def test_unrecognized_provider_error_code_suppressed() -> None:
 
 
 def test_smoke_token_budget_is_isolated_from_production_defaults() -> None:
-    from matchpulse.foundry_config import FoundryConfig, RoleSettings
-
-    from matchpulse.foundry_config import SMOKE_SETTINGS
+    from matchpulse.foundry_config import SMOKE_SETTINGS, FoundryConfig, RoleSettings
 
     assert SMOKE_SETTINGS.analyst_output_tokens == 4096
     assert SMOKE_SETTINGS.http_max_retries == 2
