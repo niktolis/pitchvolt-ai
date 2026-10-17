@@ -37,7 +37,6 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
             offset = (position * HALF_DURATION_MS) // EVENTS_PER_HALF
             clock = (half - 1) * HALF_DURATION_MS + offset
             team = teams[(position // 8 + half - 1) % 2]
-            opponent = teams[1] if team == teams[0] else teams[0]
             phase = position % 8
             kind = (
                 EventType.TURNOVER if phase == 0 else
