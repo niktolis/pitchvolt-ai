@@ -92,7 +92,10 @@ def test_provider_failure_returns_evidence_backed_fallback(monkeypatch) -> None:
 def test_role_timeout_falls_back_without_failing_sse(monkeypatch) -> None:
     from matchpulse import narrative_stream
 
-    async def timeout(*args, **kwargs):
+    async def timeout(awaitable, **kwargs):
+        # The mocked wait_for never schedules its coroutine; close it to
+        # preserve asyncio ownership and avoid an unawaited-coroutine warning.
+        awaitable.close()
         raise TimeoutError("Model timed out")
 
     monkeypatch.setattr(narrative_stream.asyncio, "wait_for", timeout)

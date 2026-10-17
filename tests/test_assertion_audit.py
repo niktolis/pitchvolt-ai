@@ -33,3 +33,23 @@ def test_adversarial_assertion_audit_abstains(
         assert status in statuses
     assert audit.complete_coverage is False
     assert audit.publishable is False
+
+
+def test_metric_citation_does_not_make_fabricated_outcome_publishable() -> None:
+    bundle = fixture()
+    candidate = NarrativeCandidate(
+        insight_id=bundle.insight.insight_id,
+        audience=Audience.CASUAL,
+        headline="A sensational victory",
+        text="harbor-fc completed 4 attacking actions in 9 seconds and won 6-0.",
+        evidence_event_ids=bundle.insight.evidence_event_ids,
+        claims=(
+            Claim(kind=ClaimKind.METRIC, key="attacking_actions", value=4),
+            Claim(kind=ClaimKind.METRIC, key="transition_duration_ms", value=9000),
+        ),
+    )
+    audit = audit_assertions(candidate, bundle)
+    assert any(f.status == AssertionStatus.SUPPORTED for f in audit.findings)
+    assert any(f.status == AssertionStatus.UNVERIFIABLE for f in audit.findings)
+    assert audit.complete_coverage is False
+    assert audit.publishable is False
