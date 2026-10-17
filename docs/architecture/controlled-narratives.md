@@ -75,3 +75,21 @@ Next local live-test acceptance after PR review/merge and fresh cost approval: t
 ## Explicit specialist initialization policies
 
 Versioned agent initialization instructions are defined in `src/matchpulse/agent_policies.py` (`grounded-v1`). The Analyst's stable policy requires exhaustive read-only evidence inspection, exact IDs and no invented player or outcome facts. The Storyteller's stable policy defines audience-aware output, prohibits unsupported tactical superlatives and requires verbatim selection from the two reviewed headline/text variants for the local safety experiment. An Editorial policy is defined but Editorial inference is not invoked. Actual match evidence, approved options and output schemas are supplied **per request**; there are no long-running agents, persistent model memory or hidden coaching requests. Policy tests run entirely offline. Prompt discipline improves reliability but does not provide semantic proof of arbitrary prose; the bounded grammar gate and deterministic public renderer remain authoritative.
+
+## Research-based role and audience policy architecture (grounded-v2)
+
+The policy architecture follows Microsoft guidance for precise actionable agent roles, sequential handoff, explicit grounding constraints, documented abstention/fallback, structured outputs and versioned testable instructions. Stable agent instructions are built once at initialization. A per-invocation, typed `Audience` profile is injected into the Storyteller's task context; immutable verified match evidence is passed separately. Current flavors:
+- **Casual**: accessible, lively, plain-language explanation of the documented moment; never sensationalize a single sequence.
+- **Analyst**: technical, quantitative interpretation with seconds, tactical classification and attacking-action count; observed facts must not become unsupported causal claims.
+- **Club**: pragmatic, team-oriented learning focus without falsely attributing intent, coaching instructions or comparative dominance.
+
+Shared `CORE_POLICY` requires synthetic-data disclosure, ignores instructions embedded in untrusted event data, forbids invented scores, players and match-long superiority, and routes outputs back into typed contracts. Analyst and Storyteller explicitly act as **internal subagents**, never public responders. Editorial is an unscheduled future reviewer, not an extra inference call or a replacement for backend verification. Unknown audience flavors fail closed. These constraints are enforced by the server as applicable; instructions improve behavior but are not a security boundary.
+
+Policy references (retrieved October 2026):
+- Microsoft Azure Architecture Center, grounding, fallback, source citation, separation of instructions/context and prompt versioning: https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/rag/rag-prompt-engineering
+- Microsoft Agent Framework, sequential specialized agents: https://learn.microsoft.com/en-us/agent-framework/workflows/orchestrations/sequential
+- Microsoft Copilot Studio multi-agent best practices, clear subagent identity and single final publisher: https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/multi-agent-patterns
+- Microsoft Cloud Adoption Framework, instruction configuration/versioning and structured outputs: https://github.com/MicrosoftDocs/cloud-adoption-framework/blob/main/docs/ai-agents/build-secure-process.md
+- Microsoft Foundry evaluators, groundedness, relevance, task adherence and abstention: https://github.com/MicrosoftDocs/azure-ai-docs/blob/main/articles/foundry/concepts/evaluation-evaluators/agent-evaluators.md
+
+Future expansion: separate free-form creativity/evidence-linked atomic claim extraction from the bounded publishing mode, then evaluate precision, groundedness, abstention, latency, and hallucination rate on a frozen fixture set before enabling public model prose. Do not confuse passing the finite grammar with semantic entailment.
