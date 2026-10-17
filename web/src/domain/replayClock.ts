@@ -28,8 +28,13 @@ export function latestAtCursor(messages: readonly ReplayMessage[], cursorMs: num
 }
 
 /** All narrative updates require a visible insight with the same ID. */
-export function visibleNarrativeIds(messages: readonly ReplayMessage[], cursorMs: number): Set<string> {
+export function visibleNarrativeIds(
+  messages: readonly ReplayMessage[],
+  cursorMs: number,
+): Set<string> {
   return new Set(
-    atOrBefore(messages, cursorMs).filter(isTacticalInsight).map((item) => item.payload.insight_id),
+    atOrBefore(messages, cursorMs)
+      .filter(isTacticalInsight)
+      .map((item) => item.payload.insight_id),
   );
 }
