@@ -200,7 +200,10 @@ export function App() {
               </span>
             </div>
             <div className="broadcast-score-center">
-              <span className="broadcast-score-unavailable" title="Score not available in event data">
+              <span
+                  className="broadcast-score-unavailable"
+                  title="Score not available in event data"
+                >
                 – : –
               </span>
               <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
