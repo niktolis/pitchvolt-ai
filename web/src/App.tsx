@@ -236,7 +236,8 @@ export function App() {
           Replay scenario
         </button>
 
-        <div className="replay-seek-controls" role="group" aria-label="Timeline playback controls">
+        <fieldset className="replay-seek-controls">
+          <legend className="visually-hidden">Timeline playback controls</legend>
           <button
             type="button"
             onClick={() => {
@@ -285,7 +286,7 @@ export function App() {
           >
             +2s
           </button>
-        </div>
+        </fieldset>
 
         <fieldset className="segmented audience-switch">
           <legend className="visually-hidden">Audience mode</legend>
