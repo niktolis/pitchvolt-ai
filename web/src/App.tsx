@@ -204,107 +204,6 @@ export function App() {
         </nav>
       </section>
 
-      <section className="control-bar" aria-label="Replay controls">
-        <label>
-          Scenario
-          <select value={scenario} onChange={(event) => setScenario(event.target.value)}>
-            {scenarios.map((item) => (
-              <option key={item} value={item}>
-                {item.replaceAll("_", " ")}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <fieldset className="segmented">
-          <legend className="visually-hidden">Replay speed</legend>
-          {SPEEDS.map((item) => (
-            <button
-              className={speed === item ? "active" : ""}
-              key={item}
-              type="button"
-              onClick={() => setSpeed(item)}
-            >
-              {item}×
-            </button>
-          ))}
-        </fieldset>
-
-        <button
-          className="replay-button"
-          type="button"
-          onClick={() => setReplayNonce((n) => n + 1)}
-        >
-          Replay scenario
-        </button>
-
-        <fieldset className="replay-seek-controls">
-          <legend className="visually-hidden">Timeline playback controls</legend>
-          <button
-            type="button"
-            onClick={() => {
-              setPlaying((p) => !p);
-              setStreamState("live");
-            }}
-            disabled={!messages.length}
-          >
-            {playing ? "Pause" : "Play"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
-              setPlaying(false);
-            }}
-            disabled={!messages.length}
-            aria-label="Back 2 seconds"
-          >
-            −2s
-          </button>
-          <label>
-            Match clock
-            <input
-              type="range"
-              min={bounds.start}
-              max={Math.max(bounds.start + 1, bounds.end)}
-              step={100}
-              value={cursorMs}
-              onChange={(event) => {
-                setCursorMs(Number(event.target.value));
-                setPlaying(false);
-              }}
-              disabled={!messages.length}
-              aria-label="Seek match time"
-              aria-valuetext={clockLabel(cursorMs)}
-            />
-          </label>
-          <button
-            type="button"
-            onClick={() => {
-              setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
-              setPlaying(false);
-            }}
-            disabled={!messages.length}
-            aria-label="Forward 2 seconds"
-          >
-            +2s
-          </button>
-        </fieldset>
-
-        <fieldset className="segmented audience-switch">
-          <legend className="visually-hidden">Audience mode</legend>
-          {MODES.map((item) => (
-            <button
-              className={mode === item ? "active" : ""}
-              key={item}
-              type="button"
-              onClick={() => setMode(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </fieldset>
-      </section>
 
       {error ? <div className="error-banner">{error}</div> : null}
       {narrativeError ? <div className="error-banner">{narrativeError}</div> : null}
@@ -416,6 +315,111 @@ export function App() {
           </section>
         </div>
       </section>
+
+      <details className="replay-tools">
+        <summary>Replay controls <span>Scenario · Speed · Playback · Audience</span></summary>
+        <section className="control-bar" aria-label="Replay controls">
+          <label>
+            Scenario
+            <select value={scenario} onChange={(event) => setScenario(event.target.value)}>
+              {scenarios.map((item) => (
+                <option key={item} value={item}>
+                  {item.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+          </label>
+  
+          <fieldset className="segmented">
+            <legend className="visually-hidden">Replay speed</legend>
+            {SPEEDS.map((item) => (
+              <button
+                className={speed === item ? "active" : ""}
+                key={item}
+                type="button"
+                onClick={() => setSpeed(item)}
+              >
+                {item}×
+              </button>
+            ))}
+          </fieldset>
+  
+          <button
+            className="replay-button"
+            type="button"
+            onClick={() => setReplayNonce((n) => n + 1)}
+          >
+            Replay scenario
+          </button>
+  
+          <fieldset className="replay-seek-controls">
+            <legend className="visually-hidden">Timeline playback controls</legend>
+            <button
+              type="button"
+              onClick={() => {
+                setPlaying((p) => !p);
+                setStreamState("live");
+              }}
+              disabled={!messages.length}
+            >
+              {playing ? "Pause" : "Play"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
+                setPlaying(false);
+              }}
+              disabled={!messages.length}
+              aria-label="Back 2 seconds"
+            >
+              −2s
+            </button>
+            <label>
+              Match clock
+              <input
+                type="range"
+                min={bounds.start}
+                max={Math.max(bounds.start + 1, bounds.end)}
+                step={100}
+                value={cursorMs}
+                onChange={(event) => {
+                  setCursorMs(Number(event.target.value));
+                  setPlaying(false);
+                }}
+                disabled={!messages.length}
+                aria-label="Seek match time"
+                aria-valuetext={clockLabel(cursorMs)}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
+                setPlaying(false);
+              }}
+              disabled={!messages.length}
+              aria-label="Forward 2 seconds"
+            >
+              +2s
+            </button>
+          </fieldset>
+  
+          <fieldset className="segmented audience-switch">
+            <legend className="visually-hidden">Audience mode</legend>
+            {MODES.map((item) => (
+              <button
+                className={mode === item ? "active" : ""}
+                key={item}
+                type="button"
+                onClick={() => setMode(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </fieldset>
+        </section>
+      </details>
 
       <footer>
         <span>Ingest → Interpret → Explain → Render → Personalize</span>
