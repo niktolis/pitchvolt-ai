@@ -93,6 +93,9 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
     for _, options, _ in run_calls:
         assert options["max_output_tokens"] == 192
     assert roles.last_evidence_tool_calls == ("event-1",)
+    assert [item.role for item in roles.invocations] == ["analyst", "storyteller"]
+    assert all(item.duration_ms >= 0 for item in roles.invocations)
+    assert all(item.input_tokens is None for item in roles.invocations)
     assert run_calls[0][1]["response_format"] is AnalystPlan
     assert run_calls[1][1]["response_format"] is StorytellerSelection
 
