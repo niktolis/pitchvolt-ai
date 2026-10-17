@@ -106,8 +106,18 @@ Source events are all checked for chronological consistency, including types tha
 
 ## Extended synthetic replay baseline (initial deterministic version)
 
-The `extended_match` scenario contains **220 fictional canonical events across two halves** with seeded positions, periods, turnovers, passes, carries, shots and explicitly generated goals. It exercises the existing replay API without introducing a second transport contract. The `seeded_uncalibrated` evidence marker is mandatory: the fixture is **not calibrated to historical StatsBomb distributions** and is not equivalent to a full realistic simulation. Real Open Data ingestion, distribution estimation, validated lineup/staff metadata and referee/substitution state remain outstanding before issue #65 can be closed. Legacy six-event scenarios remain regression fixtures.
+The `extended_match` scenario contains **220 fictional canonical events across two halves**, including four explicitly fabricated synthetic turnovers and one scripted synthetic goal. Its *broad action-family frequencies only* are weighted to one pinned historical reference (`statsbomb_reference_weighted_actions` evidence marker). The event order, event rates per minute, team tactics, player identities, possession, passing outcomes, goals and scorelines are **not calibrated** and the fixture is not equivalent to a football match simulation. Real Open Data ingestion, distribution estimation, validated lineup/staff metadata and referee/substitution state remain outstanding before issue #65 can be closed. Legacy six-event scenarios remain regression fixtures.
 
 ## Source-accurate historical lineups (partial)
 
 The separate `statsbomb_lineups.load_historical_lineups` accepts a locally obtained historical `data/lineups/<match_id>.json` file and an exact SHA-256 checksum, validates two teams, unique players, jersey numbers and available source position names. These are source-backed display records only, not a fabricated starting XI, not a substitution timeline, and not a verified link to the event file until the match-bundle validator is complete. Keep lineups distinct from original fictional MatchPulse player metadata.
+
+## First pinned actual historical reference
+
+[StatsBomb Open Data match 9880](https://github.com/hudl/open-data/blob/4b73468fc5b0f1950f9f66fada70ad3a4f9327cb/data/events/9880.json) was acquired on an ephemeral GitHub Actions runner in [successful run #39069415548](https://github.com/niktolis/matchpulse-ai/actions/runs/39069415548) (2026-10-17), using upstream commit 4b73468fc5b0f1950f9f66fada70ad3a4f9327cb. Original events file SHA-256:
+
+515986eb6fc6084d3559860ab23ee47c9999c1ad476aa5fd35f693115519e4e8
+
+It contains 3,947 source records; the current conservative historical projector renders 2,379 location-backed Pass/Carry/Pressure/Shot actions and reports 1,568 other event records by family, including lineups, goalkeeper and substitution events. The four broad action-family counts are **1,162 Pass, 890 Carry, 298 Pressure and 29 Shot**. These observed counts are locked in statsbomb_reference.py and consumed by the extended original-fiction regression fixture; they are not a full match generation model or proof that all source events can be processed. We do **not** commit the original event JSON; users must follow the Open Data source and attribution terms. The acquisition CLI can reproduce the digest.
+
+The historical match is Barcelona versus Valencia in a La Liga sample; **not** a Premier League live match. No actual source-backed historical roster, score, inference narrative or public match playback is claimed by this milestone.
