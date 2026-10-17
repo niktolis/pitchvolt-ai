@@ -75,6 +75,28 @@ class MatchProcessor:
         if current.clock_ms - window[0].clock_ms > 45_000:
             return []
         kinds = [event.event_type for event in window]
+        # A sustained phase is separately evidenced by uninterrupted possession,
+        # sufficient passing and a final attempt. The same source window is used
+        # by streaming, snapshots and the narrative evidence service.
+        if (
+            EventType.TURNOVER not in kinds
+            and all(e.possession_team_id == current.team_id for e in window)
+            and sum(k == EventType.PASS for k in kinds) >= 5
+            and len(window) == 8
+        ):
+            return [TacticalInsight(
+                insight_id=f"{current.event_id}:{InsightKind.SUSTAINED_POSSESSION.value}",
+                kind=InsightKind.SUSTAINED_POSSESSION,
+                match_id=current.match_id,
+                team_id=current.team_id,
+                period=current.period,
+                clock_ms=current.clock_ms,
+                evidence_event_ids=tuple(e.event_id for e in window),
+                metrics={
+                    "sequence_duration_ms": current.clock_ms - window[0].clock_ms,
+                    "passes": sum(k == EventType.PASS for k in kinds),
+                },
+            )]
         try:
             turnover_idx = max(i for i, kind in enumerate(kinds) if kind == EventType.TURNOVER)
         except ValueError:

@@ -74,7 +74,10 @@ def test_scripted_high_press_inside_larger_match_is_evidence_backed() -> None:
     match, events = scenario("extended_match", 42)
     insights = analyze_stream(match, events)
     assert len(insights) == 4
-    assert all(item.kind == InsightKind.HIGH_PRESS for item in insights)
+    assert [item.kind for item in insights] == [
+        InsightKind.HIGH_PRESS, InsightKind.HIGH_PRESS,
+        InsightKind.SUSTAINED_POSSESSION, InsightKind.COUNTERATTACK,
+    ]
     insight = next(item for item in insights if item.evidence_event_ids[0] == events[70].event_id)
     window = events[70:78]
     assert len(window) == 8
@@ -97,8 +100,12 @@ def test_multiple_grounded_insights_distributed_across_halves() -> None:
     for insight, start in zip(insights, expected_windows, strict=True):
         window = events[start - 1:start + 7]
         assert insight.evidence_event_ids == tuple(e.event_id for e in window)
-        assert insight.metrics["transition_duration_ms"] == 7_500
-        assert insight.metrics["attacking_actions"] == 4
+        if insight.kind == InsightKind.SUSTAINED_POSSESSION:
+            assert insight.metrics["passes"] == 5
+            assert insight.metrics["sequence_duration_ms"] == 17_500
+        else:
+            assert insight.metrics["transition_duration_ms"] == 7_500
+            assert insight.metrics["attacking_actions"] == 4
         assert all(e.evidence["scripted_tactical_window"] for e in window)
     assert {i.period for i in insights} == {1, 2}
 
@@ -115,3 +122,16 @@ def test_offline_extended_smoke_scenario_without_inference(capsys) -> None:
     bundle = foundry_smoke.fixture("extended_match")
     assert bundle.insight.kind == InsightKind.HIGH_PRESS
     assert len(bundle.events) == 8
+
+
+def test_tactical_diversity_preserves_4_explicit_turnovers_and_real_insight_clocks():
+    match, events = scenario("extended_match", 42)
+    insights = analyze_stream(match, events)
+    assert len([e for e in events if e.event_type == EventType.TURNOVER]) == 4
+    assert len({item.insight_id for item in insights}) == 4
+    assert all(item.clock_ms < 5_400_000 for item in insights)
+    assert {i.kind for i in insights} == {
+        InsightKind.HIGH_PRESS,
+        InsightKind.COUNTERATTACK,
+        InsightKind.SUSTAINED_POSSESSION,
+    }
