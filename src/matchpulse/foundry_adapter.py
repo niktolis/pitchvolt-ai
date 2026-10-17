@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from time import perf_counter
 
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
-from matchpulse.narrative import Audience, EvidenceBundle, NarrativeCandidate, Claim, ClaimKind
+from matchpulse.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
 from matchpulse.shadow_validation import ShadowAssessment, assess_candidate
 from matchpulse.workflow import AnalystPlan, StorytellerSelection
 
