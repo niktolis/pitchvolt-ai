@@ -175,6 +175,10 @@ async def run(argv: list[str] | None = None) -> int:
                 "last_model_response_metadata": roles.last_response_metadata,
                 "role_response_metadata": roles.role_response_metadata,
                 "validated_role_decisions": roles.role_decisions,
+                "bounded_grounding": (
+                    asdict(roles.last_grounding_result)
+                    if roles.last_grounding_result is not None else None
+                ),
                 "shadow_assessment": (
                     roles.last_shadow_assessment.model_dump(mode="json")
                     if roles.last_shadow_assessment is not None else None
@@ -211,6 +215,8 @@ async def run(argv: list[str] | None = None) -> int:
                 print("FAIL: required role execution or shadow candidate not confirmed")
                 return 1
             print("PASS: evidence tool, both specialist roles and verifier completed")
+            if roles.last_grounding_result is not None and not roles.last_grounding_result.eligible:
+                print("NOTE: model-authored prose outside bounded grammar; not eligible for publication")
             if any(inv.input_tokens is None or inv.output_tokens is None
                    for inv in roles.invocations):
                 print("NOTE: SDK usage unavailable; null is NOT zero billed tokens")
