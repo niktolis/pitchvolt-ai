@@ -79,6 +79,7 @@ class AudiencePolicy:
             f"Purpose: {self.purpose}\nTone: {self.tone}\n"
             f"Primary focus: {self.focus}\nTerminology: {self.terminology}\n"
             f"Editorial constraints: {self.constraints}\n"
+            "Cross-audience rule: No player names, scores or match outcomes unless verified.\n"
         )
 
 
