@@ -73,3 +73,32 @@ out-of-field observation. These objects must not be drawn at clamped edge
 coordinates, dropped from provenance counts or silently reprojected onto the
 pitch. The full-XI count describes source observations, not rendered on-pitch
 objects.
+
+## Verified source census and exact replay semantics (18 October 2026)
+
+The [immutable upstream audit](https://github.com/niktolis/matchpulse-ai/actions/runs/39077031102) verified all three original files for StatsBomb match **3764440** at commit `4b73468fc5b0f1950f9f66fada70ad3a4f9327cb`.
+
+| Original file | SHA-256 |
+| --- | --- |
+| Events | `9772a4e35b4f5c6ff07868321c7e80280bf3e03481d01d3ca56195c4a512746f` |
+| Lineups | `7d3365b7ced12e3e2de50f6ecd076d088e94bbc769492ae4aa5867898f592fc0` |
+| 360 | `1f33de0d962233529356e1bd8970d0015f4ad0c165065fcdf521c714f06ecee5` |
+
+The verified source contains **4,160 events**, **3,914 freeze frames**,
+and only **8 frames** with 11 players on each side (**0.20%**).
+Frame coverage ranges from **6–22 observations**. **64,970** observations
+are anonymous non-actors without persistent player IDs. Some authentic
+player coordinates lie outside nominal bounds: the adapter preserves
+their raw `source_location` while returning `position = None`, never
+clamping observations to fake on-field positions.
+
+The offline `historical_moment_at_event` contract validates match ID,
+event digest, source origin, event UUID and exact period/clock/team.
+It emits no positions for missing frames, never uses the previous/next
+snapshot, and distinguishes all observed objects from on-field renderable
+objects. No API endpoint, historical frontend feed, Azure resources,
+Foundry inference or source JSON redistribution are introduced.
+The temporary network audit workflow is removed from the release branch;
+the verified hashes allow opt-in source acquisition to be independently
+reproduced. Historical-data publication remains subject to attribution
+and license review.
