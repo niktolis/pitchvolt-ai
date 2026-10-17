@@ -7,7 +7,6 @@ routes stay deterministic and public.
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import secrets
 from collections.abc import AsyncIterator
@@ -53,8 +52,7 @@ async def _one_insight(name: str, audience: Audience) -> AsyncIterator[Narrative
         )
         project_client = create_smoke_project_client(config.project_endpoint, credential)
         roles = FoundryRoles(config, credential=credential, project_client=project_client)
-        tool = InMemoryEvidenceTool(lambda requested_id: bundle if requested_id == insight_id else
-                                    (_ for _ in ()).throw(ValueError("Unknown insight")))
+        tool = InMemoryEvidenceTool(lambda _: bundle)
         result = await asyncio.wait_for(
             Orchestrator(tool, roles, roles).narrate(insight_id, audience),
             timeout=35.0,
