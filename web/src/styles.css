@@ -1542,3 +1542,34 @@ body::after {
     min-width: 72px;
   }
 }
+
+/* A key moment is visualized at its recorded coordinate. No decorative ball
+   or invented second player is permitted without a matching source record. */
+.key-moment-source-scene {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 44% 35%, rgba(189, 253, 135, 0.11), transparent 62%),
+    repeating-linear-gradient(90deg, #1d4728 0 10%, #265331 10% 20%);
+  box-shadow: inset 0 0 32px rgba(0, 9, 4, 0.66);
+}
+.key-moment-source-scene::after {
+  display: none;
+}
+.key-moment-source-scene svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 12px 12px 22px;
+  filter: drop-shadow(0 0 1px rgba(211, 255, 183, 0.24));
+}
+.moment-provenance-label {
+  position: absolute;
+  right: 8px;
+  bottom: 7px;
+  color: #d1f5ba;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px #020f07;
+}
