@@ -75,3 +75,7 @@ request bodies, access tokens or response bodies. HTTP status helps distinguish
 400 (request contract), 401/403 (auth), 404 (deployment/endpoint) and 429
 (quota/rate). If code/status is unavailable, stop and investigate locally rather
 than rerunning inference. No new authorization is implied by a diagnostic PR.
+
+### Agent Framework ChatOptions compatibility
+
+Installed Agent Framework Core 1.22.0 declares `ChatOptions.max_tokens` and `response_format`, not `ChatOptions.max_output_tokens`. The provider maps the existing configured output budget to the supported `max_tokens` request option. This fixes an offline-confirmed contract mismatch, **not** a confirmed explanation for earlier `ChatClientException` without HTTP metadata. No renewed billable test is authorized by this change.
