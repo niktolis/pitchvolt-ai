@@ -37,3 +37,13 @@ PDF and PPTX exports are produced as workflow artifacts; multi-board animations 
 ## Input-adapter boundary
 
 The current `Synthetic EventSource` deployment box includes an additional **local** StatsBomb-shaped fictional adapter (issue #15). It translates 120 × 80 native provider coordinates into the same canonical 105 × 68m `MatchEvent`; all downstream arrows and deployed topology in the diagrams are unchanged. The adapter is not a remote StatsBomb service, and neither real historical import nor live provider ingestion is implied. [Data format and limits](../synthetic-data.md).
+
+## 5. Heterogeneous specialist-agent orchestration
+
+![Heterogeneous Analyst and Storyteller with optional Editorial reviewer and deterministic verification](rendered/agent-orchestration.svg)
+
+[Editable D2 source](diagrams/agent-orchestration.d2) · [ADR-0002 model-assignment addendum](../decisions/ADR-0002-agent-orchestration.md)
+
+The core owns every football fact. The planned Foundry Analyst uses **GPT-5 mini (Global Standard)** to examine read-only evidence, and the planned Storyteller uses **GPT-4o mini (Regional Standard)** for audience-specific structured selection. An **optional Editorial specialist has no assigned model**; it is invoked only if evidence-based evaluation supports its additional expense. The orchestrator and verifier are deterministic application components, **not extra AI agents**. The local orchestration and constrained evidence function exist, but the two-model Foundry execution, model-initiated cloud tool calls, cost measurement and Editorial invocation remain unverified or unimplemented.
+
+The diagram indicates intended model placement, not deployed resources. Azure inference remains disabled until separately approved.

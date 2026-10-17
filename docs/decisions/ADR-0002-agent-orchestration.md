@@ -40,3 +40,21 @@
 
 ## Approval and execution policy
 Approved by project owner on 2026-10-15: selective specialist-agent orchestration. Analyst and Storyteller handle substantive narrative workflows; deterministic verification always runs; Editorial review is conditional on uncertainty, failed factual checks, or high-impact interpretation. Use measured cost, latency, and output quality to tune escalation thresholds. Changes to this architectural policy require a new review.
+
+## Addendum — heterogeneous model assignment (approved 17 October 2026)
+
+The project owner approved **different inference models per specialist role**. The selection is configuration, not a claim of live model validation:
+
+| Specialist | Intended Foundry deployment | Responsibility | State |
+|---|---|---|---|
+| Analyst | GPT-5 mini, Global Standard | Model-requested, read-only evidence tools; select grounded tactical angle and preserve source IDs | Adapter/tool boundary implemented; live execution pending |
+| Storyteller | GPT-4o mini, Regional Standard | Select audience-sensitive framing from the verified Analyst plan; templates render final prose | Adapter implemented; live execution pending |
+| Editorial reviewer | **Unassigned**, conditional | Review high-uncertainty interpretations only if measured quality benefit justifies extra cost/latency | Not implemented; do not imply three active agents |
+
+The **Orchestrator** is deterministic coordination code, not a fourth LLM agent. The **Verifier** is a deterministic publication gate, not a model or fifth agent. An Editorial review never overrides verification.
+
+Each specialist must receive an independently configurable deployment/client, model-specific request settings, output-token cap, timeout and usage/cost telemetry. Do not reuse one implicit model or blindly share GPT-5 reasoning parameters with GPT-4o. Compare heterogeneous performance against a same-model baseline on exactly the same canonical fixture/evidence; record token usage, grounding accuracy, p50/p95 latency and observed cost before asserting improvement.
+
+Neither deployment is currently proven available and no inference is approved by this addendum. Live inference requires separately reviewed project endpoint, subscription quota, per-model deployment/cost safeguards and explicit owner approval.
+
+[Role assignment diagram](../architecture/diagrams/agent-orchestration.d2) · [Architecture entry point](../architecture/README.md).

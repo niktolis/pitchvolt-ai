@@ -1,0 +1,45 @@
+direction: right
+title: Heterogeneous agent orchestration (target architecture) {
+  shape: text
+  near: top-center
+  style.font-size: 24
+}
+
+facts: Deterministic core {
+  source: Synthetic match events
+  processor: MatchProcessor + evidence IDs
+  tool: Read-only evidence lookup
+  source -> processor
+  processor -> tool: immutable cited events
+}
+
+runtime: Application orchestration {
+  coordinator: Orchestrator (not an LLM)
+  gate: Deterministic verifier
+  output: Narrative SSE + React UI
+  coordinator -> gate: typed plans and selections
+  gate -> output: verified narrative or fallback
+}
+
+models: Microsoft Foundry (target, not deployed) {
+  analyst: Analyst agent\nGPT-5 mini\nGlobal Standard
+  storyteller: Storyteller agent\nGPT-4o mini\nRegional Standard
+  editorial: Editorial reviewer (optional)\nModel unassigned
+  analyst -> storyteller: validated tactical plan
+  storyteller -> editorial: conditional review only {
+    style.stroke-dash: 5
+  }
+}
+
+facts.tool -> runtime.coordinator: trusted event IDs
+runtime.coordinator -> models.analyst: authorized request, read-only tools {
+  style.stroke-dash: 5
+}
+models.storyteller -> runtime.coordinator: typed audience selection {
+  style.stroke-dash: 5
+}
+models.editorial -> runtime.coordinator: optional decision {
+  style.stroke-dash: 5
+}
+
+legend: "Solid = implemented core. Dashed = planned Foundry connectivity. Verifier is always deterministic."
