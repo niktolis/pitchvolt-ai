@@ -89,7 +89,11 @@ export function App() {
 
   const bounds = useMemo(() => matchBounds(messages), [messages]);
   const fixtureTeams = useMemo(
-    () => [...new Set(messages.filter(isMatchEvent).map((message) => message.payload.team_id))].slice(0, 2),
+    () =>
+      [...new Set(messages.filter(isMatchEvent).map((message) => message.payload.team_id))].slice(
+        0,
+        2,
+      ),
     [messages],
   );
   const homeName = fixtureTeams[0] ? displayName(fixtureTeams[0]) : "Synthetic match";
