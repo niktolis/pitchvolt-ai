@@ -111,3 +111,26 @@ def test_wrapped_pydantic_error_exposes_only_safe_category() -> None:
     assert report["cause_type"] == "ValidationError"
     assert report["validation_diagnostics"][0]["type"] == "int_parsing"
     assert "secret" not in str(report)
+
+
+
+def test_extended_match_smoke_preflight_is_offline_and_has_grounded_insight(capsys) -> None:
+    from matchpulse.intelligence import InsightKind
+
+    bundle = foundry_smoke.fixture("extended_match")
+    assert bundle.insight.kind == InsightKind.HIGH_PRESS
+    assert len(bundle.events) == 8
+    assert bundle.insight.metrics["transition_duration_ms"] == 7500
+    assert tuple(item.event_id for item in bundle.events) == bundle.insight.evidence_event_ids
+
+    assert asyncio.run(foundry_smoke.run(["--scenario", "extended_match"])) == 0
+    output = capsys.readouterr().out
+    assert '"mode": "DRY_RUN"' in output
+    assert '"scenario": "extended_match"' in output
+    assert "No Azure credentials loaded and no inference invoked." in output
+    assert '"maximum_role_invocations": 2' in output
+
+
+def test_smoke_rejects_unknown_scenario_before_credentials() -> None:
+    with pytest.raises(SystemExit):
+        foundry_smoke.arguments(["--scenario", "untrusted"])
