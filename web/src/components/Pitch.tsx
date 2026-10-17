@@ -20,13 +20,7 @@ function pctY(value: number): number {
   return (value / 68) * 100;
 }
 
-export function Pitch({
-  event,
-  children,
-  playing,
-  canReplay,
-  onTogglePlayback,
-}: PitchProps) {
+export function Pitch({ event, children, playing, canReplay, onTogglePlayback }: PitchProps) {
   const locatedEvent = event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
   const destination =
     locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
