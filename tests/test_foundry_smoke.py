@@ -10,9 +10,9 @@ def test_smoke_dry_run_requires_no_sdk_or_endpoint(capsys) -> None:
     assert asyncio.run(foundry_smoke.run([])) == 0
     output = capsys.readouterr().out
     assert '"mode": "DRY_RUN"' in output
-    assert '"http_max_retries": 0' in output
+    assert '"http_max_retries": 2' in output
     assert "No Azure credentials loaded" in output
-    assert "\"analyst_max_output_tokens\": 512" in output
+    assert "\"analyst_max_output_tokens\": 1024" in output
 
 
 def test_smoke_requires_explicit_two_part_live_opt_in() -> None:
@@ -37,7 +37,7 @@ def test_live_smoke_explicitly_uses_azure_cli_credential_source() -> None:
     assert "credential = AzureCliCredential()" in smoke
     assert "from azure.identity.aio import AzureCliCredential" in smoke
     assert "from azure.ai.projects.aio import AIProjectClient" in smoke
-    assert 'kwargs["max_retries"] = 0' in smoke
+    assert 'kwargs["max_retries"] = SMOKE_HTTP_MAX_RETRIES' in smoke
     assert "project_client=project_client" in smoke
     assert "await project_client.close()" in smoke
     assert "await credential.close()" in smoke
@@ -69,7 +69,8 @@ def test_unrecognized_provider_error_code_suppressed() -> None:
 def test_smoke_token_budget_is_isolated_from_production_defaults() -> None:
     from matchpulse.foundry_config import FoundryConfig, RoleSettings
 
-    assert foundry_smoke.SMOKE_ANALYST_OUTPUT_TOKENS == 512
+    assert foundry_smoke.SMOKE_ANALYST_OUTPUT_TOKENS == 1024
+    assert foundry_smoke.SMOKE_HTTP_MAX_RETRIES == 2
     assert RoleSettings().max_output_tokens == 256
     assert FoundryConfig(
         project_endpoint="https://example.services.ai.azure.com/api/projects/sample",
