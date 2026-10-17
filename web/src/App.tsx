@@ -134,9 +134,8 @@ export function App() {
   const visibleMessages = replay.visible;
   const selected = visibleMessages.find((item) => item.id === selectedId) ?? replay.selected;
   const latestInsight = replay.insight;
-  const displayEvidence = evidence && isEvidenceVisible(messages, cursorMs, evidence.insight_id)
-    ? evidence
-    : null;
+  const displayEvidence =
+    evidence && isEvidenceVisible(messages, cursorMs, evidence.insight_id) ? evidence : null;
   const selectedEvent: MatchEvent | null =
     selected && isMatchEvent(selected) ? selected.payload : replay.event;
 
