@@ -14,7 +14,7 @@ from matchpulse.narrative import Audience
 
 
 def test_role_policy_contracts() -> None:
-    assert POLICY_VERSION == "linked-shadow-v1"
+    assert POLICY_VERSION == "broadcast-shadow-v1"
     for policy in (ANALYST_INSTRUCTIONS, STORYTELLER_INSTRUCTIONS, EDITORIAL_INSTRUCTIONS):
         assert len(policy.strip()) > 400
         assert CORE_POLICY in policy
@@ -50,3 +50,16 @@ def test_audience_policies_do_not_override_common_grounding() -> None:
 def test_unknown_audience_fails_closed() -> None:
     with pytest.raises(KeyError):
         audience_instruction("broadcast_unreviewed")  # type: ignore[arg-type]
+
+
+def test_live_broadcast_voice_keeps_evidence_constraints() -> None:
+    casual = audience_instruction(Audience.CASUAL)
+    analyst = audience_instruction(Audience.ANALYST)
+    club = audience_instruction(Audience.CLUB)
+    assert "Passionate live Premier League-style play-by-play" in casual
+    assert "spontaneous" in casual
+    assert "tactical precision" in analyst
+    assert "club-studio pundit" in club
+    assert "SHADOW" in STORYTELLER_INSTRUCTIONS
+    assert "never\ninvent a goal" in STORYTELLER_INSTRUCTIONS
+    assert "Never imply a fictional match" in CORE_POLICY
