@@ -63,3 +63,13 @@ with `statsbomb_bundle_report --frame-sha256 <sha>` to inspect exact
 observation counts offline. The audit includes a count of snapshots with
 11 observations per side; fewer observations remain explicitly incomplete.
 Do not treat this source audit as permission to republish upstream JSON.
+
+## Out-of-bounds source observations
+
+Real StatsBomb 360 coverage can report source player coordinates slightly
+outside the nominal 120 × 80 field grid. The original finite coordinate pair
+is retained in `source_location`; `position` is explicitly `None` for any
+out-of-field observation. These objects must not be drawn at clamped edge
+coordinates, dropped from provenance counts or silently reprojected onto the
+pitch. The full-XI count describes source observations, not rendered on-pitch
+objects.
