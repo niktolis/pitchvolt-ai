@@ -65,3 +65,13 @@ A fallback, structured-output failure, SDK or auth error returns nonzero.
 ### First live attempt diagnostic (17 Oct 2026)
 
 The first test was interrupted inside `DefaultAzureCredential` -> Managed Identity IMDS token acquisition, before a confirmed model response. Azure CLI independently obtained an access token, and the project endpoint was correct. **Do not rerun billable inference automatically** after updating this branch: inspect Azure model metrics/usage and confirm a new invocation is explicitly authorized. The fix scopes Azure CLI authentication to this workstation smoke harness only.
+
+### Sanitized provider failures
+
+When the SDK raises a provider exception, the smoke command prints an allowlisted
+exception type, optional exception cause class, optional numeric HTTP status and
+known-safe error code. It deliberately never prints raw exception strings, headers,
+request bodies, access tokens or response bodies. HTTP status helps distinguish
+400 (request contract), 401/403 (auth), 404 (deployment/endpoint) and 429
+(quota/rate). If code/status is unavailable, stop and investigate locally rather
+than rerunning inference. No new authorization is implied by a diagnostic PR.

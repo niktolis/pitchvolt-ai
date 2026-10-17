@@ -17,6 +17,33 @@ ANALYST_DEPLOYMENT = "matchpulse-gpt5-mini"
 STORYTELLER_DEPLOYMENT = "matchpulse-gpt4o"
 
 
+def sanitized_failure(exc: Exception) -> dict[str, object]:
+    """Report only allowlisted structured metadata, never provider message bodies."""
+    status = None
+    code = None
+    for current in (exc, exc.__cause__, exc.__context__):
+        if current is None:
+            continue
+        value = getattr(current, "status_code", None)
+        if isinstance(value, int) and 100 <= value <= 599:
+            status = value
+        value = getattr(current, "code", None)
+        if isinstance(value, str) and value in {
+            "authentication_error", "permission_denied", "rate_limit_exceeded",
+            "model_not_found", "invalid_request_error", "insufficient_quota",
+        }:
+            code = value
+        if status is not None and code is not None:
+            break
+    return {
+        "exception_type": type(exc).__name__,
+        "cause_type": type(exc.__cause__).__name__ if exc.__cause__ else None,
+        "http_status": status,
+        "safe_error_code": code,
+        "note": "No exception message, request body, headers, or credentials printed",
+    }
+
+
 def fixture():
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
     match, events = scenario("high_press")
@@ -101,7 +128,7 @@ async def run(argv: list[str] | None = None) -> int:
         return 0
     except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
         # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
-        print(f"FAIL: {type(exc).__name__}; inspect local logs without sharing credentials")
+        print("FAIL: " + json.dumps(sanitized_failure(exc), sort_keys=True))
         return 1
 
 
