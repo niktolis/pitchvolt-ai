@@ -10,8 +10,8 @@ import {
   eventPath,
   FIELD_HEIGHT,
   FIELD_WIDTH,
-  toWorld,
   type PitchPoint,
+  toWorld,
 } from "./pitch-geometry";
 
 function BroadcastCamera() {
@@ -208,10 +208,7 @@ function Trajectory({ event }: { event: MatchEvent }) {
   const start = path.start.clone().setY(0.18);
   const end = path.end.clone().setY(0.18);
   const direction = end.clone().sub(start).normalize();
-  const rotation = new THREE.Quaternion().setFromUnitVectors(
-    new THREE.Vector3(0, 1, 0),
-    direction,
-  );
+  const rotation = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
   const center = start.clone().add(end).multiplyScalar(0.5);
 
   return (
@@ -234,7 +231,11 @@ function Trajectory({ event }: { event: MatchEvent }) {
 
 export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
   return (
-    <div className="broadcast-webgl" role="img" aria-label="Perspective-rendered tactical football pitch">
+    <div
+      className="broadcast-webgl"
+      role="img"
+      aria-label="Perspective-rendered tactical football pitch"
+    >
       <Canvas
         camera={{ fov: 40, position: [0, 120, 80], near: 0.1, far: 420 }}
         dpr={[1, 1.5]}
