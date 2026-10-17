@@ -41,7 +41,7 @@ def test_acquire_then_reopen_with_provenance(tmp_path):
     original = json.dumps(records()).encode("utf-8")
     manifest = prepare_fixture(original, commit=COMMIT, match_id="123", directory=tmp_path)
     assert manifest.event_count == 2
-    assert manifest.event_coverage == "full_match"
+    assert manifest.event_coverage == "excerpt"
     assert manifest.event_sha256
     assert (tmp_path / "123.json").read_bytes() == original
     read = load_historical_fixture(tmp_path / "123.json", manifest)
