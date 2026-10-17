@@ -150,7 +150,8 @@ def test_model_controls_fact_order_but_not_factual_values() -> None:
         f"Attacking actions: {bundle.insight.metrics['attacking_actions']} · "
         f"Team: {bundle.insight.team_id}"
     )
-    assert f"Turnover-to-shot: {bundle.insight.metrics['transition_duration_ms'] / 1000:.3f}s" in narrative.text
+    seconds = bundle.insight.metrics["transition_duration_ms"] / 1000
+    assert f"Turnover-to-shot: {seconds:.3f}s" in narrative.text
     assert narrative.evidence_event_ids == bundle.insight.evidence_event_ids
 
 
