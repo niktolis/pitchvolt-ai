@@ -1,7 +1,7 @@
 """Cloud inference is never enabled by importing or constructing default config."""
 import pytest
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles
+from matchpulse.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles, RoleSettings
 
 
 def test_foundry_inference_is_explicitly_opt_in() -> None:
@@ -86,3 +86,26 @@ def test_empty_optional_role_deployment_rejected() -> None:
     with pytest.raises(ValueError, match="deployment"):
         FoundryConfig("https://example.services.ai.azure.com", "analyst",
                       editorial_model_deployment="")
+
+
+def test_role_specific_output_caps_and_reasoning_settings() -> None:
+    config = FoundryConfig(
+        "https://example.services.ai.azure.com/api/projects/sample",
+        "analyst-gpt5",
+        storyteller_model_deployment="storyteller-gpt4o",
+        analyst_settings=RoleSettings(max_output_tokens=512),
+        storyteller_settings=RoleSettings(max_output_tokens=128),
+        editorial_settings=RoleSettings(max_output_tokens=96),
+    )
+    assert config.settings_for("analyst").max_output_tokens == 512
+    assert config.settings_for("storyteller").max_output_tokens == 128
+    assert config.settings_for("editorial").max_output_tokens == 96
+    with pytest.raises(ValueError, match="specialist"):
+        config.settings_for("arbitrary")
+
+
+def test_unsupported_reasoning_setting_rejected_before_cloud() -> None:
+    with pytest.raises(ValueError, match="reasoning effort"):
+        RoleSettings(reasoning_effort="unsupported")
+    with pytest.raises(ValueError, match="token cap"):
+        RoleSettings(max_output_tokens=2048)
