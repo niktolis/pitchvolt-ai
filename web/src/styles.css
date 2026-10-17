@@ -1137,3 +1137,73 @@ body {
   .control-bar { flex-wrap: wrap; }
   .replay-seek-controls { flex-basis: 100%; order: 2; }
 }
+
+/* Approved broadcast composition: the event timeline is a compact replay rail
+   belonging to the pitch, not a fourth competing dashboard card. */
+.pitch-panel > .timeline-panel {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-height: none;
+  margin: 9px 10px 12px;
+  border: 0;
+  border-top: 1px solid rgba(182, 230, 75, 0.26);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.pitch-panel > .timeline-panel .panel-heading {
+  padding: 10px 7px 5px;
+}
+.pitch-panel > .timeline-panel .panel-heading h2 {
+  margin: 0;
+  color: var(--pv-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.pitch-panel > .timeline-panel .panel-heading .eyebrow {
+  display: none;
+}
+.pitch-panel > .timeline-panel .timeline {
+  display: flex;
+  gap: 7px;
+  min-height: 55px;
+  max-height: 90px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3px 5px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #527340 transparent;
+}
+.pitch-panel > .timeline-panel .timeline-item {
+  flex: 0 0 134px;
+  width: 134px;
+  min-height: 50px;
+  margin: 0;
+  padding: 7px 8px;
+  border: 1px solid rgba(182, 230, 75, 0.12);
+  border-radius: 9px;
+  background: rgba(9, 27, 16, 0.7);
+}
+.pitch-panel > .timeline-panel .timeline-item.selected {
+  border-color: var(--pv-primary);
+  background: rgba(182, 230, 75, 0.12);
+}
+.pitch-panel > .timeline-panel .timeline-copy strong {
+  font-size: 11px;
+}
+.pitch-panel > .timeline-panel .timeline-copy span {
+  font-size: 9px;
+}
+.pitch-panel > .timeline-panel .empty-state {
+  align-self: center;
+  min-width: 0;
+  padding: 5px 0;
+}
+.broadcast-detail-panels {
+  grid-template-columns: minmax(0, 1fr);
+}
+.broadcast-detail-panels > .evidence-panel {
+  width: 100%;
+}
