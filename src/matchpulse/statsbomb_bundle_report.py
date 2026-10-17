@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from matchpulse.fixture_manifest import FixtureManifest
+from matchpulse.providers.statsbomb_360 import load_historical_360
 from matchpulse.providers.statsbomb_bundle import (
     HistoricalBundleReport,
     validate_historical_bundle,
@@ -70,11 +71,12 @@ def main() -> None:
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--match-id", required=True)
     parser.add_argument("--lineup-sha256", required=True)
+    parser.add_argument("--frame-sha256", help="Optional verified same-match 360 digest")
     args = parser.parse_args()
     result = load_verified_historical_bundle(
         args.directory, match_id=args.match_id, lineup_sha256=args.lineup_sha256
     )
-    print(json.dumps({
+    summary: dict[str, object] = {
         "match_id": result.fixture.manifest.match_id,
         "origin": result.fixture.manifest.origin.value,
         "source_url": result.fixture.manifest.source_url,
@@ -90,7 +92,24 @@ def main() -> None:
         "score_by_team": result.state.score_by_team,
         "score_unavailable_reason": result.state.score_unavailable_reason,
         "historical_ui_supported": False,
-    }, indent=2, sort_keys=True))
+    }
+    if args.frame_sha256:
+        frames = load_historical_360(
+            args.directory / f"{args.match_id}.360.json",
+            result.fixture,
+            expected_sha256=args.frame_sha256,
+        )
+        summary.update({
+            "frame_sha256": frames.frame_sha256,
+            "frame_count": len(frames.frames),
+            "full_xi_frame_count": sum(
+                frame.has_observed_full_xi for frame in frames.frames
+            ),
+            "anonymous_non_actor_observations": sum(
+                not player.actor for frame in frames.frames for player in frame.observations
+            ),
+        })
+    print(json.dumps(summary, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

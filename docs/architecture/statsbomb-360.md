@@ -38,3 +38,28 @@ redistribution and attribution requirements have been reviewed.
 
 Upstream attribution: StatsBomb Open Data, Hudl,
 https://github.com/hudl/open-data.
+
+## Optional three-file acquisition and audit
+
+The existing reproducible two-file acquisition keeps its default behavior.
+For an explicitly selected 360-capable source match, use the new opt-in flag:
+
+```sh
+uv run --frozen python -m matchpulse.statsbomb_bundle_acquire \
+  --commit 4b73468fc5b0f1950f9f66fada70ad3a4f9327cb \
+  --match-id 3764440 \
+  --output-dir .local-statsbomb/3764440 --include-360
+```
+
+This prints the three pinned upstream URLs without network access. Only
+`--execute-download` permits downloading, with the existing per-file 30 MB
+limit, and atomic rollback if the original 360 file does not match the
+verified source event IDs. No original JSON is committed or shipped with the
+deployed demo. The same upstream tree contains events, lineups and 360 for
+3764440; 9880 has no 360 asset at this pinned revision.
+
+The returned independent event, lineup and frame SHA-256 values can be used
+with `statsbomb_bundle_report --frame-sha256 <sha>` to inspect exact
+observation counts offline. The audit includes a count of snapshots with
+11 observations per side; fewer observations remain explicitly incomplete.
+Do not treat this source audit as permission to republish upstream JSON.
