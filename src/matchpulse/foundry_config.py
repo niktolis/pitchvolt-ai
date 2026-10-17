@@ -15,8 +15,8 @@ class RoleSettings:
     reasoning_effort: str | None = None
 
     def __post_init__(self) -> None:
-        if not 1 <= self.max_output_tokens <= 1024:
-            raise ValueError("Per-role output token cap must be between 1 and 1024")
+        if not 1 <= self.max_output_tokens <= 8192:
+            raise ValueError("Per-role output token cap must be between 1 and 8192")
         if self.reasoning_effort not in (None, "low", "medium", "high"):
             raise ValueError("Unsupported reasoning effort")
 
