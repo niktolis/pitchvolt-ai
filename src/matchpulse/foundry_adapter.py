@@ -16,8 +16,8 @@ from matchpulse.agent_policies import (
     STORYTELLER_INSTRUCTIONS,
     audience_instruction,
 )
-from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.evidence_links import LinkAssessment, assess_evidence_links
+from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
 from matchpulse.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
 from matchpulse.shadow_validation import ShadowAssessment, assess_candidate
