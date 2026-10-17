@@ -8,7 +8,7 @@ import os
 from dataclasses import asdict
 
 from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles, RoleSettings
-from matchpulse.foundry_config import SMOKE_SETTINGS, NARRATIVE_ROLE_CALLS
+from matchpulse.foundry_config import DEFAULT_TOOL_CALL_LIMIT, NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS
 from matchpulse.narrative import Audience, InMemoryEvidenceTool
 from matchpulse.narrative_stream import _bundles
 from matchpulse.scenarios import scenario
@@ -144,7 +144,7 @@ async def run(argv: list[str] | None = None) -> int:
         model_deployment=SMOKE_SETTINGS.analyst_deployment,
         storyteller_model_deployment=SMOKE_SETTINGS.storyteller_deployment,
         inference_explicitly_approved=True,  # isolated CLI ONLY, never SSE application
-        max_tool_calls_per_analyst=min(FoundryConfig.__dataclass_fields__["max_tool_calls_per_analyst"].default, len(bundle.events)),
+        max_tool_calls_per_analyst=min(DEFAULT_TOOL_CALL_LIMIT, len(bundle.events)),
         timeout_seconds_per_role=SMOKE_SETTINGS.timeout_seconds_per_role,
         analyst_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.analyst_output_tokens),
     )
