@@ -29,6 +29,10 @@ describe("source-aligned pitch camera", () => {
         expect(Math.abs(ndc.x)).toBeLessThan(0.96);
         expect(Math.abs(ndc.y)).toBeLessThan(0.96);
         expect(ndc.z).toBeLessThan(1);
+        const head = toWorld({ x, y }).add(new THREE.Vector3(0, 2.8, 0)).project(camera);
+        expect(Math.abs(head.x)).toBeLessThan(1);
+        expect(Math.abs(head.y)).toBeLessThan(1);
+        expect(head.z).toBeLessThan(1);
       }
     }
     expect(BROADCAST_DIRECTION.y).toBeGreaterThan(BROADCAST_DIRECTION.z);
