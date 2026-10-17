@@ -1,5 +1,5 @@
 """Evidence links are useful provenance metadata, never publication authority."""
-from matchpulse.evidence_links import LinkStatus, LinkedClaim, assess_evidence_links
+from matchpulse.evidence_links import LinkedClaim, LinkStatus, assess_evidence_links
 from matchpulse.foundry_smoke import fixture
 from matchpulse.narrative import Audience, Claim, ClaimKind, NarrativeCandidate
 
