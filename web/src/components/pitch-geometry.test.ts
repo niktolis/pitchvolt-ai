@@ -1,11 +1,6 @@
-import { describe, expect, it } from "vitest";
 import * as THREE from "three";
-import {
-  broadcastCameraPosition,
-  BROADCAST_DIRECTION,
-  eventPath,
-  toWorld,
-} from "./pitch-geometry";
+import { describe, expect, it } from "vitest";
+import { BROADCAST_DIRECTION, broadcastCameraPosition, eventPath, toWorld } from "./pitch-geometry";
 
 describe("source-aligned pitch camera", () => {
   it("maps canonical metres without changing recorded positions", () => {
