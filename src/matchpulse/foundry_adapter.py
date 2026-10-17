@@ -20,7 +20,7 @@ from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
 from matchpulse.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
 from matchpulse.shadow_validation import ShadowAssessment, assess_candidate
-from matchpulse.workflow import AnalystPlan, StorytellerSelection
+from matchpulse.workflow import AnalystPlan, FactSlot, StorytellerSelection
 
 __all__ = ["FoundryConfig", "FoundryDisabled", "FoundryRoles", "RoleInvocation", "RoleSettings"]
 
@@ -234,8 +234,12 @@ class FoundryRoles:
             f"Verified team: {evidence.insight.team_id}; tactic: {evidence.insight.kind.value}; "
             f"duration_ms: {evidence.insight.metrics['transition_duration_ms']}; "
             f"attacking_actions: {evidence.insight.metrics['attacking_actions']}. "
-            "Select a supported style and fact_order; separately propose authored_headline and "
-            "authored_text using ONLY these verified facts. This proposal will NOT be published.\n"
+            "Select a supported style. The optional fact_order must be null, OR it must "
+            "contain EVERY canonical fact exactly once, in any order. "
+            f"Canonical fact slots: {[slot.value for slot in FactSlot]!r}. "
+            "Never supply a subset (such as only transition and actions); use null "
+            "when unsure. Separately propose authored_headline and authored_text using "
+            "ONLY these verified facts. This proposal will NOT be published.\n"
             f"Approved headline/text pairs: {approved_phrasings(evidence)!r}. "
             "Choose one complete pair verbatim; do not add qualifiers or extra sentences.",
             StorytellerSelection,

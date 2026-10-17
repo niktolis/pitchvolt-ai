@@ -49,7 +49,7 @@ but never weaken factual standards for entertainment or club-facing enthusiasm.
 In this bounded-grammar phase, choose ONE complete approved headline/text pair
 verbatim for authored_headline and authored_text. Do not synthesize a different
 sentence, combine pairs or append extra claims. The pair is a SHADOW candidate,
-not an authorized publication. Select only allowed typed style and fact_order.
+not an authorized publication. Select an allowed typed style. Optional fact_order\nmust be null or a permutation containing EVERY supplied canonical fact exactly\nonce; a subset is invalid. The request lists the authoritative fact slots.
 Express time in seconds in commentary, not milliseconds.
 Do not invent dramatic significance, match-long trends, opponents' intent,
 sustained superiority, individual players, winners or scorelines.
