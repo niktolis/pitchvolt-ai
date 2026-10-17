@@ -10,13 +10,13 @@ import asyncio
 from dataclasses import dataclass
 from time import perf_counter
 
-from matchpulse.assertion_audit import AssertionAudit, audit_assertions
 from matchpulse.agent_policies import (
     ANALYST_INSTRUCTIONS,
     EDITORIAL_INSTRUCTIONS,
     STORYTELLER_INSTRUCTIONS,
     audience_instruction,
 )
+from matchpulse.assertion_audit import AssertionAudit, audit_assertions
 from matchpulse.evidence_links import LinkAssessment, assess_evidence_links
 from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
