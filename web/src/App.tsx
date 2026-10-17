@@ -319,11 +319,7 @@ export function App() {
 
             <fieldset className="replay-seek-controls">
               <legend className="visually-hidden">Timeline playback controls</legend>
-              <button
-                type="button"
-                onClick={togglePlayback}
-                disabled={!messages.length}
-              >
+              <button type="button" onClick={togglePlayback} disabled={!messages.length}>
                 {playing ? "Pause" : "Play"}
               </button>
               <button
