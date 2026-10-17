@@ -33,3 +33,9 @@ This permits model-selected **information ordering**, not free-form AI-authored 
 The ordinary narrative SSE update now carries optional `verification` and `trace` fields while preserving its existing headline, text, source, audience and evidence IDs. A successful server-owned narrative is `controlled`; a rejected or unavailable provider returns `deterministic_fallback`. Each trace step exposes only the orchestration role, action, elapsed milliseconds and an optional evidence-event ID. Prompts, raw model responses, credentials and exception messages are never serialized into SSE updates.
 
 This is provenance for **publication decisions**, not semantic certification of unrestricted model-authored prose and not proof of paid Foundry inference. Foundry preview remains separately gated. No model deployment or Azure invocation is required for the offline regression tests.
+
+## Offline shadow assessment of free-text Storyteller candidates
+
+`matchpulse.shadow_validation.assess_candidate` evaluates proposed `NarrativeCandidate` responses **without publishing them**. An invalid evidence/claim manifest returns `invalid_claims`; a valid manifest returns `unverified_prose`, not a success state. The result schema enforces `publishable=false` and records only non-sensitive insight ID and claim/evidence counts, not model-produced wording or exception messages.
+
+This distinction matters: a model can attach valid tactical claims to a sentence that fabricates goals, possession or player actions. Machine-readable claim verification alone cannot establish sentence-level entailment. The existing `verify_narrative` rejection and public narrative renderer stay unchanged. This module enables offline negative-control evaluation for a future, independently reviewed semantic verification strategy; it is not a replacement for one. No SDK calls, inference permission or Azure cost are added.
