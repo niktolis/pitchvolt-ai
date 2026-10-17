@@ -7,6 +7,9 @@ import { isSourcePitchPoint } from "./pitch-geometry";
 interface PitchProps {
   event: MatchEvent | null;
   children?: ReactNode;
+  playing: boolean;
+  canReplay: boolean;
+  onTogglePlayback: () => void;
 }
 
 function pctX(value: number): number {
@@ -17,7 +20,13 @@ function pctY(value: number): number {
   return (value / 68) * 100;
 }
 
-export function Pitch({ event, children }: PitchProps) {
+export function Pitch({
+  event,
+  children,
+  playing,
+  canReplay,
+  onTogglePlayback,
+}: PitchProps) {
   const locatedEvent = event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
   const destination =
     locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
@@ -108,6 +117,16 @@ export function Pitch({ event, children }: PitchProps) {
             </g>
           ) : null}
         </svg>
+
+        <button
+          className={`pitch-play-overlay ${playing ? "is-playing" : "is-paused"}`}
+          type="button"
+          onClick={onTogglePlayback}
+          disabled={!canReplay}
+          aria-label={playing ? "Pause match replay" : "Play match replay"}
+        >
+          <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
+        </button>
 
         {locatedEvent && !hasWebGL ? (
           <div
