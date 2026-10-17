@@ -27,6 +27,12 @@ def test_narrative_stream_uses_same_insight_and_exact_evidence() -> None:
     assert data["insight_id"] == insight.insight_id
     assert data["audience"] == "analyst"
     assert data["source"] == "local_controlled"
+    assert data["verification"] == "controlled"
+    assert [step["role"] for step in data["trace"][-3:]] == [
+        "analyst", "storyteller", "verifier",
+    ]
+    assert all(step["duration_ms"] >= 0 for step in data["trace"])
+    assert all(step["action"] != "reject" for step in data["trace"])
     assert data["evidence_event_ids"] == insight.evidence_event_ids
     assert str(insight.metrics["attacking_actions"]) in data["text"]
     assert "event: match_event" not in response.text
@@ -76,6 +82,9 @@ def test_provider_failure_returns_evidence_backed_fallback(monkeypatch) -> None:
         if line.startswith("data: ") and line != "data: {}"
     )
     assert payload["source"] == "deterministic_fallback"
+    assert payload["verification"] == "deterministic_fallback"
+    assert payload["trace"][-1]["action"] == "reject"
+    assert "Local agent unavailable" not in response.text
     assert payload["evidence_event_ids"]
     assert "event: narrative_complete" in response.text
 
@@ -90,6 +99,7 @@ def test_role_timeout_falls_back_without_failing_sse(monkeypatch) -> None:
     response = client.get("/api/matches/high_press/narratives/stream")
     assert response.status_code == 200
     assert '"source":"deterministic_fallback"' in response.text
+    assert '"verification":"deterministic_fallback"' in response.text
     assert "event: narrative_complete" in response.text
 
 
