@@ -102,12 +102,10 @@ class FoundryRoles:
         # installed SDK before being sent to Foundry. Fail closed for now.
         if settings.reasoning_effort is not None:
             raise FoundryDisabled("Reasoning effort requires SDK compatibility validation")
-        if tools is not None:
-            options["tools"] = tools
         started = perf_counter()
         self._attempts[role] += 1
         response = await asyncio.wait_for(
-            self._agents[role].run(prompt, options=options),
+            self._agents[role].run(prompt, options=options, **({"tools": tools} if tools is not None else {})),
             timeout=self._config.timeout_seconds_per_role,
         )
         usage = getattr(response, "usage", None)
