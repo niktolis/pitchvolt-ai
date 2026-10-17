@@ -373,9 +373,7 @@ export function App() {
           <SourceMomentPreview event={selectedEvent} />
           {selectedEvent ? (
             <div className="key-moment-copy">
-              <strong>
-                {eventLabel(selectedEvent)}
-              </strong>
+              <strong>{eventLabel(selectedEvent)}</strong>
               <p>
                 {displayName(selectedEvent.player_id)} · {displayName(selectedEvent.team_id)}
               </p>
