@@ -4,7 +4,11 @@ import pytest
 from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
 from matchpulse.providers.statsbomb_bundle import validate_historical_bundle
 from matchpulse.providers.statsbomb_historical import HistoricalFixture
-from matchpulse.providers.statsbomb_lineups import HistoricalLineups, HistoricalPlayer, HistoricalTeam
+from matchpulse.providers.statsbomb_lineups import (
+    HistoricalLineups,
+    HistoricalPlayer,
+    HistoricalTeam,
+)
 
 
 def sample():
