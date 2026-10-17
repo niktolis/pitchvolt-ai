@@ -1,0 +1,32 @@
+name: Bootstrap PitchVolt 3D dependencies
+on:
+  push:
+    branches: [feat/pitchvolt-3d-toolchain]
+permissions:
+  contents: write
+jobs:
+  lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.22.0'
+      - name: Install exact renderer packages and resolve lockfile
+        working-directory: web
+        run: |
+          npm install --save-exact three@0.186.1 @react-three/fiber@9.8.1 @react-three/drei@10.7.9
+          npm install --save-dev --save-exact @types/three@0.186.0
+          npm ci
+          npm run check
+      - name: Commit lockfile and dependency manifest to branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add web/package.json web/package-lock.json
+          git diff --cached --quiet && exit 0
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'build: lock Three.js, React Three Fiber and Drei dependencies'
+          git push origin HEAD:feat/pitchvolt-3d-toolchain
