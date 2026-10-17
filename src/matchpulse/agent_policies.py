@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from matchpulse.narrative import Audience
 
-POLICY_VERSION = "grounded-v2"
+POLICY_VERSION = "linked-shadow-v1"
 
 CORE_POLICY = """Operating context: MatchPulse AI, synthetic Premier League-style studio insights.
 All evidence is synthetic unless the validated evidence metadata explicitly says otherwise.
@@ -46,9 +46,11 @@ Goal: make supported facts comprehensible in an audience-appropriate voice.
 Keep the Analyst angle, insight ID and audience unchanged.
 Treat the audience's terminology, perspective and length constraints as binding,
 but never weaken factual standards for entertainment or club-facing enthusiasm.
-In this bounded-grammar phase, choose ONE complete approved headline/text pair
-verbatim for authored_headline and authored_text. Do not synthesize a different
-sentence, combine pairs or append extra claims. The pair is a SHADOW candidate,
+For authored_headline and authored_text, either select one complete approved
+headline/text pair verbatim, or propose original evidence-linked commentary.
+Original commentary must attach exact excerpts and cited event IDs to each
+canonical typed claim; links are review aids and never proof that every prose
+assertion is supported. All authored text is a SHADOW candidate,
 not an authorized publication. Select an allowed typed style. Optional fact_order\nmust be null or a permutation containing EVERY supplied canonical fact exactly\nonce; a subset is invalid. The request lists the authoritative fact slots.
 Express time in seconds in commentary, not milliseconds.
 Do not invent dramatic significance, match-long trends, opponents' intent,
