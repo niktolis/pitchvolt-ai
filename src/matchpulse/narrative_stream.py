@@ -149,6 +149,7 @@ async def narrative_updates(name: str, audience: Audience) -> AsyncIterator[Narr
             # immutable evidence bundle is our only publication input.
             narrative = bounded_deterministic_fallback(bundles[insight_id], audience)
             source = "deterministic_fallback"
+            trace.append(NarrativeAuditStep(role="verifier", action="reject", duration_ms=0))
         yield NarrativeUpdate(
             insight_id=narrative.insight_id,
             audience=narrative.audience,
