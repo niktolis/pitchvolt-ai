@@ -11,6 +11,7 @@ import type {
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
+import { SourceMomentPreview } from "./components/SourceMomentPreview";
 import {
   type AudienceMode,
   clockLabel,
@@ -369,14 +370,10 @@ export function App() {
           <div className="panel-heading">
             <h2>Key Moment</h2>
           </div>
-          <div className="key-moment-scene" aria-hidden="true">
-            <span className="key-moment-ball" />
-          </div>
+          <SourceMomentPreview event={selectedEvent} />
           {selectedEvent ? (
             <div className="key-moment-copy">
-              <strong>
-                {clockLabel(selectedEvent.clock_ms)} · {eventLabel(selectedEvent)}
-              </strong>
+              <strong>{eventLabel(selectedEvent)}</strong>
               <p>
                 {displayName(selectedEvent.player_id)} · {displayName(selectedEvent.team_id)}
               </p>
