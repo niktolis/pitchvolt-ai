@@ -97,3 +97,16 @@ application adapter continues to use default SDK client construction. Model
 function/tool rounds can still cause multiple HTTP requests, and removing
 retries does not guarantee that Azure will cease issuing HTTP 429 responses.
 No production quota, inference permission, or monetary cap is changed.
+
+### Async client compatibility correction
+
+For the isolated manual smoke, use `azure.ai.projects.aio.AIProjectClient` and
+`azure.identity.aio.AzureCliCredential`. The asynchronous project client
+returns an authenticated `openai.AsyncOpenAI` for the Agent Framework's
+async `RawOpenAIChatClient`. Its smoke-only factory override sets
+`max_retries=0`. The earlier sync `azure.ai.projects.AIProjectClient`
+returned `openai.OpenAI` and triggered a wrapped `TypeError` in the
+async execution path. A real installed-SDK constructor test runs offline in
+Python CI and verifies **both** role clients, transport type and retry setting.
+Production construction and the 20,000 TPM Azure capacity are unchanged. No
+inference is authorized or run by the offline test.

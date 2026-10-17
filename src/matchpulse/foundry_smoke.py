@@ -18,6 +18,18 @@ STORYTELLER_DEPLOYMENT = "matchpulse-gpt4o"
 SMOKE_ANALYST_OUTPUT_TOKENS = 512
 
 
+def create_smoke_project_client(endpoint: str, credential: object):
+    """Use Azure SDK async project auth and disable only OpenAI HTTP retries."""
+    from azure.ai.projects.aio import AIProjectClient
+
+    class NoRetryAsyncProjectClient(AIProjectClient):
+        def get_openai_client(self, *, agent_name=None, **kwargs):
+            kwargs["max_retries"] = 0
+            return super().get_openai_client(agent_name=agent_name, **kwargs)
+
+    return NoRetryAsyncProjectClient(endpoint=endpoint, credential=credential)
+
+
 def sanitized_failure(exc: Exception) -> dict[str, object]:
     """Report only allowlisted structured metadata, never provider message bodies."""
     status = None
@@ -102,50 +114,47 @@ async def run(argv: list[str] | None = None) -> int:
     )
     # Workstation-specific credential avoids Managed Identity probing on macOS.
     # No token or credential content is logged or stored.
-    from azure.ai.projects import AIProjectClient
-    from azure.identity import AzureCliCredential
-
-    class NoRetryProjectClient(AIProjectClient):
-        """Apply zero OpenAI transport retries to the manual smoke test only."""
-
-        def get_openai_client(self, *, agent_name=None, **kwargs):
-            kwargs["max_retries"] = 0
-            return super().get_openai_client(agent_name=agent_name, **kwargs)
+    from azure.identity.aio import AzureCliCredential
 
     print('AUTH: using Azure CLI credential for isolated smoke test', flush=True)
     credential = AzureCliCredential()
-    project_client = NoRetryProjectClient(endpoint=config.project_endpoint, credential=credential)
+    project_client = create_smoke_project_client(config.project_endpoint, credential)
     roles = FoundryRoles(config, credential=credential, project_client=project_client)
-    print('ANALYST: starting first approved role invocation', flush=True)
-    tool = InMemoryEvidenceTool(lambda insight_id: bundle)
-    orchestrator = Orchestrator(tool, roles, roles)
+    # Both async Azure resources are closed below, including on a failed model request.
     try:
-        result = await orchestrator.narrate(bundle.insight.insight_id, Audience.ANALYST)
-        print('RESULT: role orchestration returned', flush=True)
-        report = {
-            "source": result.source,
-            "rejection_reason": result.rejection_reason,
-            "model_initiated_evidence_tool_calls": list(roles.last_evidence_tool_calls),
-            "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
-            "invocations": [asdict(item) for item in roles.invocations],
-            "last_model_response_metadata": roles.last_response_metadata,
-            "trace": [asdict(item) for item in result.trace],
-            "verified_narrative": result.narrative.model_dump(mode="json"),
-        }
-        print(json.dumps(report, indent=2))
-        valid = result.source == "controlled" and set(
-            roles.last_evidence_tool_calls
-        ) == set(bundle.insight.evidence_event_ids) and len(roles.invocations) == 2
-        if not valid:
-            print("FAIL: structured tool-enabled narrative not confirmed")
+        print('ANALYST: starting first approved role invocation', flush=True)
+        tool = InMemoryEvidenceTool(lambda insight_id: bundle)
+        orchestrator = Orchestrator(tool, roles, roles)
+        try:
+            result = await orchestrator.narrate(bundle.insight.insight_id, Audience.ANALYST)
+            print('RESULT: role orchestration returned', flush=True)
+            report = {
+                "source": result.source,
+                "rejection_reason": result.rejection_reason,
+                "model_initiated_evidence_tool_calls": list(roles.last_evidence_tool_calls),
+                "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
+                "invocations": [asdict(item) for item in roles.invocations],
+                "last_model_response_metadata": roles.last_response_metadata,
+                "trace": [asdict(item) for item in result.trace],
+                "verified_narrative": result.narrative.model_dump(mode="json"),
+            }
+            print(json.dumps(report, indent=2))
+            valid = result.source == "controlled" and set(
+                roles.last_evidence_tool_calls
+            ) == set(bundle.insight.evidence_event_ids) and len(roles.invocations) == 2
+            if not valid:
+                print("FAIL: structured tool-enabled narrative not confirmed")
+                return 1
+            print("PASS: evidence tool, both specialist roles and verifier completed")
+            return 0
+        except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
+            # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
+            print("FAIL: " + json.dumps(sanitized_failure(exc), sort_keys=True))
             return 1
-        print("PASS: evidence tool, both specialist roles and verifier completed")
-        return 0
-    except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
-        # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
-        print("FAIL: " + json.dumps(sanitized_failure(exc), sort_keys=True))
-        return 1
-
+    
+    finally:
+        await project_client.close()
+        await credential.close()
 
 def main() -> None:
     raise SystemExit(asyncio.run(run()))
