@@ -1351,3 +1351,26 @@ body {
     animation: none;
   }
 }
+
+/* Perspective pitch: remove the redundant inset presentation around WebGL. */
+.pitch-panel .pitch:has(.broadcast-webgl) {
+  margin: 0 5px;
+  border: 0;
+  outline: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  overflow: hidden;
+  background: #07180d;
+}
+.pitch-panel .pitch:has(.broadcast-webgl)::after {
+  display: none;
+}
+.pitch-panel .broadcast-webgl {
+  aspect-ratio: 105 / 67;
+  min-height: 0;
+  border-radius: 7px;
+  background: radial-gradient(ellipse at center, #234d29, #06160d);
+}
+.pitch-panel .broadcast-webgl canvas {
+  touch-action: pan-y;
+}

@@ -46,7 +46,7 @@ function FieldLines() {
   }, [segments]);
   return (
     <lineSegments geometry={geometry}>
-      <lineBasicMaterial color="#e5f4dc" transparent opacity={0.92} />
+      <lineBasicMaterial color="#f2ffe6" transparent opacity={1} />
     </lineSegments>
   );
 }
@@ -98,17 +98,17 @@ export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
   return (
     <div className="broadcast-webgl" role="img" aria-label="Three-dimensional tactical pitch">
       <Canvas
-        orthographic
-        camera={{ position: [0, 105, 24], zoom: 5.2, near: 0.1, far: 260 }}
+        camera={{ position: [0, 80, 48], fov: 44, near: 0.1, far: 320 }}
         dpr={[1, 1.5]}
         shadows
         gl={{ antialias: true, alpha: false, powerPreference: "low-power" }}
       >
         <color attach="background" args={["#061409"]} />
-        <ambientLight intensity={1.7} />
+        <hemisphereLight args={["#efffd7", "#071a0e", 2.1]} />
+        <ambientLight intensity={0.4} />
         <directionalLight
           position={[-25, 75, -22]}
-          intensity={3.2}
+          intensity={3.8}
           castShadow
           shadow-mapSize={[1024, 1024]}
         />
@@ -127,6 +127,14 @@ export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
           </mesh>
         ))}
         <FieldLines />
+        <mesh position={[-53.2, 0.35, 0]}>
+          <boxGeometry args={[0.25, 0.7, 7.3]} />
+          <meshStandardMaterial color="#e6f0dd" emissive="#819a77" emissiveIntensity={0.15} />
+        </mesh>
+        <mesh position={[53.2, 0.35, 0]}>
+          <boxGeometry args={[0.25, 0.7, 7.3]} />
+          <meshStandardMaterial color="#e6f0dd" emissive="#819a77" emissiveIntensity={0.15} />
+        </mesh>
         {event ? <ActiveActor event={event} /> : null}
       </Canvas>
     </div>
