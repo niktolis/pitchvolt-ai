@@ -170,12 +170,15 @@ async def run(argv: list[str] | None = None) -> int:
             valid = result.source == "controlled" and set(
                 roles.last_evidence_tool_calls
             ) == set(bundle.insight.evidence_event_ids) and len(roles.invocations) == 2
-            if not valid:
-                print("FAIL: structured tool-enabled narrative not confirmed")
+            shadow_ready = (
+                roles.last_shadow_assessment is not None
+                and roles.last_shadow_assessment.publishable is False
+                and roles.last_authored_candidate is not None
+            )
+            if not valid or not shadow_ready:
+                print("FAIL: required role execution or shadow candidate not confirmed")
                 return 1
             print("PASS: evidence tool, both specialist roles and verifier completed")
-            if roles.last_shadow_assessment is None:
-                print("NOTE: Storyteller did not provide a complete shadow prose candidate")
             if any(inv.input_tokens is None or inv.output_tokens is None
                    for inv in roles.invocations):
                 print("NOTE: SDK usage unavailable; null is NOT zero billed tokens")
