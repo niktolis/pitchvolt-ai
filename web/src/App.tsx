@@ -162,7 +162,9 @@ export function App() {
             </strong>
           </div>
           <nav className="broadcast-primary-nav" aria-label="Product navigation">
-            <span className="current" aria-current="page">Live</span>
+            <span className="current" aria-current="page">
+              Live
+            </span>
             <span>Matches</span>
             <span>Analysis</span>
             <span>Teams</span>
@@ -176,7 +178,7 @@ export function App() {
           <div className="broadcast-score-content">
             <strong>Synthetic match</strong>
             <div className="broadcast-score-center">
-              <span className="broadcast-score-unavailable" aria-label="Score unavailable">
+              <span className="broadcast-score-unavailable" title="Score unavailable">
                 – : –
               </span>
               <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
@@ -185,7 +187,9 @@ export function App() {
           </div>
         </div>
         <nav className="broadcast-tabs" aria-label="Match sections">
-          <span className="selected" aria-current="page">Overview</span>
+          <span className="selected" aria-current="page">
+            Overview
+          </span>
           <span>Tactical View</span>
           <span>Player Focus</span>
           <span>AI Commentary</span>
@@ -286,11 +290,15 @@ export function App() {
           </div>
           {selectedEvent ? (
             <div className="key-moment-copy">
-              <strong>{clockLabel(selectedEvent.clock_ms)} · {eventLabel(selectedEvent)}</strong>
-              <p>{displayName(selectedEvent.player_id)} · {displayName(selectedEvent.team_id)}</p>
+              <strong>
+                {clockLabel(selectedEvent.clock_ms)} · {eventLabel(selectedEvent)}
+              </strong>
+              <p>
+                {displayName(selectedEvent.player_id)} · {displayName(selectedEvent.team_id)}
+              </p>
               <span>Source-backed synthetic match event</span>
             </div>
-           ) : (
+          ) : (
             <p className="empty-state">Waiting for the next verified match event.</p>
           )}
           <button
