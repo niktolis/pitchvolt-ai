@@ -10,7 +10,7 @@ import asyncio
 from dataclasses import dataclass
 from time import perf_counter
 
-from matchpulse.foundry_config import FoundryConfig, RoleSettings  # re-export for existing callers
+from matchpulse.foundry_config import FoundryConfig, RoleSettings as RoleSettings  # intentional public re-export
 from matchpulse.narrative import Audience, EvidenceBundle
 from matchpulse.workflow import AnalystPlan, StorytellerSelection
 

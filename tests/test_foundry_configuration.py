@@ -1,8 +1,8 @@
 """Developer knob definitions remain in the dedicated typed config module."""
 import pytest
 
-from matchpulse.foundry_config import FoundryConfig, RoleSettings
 from matchpulse.foundry_adapter import FoundryConfig as PublicFoundryConfig
+from matchpulse.foundry_config import FoundryConfig, RoleSettings
 
 
 def test_adapter_reexports_canonical_settings() -> None:

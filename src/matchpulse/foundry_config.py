@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlsplit
 
+
 @dataclass(frozen=True)
 class RoleSettings:
     max_output_tokens: int = 256
