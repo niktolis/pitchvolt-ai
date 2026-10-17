@@ -78,3 +78,7 @@ Full historical-data import, broader event families, 3rd/4th periods,
 unstructured match metadata, 3D shot-height data (deliberately not fabricated), frame/360 support, and production-scale event
 semantics remain tracked in [issue #15](https://github.com/niktolis/matchpulse-ai/issues/15).
 
+
+## New primary acceptance direction (October 2026)
+
+Long-form replay and data-source interoperability become the main testing baseline. See [StatsBomb-based replay baseline](statsbomb-baseline.md) for separate real Open Data ingestion and seeded original synthetic match generation, provenance/attribution policy and acceptance gates. The existing short scenarios remain regression tests.
