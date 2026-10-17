@@ -204,7 +204,6 @@ export function App() {
         </nav>
       </section>
 
-
       {error ? <div className="error-banner">{error}</div> : null}
       {narrativeError ? <div className="error-banner">{narrativeError}</div> : null}
 
@@ -317,7 +316,9 @@ export function App() {
       </section>
 
       <details className="replay-tools">
-        <summary>Replay controls <span>Scenario · Speed · Playback · Audience</span></summary>
+        <summary>
+          Replay controls <span>Scenario · Speed · Playback · Audience</span>
+        </summary>
         <section className="control-bar" aria-label="Replay controls">
           <label>
             Scenario
@@ -329,7 +330,7 @@ export function App() {
               ))}
             </select>
           </label>
-  
+
           <fieldset className="segmented">
             <legend className="visually-hidden">Replay speed</legend>
             {SPEEDS.map((item) => (
@@ -343,7 +344,7 @@ export function App() {
               </button>
             ))}
           </fieldset>
-  
+
           <button
             className="replay-button"
             type="button"
@@ -351,7 +352,7 @@ export function App() {
           >
             Replay scenario
           </button>
-  
+
           <fieldset className="replay-seek-controls">
             <legend className="visually-hidden">Timeline playback controls</legend>
             <button
@@ -404,7 +405,7 @@ export function App() {
               +2s
             </button>
           </fieldset>
-  
+
           <fieldset className="segmented audience-switch">
             <legend className="visually-hidden">Audience mode</legend>
             {MODES.map((item) => (
