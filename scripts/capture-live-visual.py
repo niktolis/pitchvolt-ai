@@ -44,7 +44,13 @@ def main() -> None:
                             if response is None or not response.ok:
                                 raise RuntimeError("HTTP navigation failed")
                             page.locator(".broadcast-grid").wait_for(timeout=15000)
-                            page.locator(".pitch svg").wait_for(timeout=15000)
+                            # The SVG remains in the DOM but is intentionally hidden when WebGL works.
+                            # Waiting for its visibility caused false deployment failures.
+                            page.locator(".pitch").wait_for(state="visible", timeout=15000)
+                            page.locator(".pitch svg").wait_for(state="attached", timeout=15000)
+                            page.locator(".timeline-item").first.wait_for(
+                                state="visible", timeout=30000
+                            )
                             break
                         except (PlaywrightError, RuntimeError) as error:
                             if attempt == 6:
@@ -60,7 +66,17 @@ def main() -> None:
                     if "PitchVolt AI" not in page.title():
                         raise RuntimeError(f"{label}: incorrect title {page.title()!r}")
                     page.evaluate("document.fonts.ready")
-                    page.wait_for_timeout(2500)
+                    # Select a stable source-backed event instead of capturing an arbitrary
+                    # replay instant before asynchronous timeline ingestion finishes.
+                    pause = page.get_by_role("button", name="Pause", exact=True)
+                    if pause.is_visible():
+                        pause.click()
+                    page.locator(".timeline-item").first.click()
+                    # Yield to browser rendering frames without a fixed deployment delay.
+                    page.evaluate(
+                        "() => new Promise(resolve => requestAnimationFrame("
+                        "() => requestAnimationFrame(resolve)))"
+                    )
                     insight = page.locator(".insight-panel").bounding_box()
                     pitch = page.locator(".pitch-panel").bounding_box()
                     moment = page.locator(".key-moment-panel").bounding_box()
