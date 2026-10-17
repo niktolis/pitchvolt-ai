@@ -63,7 +63,7 @@ class StorytellerSelection(BaseModel):
     fact_order: tuple[FactSlot, ...] | None = None
     authored_headline: str | None = Field(default=None, max_length=180)
     authored_text: str | None = Field(default=None, max_length=600)
-    evidence_links: tuple["LinkedClaim", ...] | None = None
+    evidence_links: tuple[LinkedClaim, ...] | None = None
 
 
 class Analyst(Protocol):
