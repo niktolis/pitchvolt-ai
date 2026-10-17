@@ -62,8 +62,10 @@ def test_action_family_quota_matches_pinned_reference() -> None:
     types = Counter(e.event_type for e in events)
     assert types[EventType.TURNOVER] == 4
     assert types[EventType.GOAL] == 1
-    assert types[EventType.SHOT] + types[EventType.GOAL] == quotas[EventType.SHOT]
-    for kind in (EventType.PASS, EventType.CARRY, EventType.PRESSURE):
+    # Four scripted insight windows need four shots, against a three-shot corpus ratio.
+    assert types[EventType.SHOT] + types[EventType.GOAL] == max(4, quotas[EventType.SHOT])
+    assert types[EventType.CARRY] == quotas[EventType.CARRY] - max(0, 4 - quotas[EventType.SHOT])
+    for kind in (EventType.PASS, EventType.PRESSURE):
         assert types[kind] == quotas[kind]
 
 
