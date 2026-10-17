@@ -17,12 +17,14 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from matchpulse.events import MatchEvent, MatchMetadata
+from matchpulse.foundry_preview import router as foundry_preview_router
 from matchpulse.intelligence import MatchProcessor, TacticalInsight, analyze_stream
 from matchpulse.narrative_stream import router as narrative_router
 from matchpulse.scenarios import SCENARIO_NAMES, scenario
 
 app = FastAPI(title="MatchPulse AI", version="0.3.0")
 app.include_router(narrative_router)
+app.include_router(foundry_preview_router)
 
 
 class TacticalInsightPayload(BaseModel):
