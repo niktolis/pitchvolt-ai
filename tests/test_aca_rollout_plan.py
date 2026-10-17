@@ -17,7 +17,7 @@ def test_rollout_plan_requires_subscription_and_prints_only() -> None:
         "AZURE_CONTAINER_APP": "matchpulse-web",
         "MATCHPULSE_NARRATIVE_PROVIDER": "local",
     }
-    result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True)
+    result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True, check=False)
     assert result.returncode == 0
     assert "DOES NOT execute Azure changes" in result.stdout
     assert "az acr create" in result.stdout
@@ -35,5 +35,5 @@ def test_rollout_plan_rejects_remote_provider() -> None:
         "AZURE_CONTAINER_APP": "matchpulse-web",
         "MATCHPULSE_NARRATIVE_PROVIDER": "foundry",
     }
-    result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True)
+    result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True, check=False)
     assert result.returncode != 0
