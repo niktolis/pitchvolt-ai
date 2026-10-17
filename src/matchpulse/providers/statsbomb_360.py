@@ -90,7 +90,7 @@ def _frame(record: dict[str, Any], event: dict[str, Any]) -> Historical360Frame:
     observations: list[Observed360Player] = []
     for index, item in enumerate(raw_players):
         if not isinstance(item, dict):
-            raise ValueError("Invalid StatsBomb 360 player observation")
+            raise TypeError("Invalid StatsBomb 360 player observation")
         if any(type(item.get(flag)) is not bool for flag in ("teammate", "actor", "keeper")):
             raise ValueError("StatsBomb 360 observation requires exact boolean flags")
         if item["actor"] and not item["teammate"]:
@@ -165,7 +165,7 @@ def load_historical_360(
     frames: list[Historical360Frame] = []
     for item in decoded:
         if not isinstance(item, dict) or not isinstance(item.get("event_uuid"), str):
-            raise ValueError("Invalid StatsBomb 360 event_uuid")
+            raise TypeError("Invalid StatsBomb 360 event_uuid")
         event_id = item["event_uuid"]
         if event_id in seen:
             raise ValueError("Duplicate StatsBomb 360 event frame")
