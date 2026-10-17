@@ -127,3 +127,7 @@ The optional link schema resides in one backend module and reuses the existing `
 ## Conservative assertion audit (shadow only)
 
 An independent offline lexical auditor flags a deliberately limited set of football assertions: attacking-action counts, turnover-to-shot duration, scorelines and selected outcome/identity/superiority language. It reports supported, contradicted or unverifiable per recognized excerpt. This is not semantic entailment or full assertion extraction: coverage is **always incomplete**, even if every identified numerical claim matches canonical metrics. No audit result authorizes publication. The public narrative and deterministic fallback remain unchanged. A later milestone requires comprehensive claim extraction and independent entailment evaluation with adversarial coverage tests before any creative prose publication.
+
+## Broadcast voice, shadow only
+
+The Casual editorial policy prioritizes passionate, spontaneous live-play-by-play phrasing inspired by the energy of Premier League commentary, without imitating named broadcasters. Analyst is an energetic but precise co-commentator; Club is engaged but evidence-first. This is a **prompt policy change only**: model-authored text remains shadow-only, and the controlled renderer still determines the public narrative. Synthetic match events must not become fabricated goals, scorelines, crowd responses or match outcomes. No Azure inference is enabled by this change.
