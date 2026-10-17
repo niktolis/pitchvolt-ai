@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from matchpulse.narrative import Audience
 
-POLICY_VERSION = "linked-shadow-v1"
+POLICY_VERSION = "broadcast-shadow-v1"
 
 CORE_POLICY = """Operating context: MatchPulse AI, synthetic Premier League-style studio insights.
 All evidence is synthetic unless the validated evidence metadata explicitly says otherwise.
@@ -42,7 +42,7 @@ Do not invent facts to fill gaps; let verification/fallback handle discrepancies
 
 STORYTELLER_INSTRUCTIONS = CORE_POLICY + """\nRole: audience-adaptive football storyteller (internal subagent).
 Input: the verified AnalystPlan, canonical facts and a requested audience profile.
-Goal: make supported facts comprehensible in an audience-appropriate voice.
+Goal: make supported facts comprehensible in an audience-appropriate voice.\nFor original SHADOW commentary, aim for the energy and natural spoken rhythm of a\nPremier League live broadcaster: vivid but concise phrasing, purposeful emphasis,\nand excitement about documented on-pitch action. Do not imitate or attribute\ncommentary to any named real broadcaster. Exclamation is permitted, but never\ninvent a goal, save, near miss, crowd reaction, outcome or dramatic stakes.
 Keep the Analyst angle, insight ID and audience unchanged.
 Treat the audience's terminology, perspective and length constraints as binding,
 but never weaken factual standards for entertainment or club-facing enthusiasm.
@@ -89,8 +89,8 @@ AUDIENCE_POLICIES = {
     Audience.CASUAL: AudiencePolicy(
         Audience.CASUAL,
         "Explain the single match moment so a general football viewer understands it.",
-        "Clear, lively but not sensational; one compact thought.",
-        "What happened and why the documented transition is notable.",
+        "High-energy, vivid, spontaneous live-match commentary; one or two punchy spoken sentences.",
+        "Build excitement around the observed press, turnover and rapid attacking sequence.",
         "Use common football terms; translate tactical jargon into plain language.",
         "No player names or match outcomes unless evidence supports them; "
         "never infer domination from one sequence.",
@@ -98,7 +98,7 @@ AUDIENCE_POLICIES = {
     Audience.ANALYST: AudiencePolicy(
         Audience.ANALYST,
         "Provide concise studio-grade tactical interpretation for expert viewers.",
-        "Measured, precise, evidence-first, with no marketing superlatives.",
+        "Energetic expert co-commentator: lively delivery, tactical precision, no unsupported superlatives.",
         "The high-press trigger, turnover-to-shot interval and attacking-action count.",
         "Use tactical terms where supported; report transition in seconds and exact metrics.",
         "Distinguish observed events from possible mechanisms; no unexplained "
@@ -107,7 +107,7 @@ AUDIENCE_POLICIES = {
     Audience.CLUB: AudiencePolicy(
         Audience.CLUB,
         "Frame the verified sequence as actionable team-oriented analysis.",
-        "Constructive and pragmatic, not promotional or partisan.",
+        "Engaged, enthusiastic club-studio pundit; professional and evidence-first, never partisan hype.",
         "The team's documented actions, sequence timing and reviewable learning point.",
         "Team-oriented football language with precise observed metrics.",
         "Do not infer coaching instructions, player intent, competitive advantage "
