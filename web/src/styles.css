@@ -1573,3 +1573,56 @@ body::after {
   text-transform: uppercase;
   text-shadow: 0 1px 4px #020f07;
 }
+
+/* Broadcast-preview play affordance: a real control wired to the match cursor. */
+.pitch-play-overlay {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 78px;
+  height: 78px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--pv-primary);
+  border-radius: 50%;
+  background: rgba(2, 15, 9, 0.85);
+  box-shadow: 0 0 0 5px rgba(5, 16, 8, 0.23), 0 0 24px rgba(182, 230, 75, 0.36);
+  color: var(--pv-text);
+  font-size: 34px;
+  transition: opacity 150ms ease, box-shadow 150ms ease;
+}
+.pitch-play-overlay span {
+  line-height: 1;
+}
+.pitch-play-overlay.is-playing {
+  opacity: 0.06;
+}
+.pitch-play-overlay.is-playing:hover,
+.pitch-play-overlay.is-playing:focus-visible {
+  opacity: 1;
+}
+.pitch-play-overlay.is-paused {
+  opacity: 1;
+}
+.pitch-play-overlay:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+.pitch-play-overlay:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+@media (max-width: 720px) {
+  .pitch-play-overlay {
+    width: 60px;
+    height: 60px;
+    font-size: 27px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pitch-play-overlay {
+    transition: none;
+  }
+}
