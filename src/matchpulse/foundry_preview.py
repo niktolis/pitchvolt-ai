@@ -109,10 +109,10 @@ async def foundry_preview_stream(
     async def publish() -> AsyncIterator[str]:
         try:
             async for update in _one_insight(name, audience):
-                yield f"event: narrative_update\\ndata: {update.model_dump_json()}\\n\\n"
+                yield f"event: narrative_update\ndata: {update.model_dump_json()}\n\n"
         except Exception:  # noqa: BLE001 - protect SSE completion on unexpected failure
-            yield "event: narrative_error\\ndata: {}\\n\\n"
-        yield "event: narrative_complete\\ndata: {}\\n\\n"
+            yield "event: narrative_error\ndata: {}\n\n"
+        yield "event: narrative_complete\ndata: {}\n\n"
 
     return StreamingResponse(
         publish(), media_type="text/event-stream",
