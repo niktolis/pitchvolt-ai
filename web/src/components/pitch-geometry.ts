@@ -21,7 +21,6 @@ export function isSourcePitchPoint(point: PitchPoint | null | undefined): point 
   );
 }
 
-
 export function toWorld(point: PitchPoint): THREE.Vector3 {
   return new THREE.Vector3(point.x - FIELD_WIDTH / 2, 0, point.y - FIELD_HEIGHT / 2);
 }
