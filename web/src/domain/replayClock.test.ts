@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import type { ReplayMessage } from "../api/types";
-import { atOrBefore, clampCursor, latestAtCursor, matchBounds, visibleNarrativeIds } from "./replayClock";
+import {
+  atOrBefore,
+  clampCursor,
+  latestAtCursor,
+  matchBounds,
+  visibleNarrativeIds,
+} from "./replayClock";
 
 const event = (id: number, clock: number): ReplayMessage =>
   ({
