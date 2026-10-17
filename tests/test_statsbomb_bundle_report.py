@@ -19,12 +19,13 @@ def sample(tmp_path):
          "team": {"id": 2, "name": "Away"}, "player": {"id": 20, "name": "Away 20"},
          "location": [100, 40], "shot": {"outcome": {"name": "Goal"}}},
     ]
+
     def players(ident: int) -> dict[str, object]:
         return {
-        "player_id": ident, "player_name": f"Player {ident}",
-        "player_nickname": None, "jersey_number": ident,
-        "positions": [],
-    }
+            "player_id": ident, "player_name": f"Player {ident}",
+            "player_nickname": None, "jersey_number": ident,
+            "positions": [],
+        }
     lineups = [
         {"team_id": 1, "team_name": "Home", "lineup": [players(10)]},
         {"team_id": 2, "team_name": "Away", "lineup": [players(20)]},
