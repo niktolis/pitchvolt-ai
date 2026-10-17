@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from matchpulse.api import app
 from matchpulse.events import EventType, validate_stream
 from matchpulse.scenarios import scenario
+from matchpulse.statsbomb_reference import REFERENCE_ACTION_COUNTS, REFERENCE_PROJECTED_COUNT, calibrated_action_quotas
 
 
 def test_long_fixture_is_deterministic_across_requests():
@@ -29,7 +30,7 @@ def test_source_backed_goals_and_no_implicit_score():
     goals = [e for e in events if e.event_type == EventType.GOAL]
     assert goals
     assert all(e.outcome.value == "success" and e.destination is not None for e in goals)
-    assert all(e.evidence["fixture"] == "seeded_uncalibrated" for e in events)
+    assert all(e.evidence["fixture"] == "statsbomb_reference_weighted_actions" for e in events)
 
 
 def test_api_timeline_and_catalog_include_long_fixture():
@@ -41,3 +42,18 @@ def test_api_timeline_and_catalog_include_long_fixture():
     assert sum(item["kind"] == "match_event" for item in items) == 220
     assert items[0]["payload"]["period"] == 1
     assert items[-1]["payload"]["period"] == 2
+
+
+def test_action_family_quota_matches_pinned_reference() -> None:
+    from collections import Counter
+
+    quotas = calibrated_action_quotas(216)
+    assert sum(quotas.values()) == 216
+    assert sum(REFERENCE_ACTION_COUNTS.values()) == REFERENCE_PROJECTED_COUNT
+    _, events = scenario("extended_match", 42)
+    types = Counter(e.event_type for e in events)
+    assert types[EventType.TURNOVER] == 4
+    assert types[EventType.GOAL] == 1
+    assert types[EventType.SHOT] + types[EventType.GOAL] == quotas[EventType.SHOT]
+    for kind in (EventType.PASS, EventType.CARRY, EventType.PRESSURE):
+        assert types[kind] == quotas[kind]
