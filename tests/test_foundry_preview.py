@@ -1,6 +1,8 @@
 """No unexpected billable requests from public application routes."""
 from __future__ import annotations
 
+import json
+
 from fastapi.testclient import TestClient
 
 from matchpulse import foundry_preview
@@ -50,7 +52,6 @@ def test_preview_requires_private_token_endpoint_and_is_single_use(monkeypatch) 
         assert "event: narrative_update\\ndata: " in first.text
         assert "\\n\\nevent: narrative_complete\\ndata: {}\\n\\n" in first.text
         assert "\\\\n" not in first.text
-        import json
         data_line = next(line for line in first.text.splitlines() if line.startswith("data: {") and line != "data: {}")
         assert json.loads(data_line.removeprefix("data: "))["source"] == "foundry_controlled"
         result = client.get(url, headers={"X-MatchPulse-Inference-Token": token})
