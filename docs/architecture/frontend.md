@@ -1,5 +1,7 @@
 # Live broadcast UI — behavior and architecture
 
+> **Continue UI work in a new chat:** read the [dedicated UI handoff](../handoff-ui-next-chat.md) alongside the [overall project handoff](../handoff-next-chat.md). The UI handoff records the approved preview, source-position safeguards, PR #117 state and manual visual acceptance protocol.
+
 ## Business purpose
 
 The React broadcast is the first judge-visible vertical slice of PitchVolt AI. It turns the deterministic replay transport into an inspectable experience without creating a second source of football truth:
