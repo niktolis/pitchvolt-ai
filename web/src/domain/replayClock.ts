@@ -47,3 +47,15 @@ export function isEvidenceVisible(
 ): boolean {
   return visibleNarrativeIds(messages, cursorMs).has(insightId);
 }
+
+/** Most recent *published* tactical insights, never inferred from actor movement. */
+export function recentInsightsAtCursor(
+  messages: readonly ReplayMessage[],
+  cursorMs: number,
+  limit = 3,
+) {
+  return atOrBefore(messages, cursorMs)
+    .filter(isTacticalInsight)
+    .slice(-Math.max(0, limit))
+    .reverse();
+}
