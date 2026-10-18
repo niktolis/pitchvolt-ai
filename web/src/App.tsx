@@ -17,9 +17,9 @@ import type {
 } from "./api/types";
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
-import { recentRecordedActions, recordedActionCopy } from "./domain/editorialActivity";
 import { Pitch } from "./components/Pitch";
 import { SourceMomentPreview } from "./components/SourceMomentPreview";
+import { recentRecordedActions, recordedActionCopy } from "./domain/editorialActivity";
 import {
   lineupAtCursor,
   playerLabel,
@@ -177,7 +177,10 @@ export function App() {
   const visibleMessages = replay.visible;
   const selected = selectedAtCursor(visibleMessages, selectedId, cursorMs, playing);
   const latestInsight = replay.insight;
-  const observedActions = useMemo(() => recentRecordedActions(messages, cursorMs), [messages, cursorMs]);
+  const observedActions = useMemo(
+    () => recentRecordedActions(messages, cursorMs),
+    [messages, cursorMs],
+  );
   const recentInsights = useMemo(
     () => recentInsightsAtCursor(messages, cursorMs),
     [messages, cursorMs],
@@ -255,14 +258,34 @@ export function App() {
             <span>Analysis</span>
             <span>Teams</span>
           </nav>
-          <div className="broadcast-utilities" aria-label="Broadcast presentation details">
-            <svg className="broadcast-utility-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <div className="broadcast-utilities">
+            <svg
+              className="broadcast-utility-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <circle cx="10.5" cy="10.5" r="6.8" stroke="currentColor" strokeWidth="1.8" />
-              <path d="m15.5 15.5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              <path
+                d="m15.5 15.5 5 5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
-            <svg className="broadcast-utility-icon profile" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg
+              className="broadcast-utility-icon profile"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.7" />
-              <path d="M5 20c0-4.1 3.1-6.2 7-6.2s7 2.1 7 6.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              <path
+                d="M5 20c0-4.1 3.1-6.2 7-6.2s7 2.1 7 6.2"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              />
             </svg>
             <span className="broadcast-preview-label">SYNTHETIC REPLAY</span>
           </div>
@@ -611,61 +634,61 @@ export function App() {
         </div>
       </section>
 
-        <details className="broadcast-roster">
-          <summary>
-            Team rosters &amp; substitutions <span>Source-authored fiction</span>
-          </summary>
-          {presentation ? (
-            <div className="broadcast-roster-grid">
-              {[presentation.home, presentation.away].map((team) => {
-                const active =
-                  team.team_id === presentation.home.team_id
-                    ? replayLineup?.home_active
-                    : replayLineup?.away_active;
-                const playerById = new Map(
-                  team.players.map((player) => [player.player_id, player]),
-                );
-                const visibleChanges = presentation.substitutions.filter(
-                  (change) => change.team_id === team.team_id && change.clock_ms <= cursorMs,
-                );
-                return (
-                  <section key={team.team_id} aria-label={`${team.name} roster`}>
-                    <h3>
-                      {team.name} <small>Coach: {team.coach}</small>
-                    </h3>
-                    {active ? (
-                      <ol className="roster-active-list">
-                        {active.map((id) => (
-                          <li key={id}>
-                            <span>{playerById.get(id)?.jersey_number ?? "–"}</span>{" "}
-                            {playerById.get(id)?.surname ?? "Unknown"}
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <p>Starting XI not established for this excerpt.</p>
-                    )}
-                    <div className="roster-substitutions" aria-live="polite">
-                      {visibleChanges.map((change) => (
-                        <p key={change.event_id}>
-                          <strong>{clockLabel(change.clock_ms)}</strong>
-                          <span className="roster-out">
-                            ↓ {playerById.get(change.outgoing_player_id)?.surname ?? "Unknown"}
-                          </span>
-                          <span className="roster-in">
-                            ↑ {playerById.get(change.incoming_player_id)?.surname ?? "Unknown"}
-                          </span>
-                        </p>
+      <details className="broadcast-roster">
+        <summary>
+          Team rosters &amp; substitutions <span>Source-authored fiction</span>
+        </summary>
+        {presentation ? (
+          <div className="broadcast-roster-grid">
+            {[presentation.home, presentation.away].map((team) => {
+              const active =
+                team.team_id === presentation.home.team_id
+                  ? replayLineup?.home_active
+                  : replayLineup?.away_active;
+              const playerById = new Map(
+                team.players.map((player) => [player.player_id, player]),
+              );
+              const visibleChanges = presentation.substitutions.filter(
+                (change) => change.team_id === team.team_id && change.clock_ms <= cursorMs,
+              );
+              return (
+                <section key={team.team_id} aria-label={`${team.name} roster`}>
+                  <h3>
+                    {team.name} <small>Coach: {team.coach}</small>
+                  </h3>
+                  {active ? (
+                    <ol className="roster-active-list">
+                      {active.map((id) => (
+                        <li key={id}>
+                          <span>{playerById.get(id)?.jersey_number ?? "–"}</span>{" "}
+                          {playerById.get(id)?.surname ?? "Unknown"}
+                        </li>
                       ))}
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
-          ) : (
-            <p>Loading verified fixture metadata…</p>
-          )}
-        </details>
+                    </ol>
+                  ) : (
+                    <p>Starting XI not established for this excerpt.</p>
+                  )}
+                  <div className="roster-substitutions" aria-live="polite">
+                    {visibleChanges.map((change) => (
+                      <p key={change.event_id}>
+                        <strong>{clockLabel(change.clock_ms)}</strong>
+                        <span className="roster-out">
+                          ↓ {playerById.get(change.outgoing_player_id)?.surname ?? "Unknown"}
+                        </span>
+                        <span className="roster-in">
+                          ↑ {playerById.get(change.incoming_player_id)?.surname ?? "Unknown"}
+                        </span>
+                      </p>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        ) : (
+          <p>Loading verified fixture metadata…</p>
+        )}
+      </details>
 
       <footer>
         <span>Ingest → Interpret → Explain → Render → Personalize</span>
