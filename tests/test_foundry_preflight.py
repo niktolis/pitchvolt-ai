@@ -10,7 +10,7 @@ import pytest
 
 from pitchvolt import foundry_preflight
 from pitchvolt.foundry_adapter import FoundryRoles, sanitized_response_metadata, usage_counts
-from pitchvolt.foundry_config import SMOKE_SETTINGS, isolated_foundry_config
+from pitchvolt.foundry_config import isolated_foundry_config
 from pitchvolt.foundry_smoke import fixture
 from pitchvolt.narrative import Audience, InMemoryEvidenceTool
 from pitchvolt.workflow import Orchestrator

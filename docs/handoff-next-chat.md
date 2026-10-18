@@ -190,15 +190,15 @@ than implying full professional match-tracking support.
 
 ## Next prioritized implementation after #118
 
-1. **Editorial action ticker #58 (PR #125 under review)** and remaining temporal
+1. **Editorial action ticker #58 (PR #125 merged)** and remaining temporal
    edge cases #63 (P0). A compact `recorded-action-feed` below the pitch
    selects the three latest **actual match_event** records at or before the
    authoritative replay cursor. It never fills gaps with fictional play,
    creates a tactical insight, or derives a ball/player trajectory. The
    existing `recentInsightsAtCursor` three-insight feed is separate.
-   Confirm PR #124 evidence navigation and UI screenshot before merging
-   overlapping work. After #125, test stream completion, audience switches
-   and long replay seeking end-to-end.
+   PR #125 is merged as `e340e06bbe999495f3cd1a45d7a9cf66211280b4`;
+   the next task is offline Foundry #4, followed by judge-ready replay
+   end-to-end tests. Keep the UI-specific handover independently current.
 2. **Original fixture crest/artwork and UI target fidelity #59/#18/#61.**
    Extend only after approved visuals, real production screenshot and
    existing source identity contract. Avoid celebrity/real club

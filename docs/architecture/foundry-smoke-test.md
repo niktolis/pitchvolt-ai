@@ -86,7 +86,7 @@ The 17 Oct Analyst request returned in ~5.3 seconds without a structured value o
 
 ### Isolated Analyst budget experiment (not a live-test approval)
 
-For a future separately approved smoke attempt, the CLI now specifies 512 output tokens for the GPT-5 mini Analyst instead of the default 256, while the Storyteller and production defaults remain at 256. The previous Analyst returned no structured value and no tool calls, but token exhaustion has **not** been proven. GPT-5 reasoning tokens may consume part of the response budget. The larger cap may increase cost or encounter the deployment's 1,000 TPM throughput constraints; do not increase Azure quota or execute inference without separate operator approval. The CLI dry run displays the proposed budget without Azure requests.
+Historical note: the CLI formerly budgeted 512 Analyst output tokens. The current reviewed isolated smoke uses **4096** Analyst output tokens, while Storyteller and production defaults remain at 256. An earlier Analyst response exhausted a smaller token allocation; this does not establish the outcome of the next call. GPT-5 reasoning tokens may consume part of the response budget. The higher cap can increase charges or exceed a deployment's TPM allocation; do not change quotas or run inference without explicit approval. The CLI dry run displays the proposed budget without Azure requests.
 
 ### Local OpenAI HTTP retry policy
 

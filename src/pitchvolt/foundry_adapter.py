@@ -242,7 +242,6 @@ class FoundryRoles:
             # A transport/schema failure may happen *after* real model tool
             # requests. Keep only the IDs actually observed, even on error.
             self.last_evidence_tool_calls = tuple(observed)
-        self.last_evidence_tool_calls = tuple(observed)
         if response.value is None:
             raise ValueError("Analyst returned no structured output")
         plan = AnalystPlan.model_validate(response.value)
