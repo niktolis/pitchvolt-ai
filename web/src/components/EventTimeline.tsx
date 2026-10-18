@@ -19,7 +19,7 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
         <span className="count-badge">{messages.length}</span>
       </div>
 
-      <div className="timeline" role="group" aria-label="Recorded replay events">
+      <section className="timeline" aria-label="Recorded replay events">
         {messages.length === 0 ? (
           <p className="empty-state">Waiting for the deterministic SSE replay…</p>
         ) : (
@@ -68,7 +68,7 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
             return null;
           })
         )}
-      </div>
+      </section>
     </section>
   );
 }
