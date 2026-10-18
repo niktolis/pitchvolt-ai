@@ -1,6 +1,6 @@
 # Foundry configuration knobs (developer guide)
 
-**Source of truth:** `src/matchpulse/foundry_config.py`. Do not duplicate tunables or validation in the adapter. `FoundryConfig` and `RoleSettings` are immutable typed dataclasses. Existing imports through `matchpulse.foundry_adapter` remain supported.
+**Source of truth:** `src/pitchvolt/foundry_config.py`. Do not duplicate tunables or validation in the adapter. `FoundryConfig` and `RoleSettings` are immutable typed dataclasses. Existing imports through `pitchvolt.foundry_adapter` remain supported.
 
 | Setting | Default | Valid range / intent |
 |---|---:|---|
@@ -19,7 +19,7 @@
 Example (offline configuration only):
 
 ```python
-from matchpulse.foundry_config import FoundryConfig, RoleSettings
+from pitchvolt.foundry_config import FoundryConfig, RoleSettings
 
 config = FoundryConfig(
     project_endpoint="https://example.services.ai.azure.com/api/projects/sample",
