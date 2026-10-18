@@ -437,10 +437,16 @@ export function App() {
                   key={message.payload.event_id}
                   onClick={() => void inspect(message)}
                 >
-                  <span className="observed-action-symbol" aria-hidden="true">↗</span>
+                  <span className="observed-action-symbol" aria-hidden="true">
+                    ↗
+                  </span>
                   <span className="observed-action-copy">
-                    <strong>{playerLabel(presentation, message.payload.player_id)} · {item.heading}</strong>
-                    <small>{item.time} · {item.detail}</small>
+                    <strong>
+                      {playerLabel(presentation, message.payload.player_id)} · {item.heading}
+                    </strong>
+                    <small>
+                      {item.time} · {item.detail}
+                    </small>
                   </span>
                 </button>
               );
