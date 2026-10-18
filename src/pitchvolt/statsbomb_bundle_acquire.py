@@ -10,10 +10,10 @@ import hashlib
 from pathlib import Path
 from urllib.request import urlopen
 
-from matchpulse.providers.statsbomb_360 import load_historical_360
-from matchpulse.providers.statsbomb_lineups import load_historical_lineups
-from matchpulse.statsbomb_acquire import prepare_fixture, source_urls
-from matchpulse.statsbomb_bundle_report import load_verified_historical_bundle
+from pitchvolt.providers.statsbomb_360 import load_historical_360
+from pitchvolt.providers.statsbomb_lineups import load_historical_lineups
+from pitchvolt.statsbomb_acquire import prepare_fixture, source_urls
+from pitchvolt.statsbomb_bundle_report import load_verified_historical_bundle
 
 MAX_SOURCE_BYTES = 30_000_000
 

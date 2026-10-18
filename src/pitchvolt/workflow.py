@@ -12,9 +12,9 @@ from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from matchpulse.evidence_links import LinkedClaim
-from matchpulse.intelligence import InsightKind
-from matchpulse.narrative import (
+from pitchvolt.evidence_links import LinkedClaim
+from pitchvolt.intelligence import InsightKind
+from pitchvolt.narrative import (
     Audience,
     Claim,
     ClaimKind,

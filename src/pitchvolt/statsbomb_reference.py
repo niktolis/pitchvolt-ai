@@ -6,7 +6,7 @@ these aggregate event types.
 """
 from __future__ import annotations
 
-from matchpulse.events import EventType
+from pitchvolt.events import EventType
 
 REFERENCE_MATCH_ID = "9880"
 REFERENCE_COMMIT = "4b73468fc5b0f1950f9f66fada70ad3a4f9327cb"

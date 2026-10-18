@@ -11,8 +11,8 @@ import re
 from pathlib import Path
 from urllib.request import urlopen
 
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
-from matchpulse.providers.statsbomb_historical import load_historical_fixture
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.providers.statsbomb_historical import load_historical_fixture
 
 _COMMIT = re.compile(r"[0-9a-f]{40}")
 _MATCH = re.compile(r"[0-9]+")
