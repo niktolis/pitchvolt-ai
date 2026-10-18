@@ -7,10 +7,10 @@ Run locally after installing the project:
 ```shell
 python -m pip install -e '.[dev]'
 python -m pytest
-python -c 'from matchpulse.simulation import high_press_replay; print([e.model_dump(mode="json") for e in high_press_replay()])'
+python -c 'from pitchvolt.simulation import high_press_replay; print([e.model_dump(mode="json") for e in high_press_replay()])'
 ```
 
-The source adapter protocol and canonical event schema are in `src/matchpulse/events.py`. Coordinates use a normalized 105 × 68 metre pitch. Event times are simulated match-clock times, not live broadcast capture times.
+The source adapter protocol and canonical event schema are in `src/pitchvolt/events.py`. Coordinates use a normalized 105 × 68 metre pitch. Event times are simulated match-clock times, not live broadcast capture times.
 
 **Deliberate limitations**: this is not yet a complete match simulator or a general StatsBomb Open Data importer. It does not calculate player tracking speed or shot probabilities. No real StatsBomb records are imported. Before claiming football-realistic distributions, add explicit calibration and invariants and review reference licensing.
 
@@ -19,9 +19,9 @@ Acceptance for this slice: repeatability, schema-validation, ordered unique IDs,
 
 ## StatsBomb-shaped fictional events (issue #15)
 
-The canonical MatchPulse pitch remains **105 × 68 metres**; it is not a StatsBomb
+The canonical PitchVolt pitch remains **105 × 68 metres**; it is not a StatsBomb
 120 × 80 coordinate pitch. The isolated adapter
-`matchpulse.providers.statsbomb` maps **StatsBomb-native pitch coordinates**
+`pitchvolt.providers.statsbomb` maps **StatsBomb-native pitch coordinates**
 to canonical metres, validates event type IDs, nested payloads, timestamps,
 possession consistency, IDs and source provenance. These two conventions must
 never be mixed inside `MatchProcessor` or React.
@@ -31,8 +31,8 @@ high-press scenario (no external data downloaded):
 
 ```python
 import json
-from matchpulse.scenarios import scenario
-from matchpulse.providers.statsbomb import synthetic_to_statsbomb
+from pitchvolt.scenarios import scenario
+from pitchvolt.providers.statsbomb import synthetic_to_statsbomb
 
 match, events = scenario("high_press", seed=42)
 print(json.dumps(synthetic_to_statsbomb(match, events), indent=2))
@@ -76,7 +76,7 @@ be relabeled synthetic. The Open Data repo requests source and logo attribution
 on public analysis; redistribution/commercial terms need separate review.
 Full historical-data import, broader event families, 3rd/4th periods,
 unstructured match metadata, 3D shot-height data (deliberately not fabricated), frame/360 support, and production-scale event
-semantics remain tracked in [issue #15](https://github.com/niktolis/matchpulse-ai/issues/15).
+semantics remain tracked in [issue #15](https://github.com/niktolis/pitchvolt-ai/issues/15).
 
 
 ## New primary acceptance direction (October 2026)

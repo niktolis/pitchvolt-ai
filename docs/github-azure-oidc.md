@@ -11,7 +11,7 @@ receive Azure OIDC authentication. Production Foundry inference stays off.
 Use a **dedicated Entra app registration and service principal with federated
 GitHub Actions OIDC credentials**, not an interactive human account, password,
 registry admin credential or client secret. Federation matches only
-`repo:niktolis/matchpulse-ai:ref:refs/heads/main` and audience
+`repo:niktolis/pitchvolt-ai:ref:refs/heads/main` and audience
 `api://AzureADTokenExchange`. The GitHub job requests `id-token: write`
 only for the deployment job. The separate existing user-assigned managed
 identity `matchpulse-acr-pull` continues to serve private ACR image pulls at
@@ -45,7 +45,7 @@ Create the exact federated identity trust (no secrets). Use standard Bash
 `string join` to construct the JSON object:
 
 ```fish
-set -l credential '{"name":"matchpulse-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:niktolis/matchpulse-ai:ref:refs/heads/main","description":"Only GitHub main can deploy MatchPulse","audiences":["api://AzureADTokenExchange"]}'
+set -l credential '{"name":"pitchvolt-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:niktolis/pitchvolt-ai:ref:refs/heads/main","description":"Only GitHub main can deploy PitchVolt","audiences":["api://AzureADTokenExchange"]}'
 az ad app federated-credential create --id $CI_APP_OBJECT_ID --parameters $credential
 
 set -gx CI_PRINCIPAL_ID (az ad sp show --id $CI_APP_ID --query id -o tsv)
@@ -54,9 +54,9 @@ set -gx ACA_ID (az containerapp show -g rg-matchpulse-dev -n matchpulse-web --qu
 az role assignment create --assignee-object-id $CI_PRINCIPAL_ID --assignee-principal-type ServicePrincipal --role AcrPush --scope $ACR_ID
 az role assignment create --assignee-object-id $CI_PRINCIPAL_ID --assignee-principal-type ServicePrincipal --role Contributor --scope $ACA_ID
 
-gh variable set AZURE_CLIENT_ID --repo niktolis/matchpulse-ai --body $CI_APP_ID
-gh variable set AZURE_TENANT_ID --repo niktolis/matchpulse-ai --body $TENANT_ID
-gh variable set AZURE_SUBSCRIPTION_ID --repo niktolis/matchpulse-ai --body $SUB
+gh variable set AZURE_CLIENT_ID --repo niktolis/pitchvolt-ai --body $CI_APP_ID
+gh variable set AZURE_TENANT_ID --repo niktolis/pitchvolt-ai --body $TENANT_ID
+gh variable set AZURE_SUBSCRIPTION_ID --repo niktolis/pitchvolt-ai --body $SUB
 ```
 
 `gh auth status` and `az account show` must reference the expected GitHub

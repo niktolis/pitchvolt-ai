@@ -1,13 +1,13 @@
-# MatchPulse AI — durable handoff (16 October 2026)
+# PitchVolt AI — durable handoff (16 October 2026)
 
 **Deadline:** 27 October 2026. **Current authoritative source:** the main branch plus open GitHub issues and pull requests, not stale summaries here.
 
 ## Repository, scope and rules
-- Private repository: https://github.com/niktolis/matchpulse-ai; project: https://github.com/users/niktolis/projects/6.
+- Private repository: https://github.com/niktolis/pitchvolt-ai; project: https://github.com/users/niktolis/projects/6.
 - Original **fictional/synthetic football** events only. Do not import actual StatsBomb Open Data as synthetic; licensing and full historic compatibility tracked by #15.
 - Canonical validated `MatchEvent` and one deterministic `MatchProcessor` own all metrics, identity, score and evidence. Agents must not fabricate football truths.
 - Architecture ADRs: `docs/decisions/ADR-0001-intelligence-boundary.md`, `ADR-0002-agent-orchestration.md`, `ADR-0003-container-apps-streaming.md`. Two-speed delivery: fast deterministic match events independently of slow narrative.
-- **GitHub workflow:** issue → branch → tests → draft PR → explicit owner review/approval → merge. **Do not invoke Codex commands/integrations or grant GitHub organization access without explicit prior approval** (particularly `cariad-t2`). Prior MatchPulse-specific Codex exception wording was outdated; explicit approval is required.
+- **GitHub workflow:** issue → branch → tests → draft PR → explicit owner review/approval → merge. **Do not invoke Codex commands/integrations or grant GitHub organization access without explicit prior approval** (particularly `cariad-t2`). Prior PitchVolt-specific Codex exception wording was outdated; explicit approval is required.
 - **Zero out-of-pocket Azure policy:** subscription Free Trial with spending limit; project resource group `rg-matchpulse-dev`, Foundry account `matchpulse-ai-resource`, project `matchpulse-ai` in `swedencentral`. No Azure model deployment, inference invocation or billable provisioning without separately presenting model, projected costs and controls for explicit approval. Budget alerts alone are not a hard cap.
 - Do not merge automatically; no external model calls during local/CI testing.
 
@@ -26,7 +26,7 @@
 - Synchronize documentation and architecture diagrams, proof for `docs/judging-traceability.md`, and evaluate hackathon criteria.
 
 ## Source entry points
-- `src/matchpulse/events.py`, `intelligence.py`, `scenarios.py`, `narrative.py`, `workflow.py`, `narrative_stream.py`, `foundry_adapter.py`, `api.py`
+- `src/pitchvolt/events.py`, `intelligence.py`, `scenarios.py`, `narrative.py`, `workflow.py`, `narrative_stream.py`, `foundry_adapter.py`, `api.py`
 - `web/src/App.tsx`, `web/src/api/client.ts`
 - `docs/architecture/README.md`, `docs/architecture/controlled-narratives.md`, `docs/architecture/narrative-stream.md`
 - Local checks: `uv sync --frozen --extra dev && uv run --frozen bash scripts/check.sh`; `npm ci --prefix web && uv run --frozen bash scripts/check-web.sh`; `docker compose up --build api frontend`.
