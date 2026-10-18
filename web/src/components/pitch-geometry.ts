@@ -52,6 +52,22 @@ export function broadcastCameraPosition(
   return forward.clone().multiplyScalar(distance + 3);
 }
 
+/**
+ * A broadcast camera may pan between recorded actors without implying player tracking.
+ * With a known source event, show a closer region of the pitch; when absent, show all.
+ */
+export function actionCameraPose(
+  aspect: number,
+  focus: PitchPoint | null | undefined,
+): { position: THREE.Vector3; target: THREE.Vector3 } {
+  const located = isSourcePitchPoint(focus);
+  const target = located ? toWorld(focus) : new THREE.Vector3();
+  const fullFieldDistance = broadcastCameraPosition(aspect).length();
+  const distance = fullFieldDistance * (located ? 0.58 : 1);
+  const position = target.clone().addScaledVector(BROADCAST_DIRECTION, distance);
+  return { position, target };
+}
+
 /** The source owns the destination. A missing shot endpoint is not invented. */
 export function eventPath(
   source: PitchPoint,
