@@ -58,7 +58,7 @@ for source in "${sources[@]}"; do
   echo "Validating $name.d2"
   d2 validate "$source"
   if [[ "$MODE" == "check" ]]; then
-    temp="$(mktemp "${TMPDIR:-/tmp}/matchpulse-d2.XXXXXXXX.svg")"
+    temp="$(mktemp "${TMPDIR:-/tmp}/pitchvolt-d2.XXXXXXXX.svg")"
     trap 'rm -f "$temp"' EXIT
     d2 --layout="$LAYOUT" "$source" "$temp"
     if [[ ! -f "$output" ]] || ! cmp -s "$temp" "$output"; then

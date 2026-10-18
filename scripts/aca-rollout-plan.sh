@@ -7,7 +7,7 @@ set -euo pipefail
 : "${AZURE_REGISTRY_NAME:?Set globally unique registry name}"
 : "${AZURE_CONTAINER_ENV:?Set environment name}"
 : "${AZURE_CONTAINER_APP:?Set app name}"
-if [[ "${MATCHPULSE_NARRATIVE_PROVIDER:-local}" != "local" ]]; then
+if [[ "${PITCHVOLT_NARRATIVE_PROVIDER:-local}" != "local" ]]; then
   echo "Refusing Foundry-enabled demo plan" >&2
   exit 1
 fi
@@ -36,12 +36,12 @@ az acr create --resource-group "$AZURE_RESOURCE_GROUP" \
 
 # 3) Build existing production image in Azure (can incur build charges).
 az acr build --registry "$AZURE_REGISTRY_NAME" \
-  --image "matchpulse:demo" --file docker/backend.Dockerfile \
+  --image "pitchvolt:demo" --file docker/backend.Dockerfile \
   --target runtime .
 
 # 4) Resolve the immutable manifest digest from registry results before deploy:
 az acr manifest list-metadata --registry "$AZURE_REGISTRY_NAME" \
-  --name matchpulse --output table
+  --name pitchvolt --output table
 
 # 5) Create minimal Container Apps environment (may create logs/monitoring).
 az containerapp env create --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -49,9 +49,9 @@ az containerapp env create --resource-group "$AZURE_RESOURCE_GROUP" \
 
 # 6) Create a managed identity and allow ACR image pull (requires AcrPull).
 #    Review RBAC propagation, then create app with digest-pinned image:
-#    <registry>.azurecr.io/matchpulse@sha256:<verified-digest>
+#    <registry>.azurecr.io/pitchvolt@sha256:<verified-digest>
 #    target-port=8000, ingress=external, min-replicas=0, max-replicas=1.
-#    MATCHPULSE_NARRATIVE_PROVIDER=local (never enable Foundry in this rollout).
+#    PITCHVOLT_NARRATIVE_PROVIDER=local (never enable Foundry in this rollout).
 #    The final create command is intentionally not auto-generated until
 #    registry identity and actual digest have been verified.
 
