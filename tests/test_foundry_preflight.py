@@ -27,6 +27,9 @@ def test_preflight_is_offline_and_redacts_project_identity(monkeypatch, capsys):
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "READY_FOR_OPERATOR_APPROVAL"
     assert report["endpoint_is_valid_project_url"]
+    assert report["endpoint_existence_verified"] is False
+    assert report["model_deployments_verified"] is False
+    assert report["subscription_credit_verified"] is False
     assert report["cloud_requests_made"] == 0
     assert report["billable_inference_permitted"] is False
     assert report["http_max_retries"] == 0
@@ -41,6 +44,11 @@ def test_preflight_is_offline_and_redacts_project_identity(monkeypatch, capsys):
     "https://example.services.ai.azure.com/openai/v1/",
     "https://example.services.ai.azure.com/api/projects/p?key=secret",
     "https://user:secret@example.services.ai.azure.com/api/projects/p",
+    "https://YOUR-ACCOUNT.services.ai.azure.com/api/projects/YOUR-PROJECT",
+    "https://YOUR-ACCOUNT.services.ai.azure.com/api/projects/valid-project",
+    "https://valid-resource.services.ai.azure.com/api/projects/YOUR-PROJECT",
+    "https://replace-me.services.ai.azure.com/api/projects/demo",
+    "https://valid-resource.services.ai.azure.com/api/projects/placeholder",
 ])
 def test_preflight_blocks_invalid_or_missing_endpoint(monkeypatch, endpoint):
     monkeypatch.setattr(foundry_preflight.metadata, "version", lambda name: "installed")

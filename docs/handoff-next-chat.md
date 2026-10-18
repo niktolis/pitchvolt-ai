@@ -154,6 +154,27 @@ than implying full professional match-tracking support.
    No GitHub Codex integration in corporate org `cariad-t2` without
    explicit permission. Existing Azure resource names remain unchanged.
 
+## Operator workstation findings — October 18
+
+- Operator confirmed PR #130 smoke `DRY_RUN` on macOS: no credential
+  loading, zero inference; SDK versions found in local preflight.
+- Operator Python test run: **287 passed, 1 failed** because an untracked
+  old `src/matchpulse` directory exists locally. This directory is not
+  in GitHub's PR branch tree. Inspect its contents and move it to a
+  backup location **outside the repo** if no local modifications are
+  required. Do **not** weaken the repo branding identity gate to ignore
+  obsolete source trees. Re-run full checks after local cleanup.
+- Operator accidentally used the **literal** Foundry project endpoint
+  placeholder. Original preflight reported READY because only URL shape
+  was checked. PR #130 now rejects known template markers and explicitly
+  reports that endpoint existence, model deployment and Azure credits
+  remain unverified. Request the **real** Foundry project endpoint from
+  Microsoft Foundry project overview and validate it locally.
+- Remain at milestone B **STOP** until the user reviews and merges #130,
+  reports green full local checks, verifies actual endpoint/deployments/
+  remaining trial budget, and separately authorizes the one-shot
+  billable smoke. Do not issue live inference from this chat.
+
 ## Active Foundry milestone — PR #130, not yet merged
 
 - Current reviewed main at branch creation:

@@ -38,10 +38,22 @@ def evaluate(endpoint: str) -> dict[str, object]:
             config = isolated_foundry_config(
                 endpoint, evidence_event_count=len(bundle.events)
             )
-            parts = urlsplit(endpoint).path.strip("/").split("/")
+            url = urlsplit(endpoint)
+            parts = url.path.strip("/").split("/")
+            # Tutorial placeholders are syntactically valid URLs. Reject
+            # them explicitly before reporting local readiness; existence
+            # and authorization remain unverified without a cloud call.
+            example_markers = ("your-", "replace-me", "placeholder", "insert-")
+            host_label = (url.hostname or "").split(".")[0].casefold()
+            project_label = parts[2].casefold() if len(parts) == 3 else ""
+            is_placeholder = any(
+                marker in host_label or marker in project_label
+                for marker in example_markers
+            )
             endpoint_ok = (
                 len(parts) == 3 and parts[:2] == ["api", "projects"]
                 and bool(parts[2])
+                and not is_placeholder
                 and not config.inference_explicitly_approved
             )
         except ValueError:
@@ -53,6 +65,9 @@ def evaluate(endpoint: str) -> dict[str, object]:
         "status": "READY_FOR_OPERATOR_APPROVAL" if ready else "BLOCKED",
         "endpoint_is_valid_project_url": endpoint_ok,
         "endpoint_value_redacted": True,
+        "endpoint_existence_verified": False,
+        "model_deployments_verified": False,
+        "subscription_credit_verified": False,
         "dependencies": dependencies,
         "fixture": SMOKE_SETTINGS.scenario,
         "insight_id": bundle.insight.insight_id,

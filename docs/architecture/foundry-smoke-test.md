@@ -159,13 +159,23 @@ uv run --frozen --extra foundry bash scripts/check.sh
 uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke
 ```
 
-Next, set `PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT` **locally** to the actual
-Foundry **project** endpoint (no key and no additional query parameters):
+Next, obtain the actual project endpoint from **Microsoft Foundry →
+your project → Overview / Project details** (confirm the field is the
+project endpoint and not the resource or OpenAI inference endpoint).
+Set `PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT` **locally** to its exact value
+(no API keys or query parameters). **Replace both YOUR-ACCOUNT and
+YOUR-PROJECT below**. Copying the literal example must now return BLOCKED:
 
 ```fish
 set -gx PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT 'https://YOUR-ACCOUNT.services.ai.azure.com/api/projects/YOUR-PROJECT'
 uv run --frozen --extra foundry python -m pitchvolt.foundry_preflight
 ```
+
+The preflight now explicitly rejects template markers such as
+`YOUR-ACCOUNT`, `YOUR-PROJECT`, `replace-me` and `placeholder`.
+The first operator run inadvertently used the literal example and showed
+READY despite no actual project URL; this was only a shape check, not
+verification of a Foundry service, and is now prevented.
 
 The preflight **never initializes Azure credentials, opens a connection or
 invokes any model**. It only checks installed distributions, the locally
@@ -173,8 +183,11 @@ validated endpoint format, fictional fixture/evidence counts, and the shared
 typed deployment/cost settings. The command does not print the endpoint
 value, secrets, or the project name. It must say
 `READY_FOR_OPERATOR_APPROVAL` and `cloud_requests_made: 0` before a
-billable test is considered. It does **not** validate tenant RBAC, availability,
-TPM quotas or Azure subscription credit balance.
+billable test is considered. Its report now explicitly sets `endpoint_existence_verified=false`,
+`model_deployments_verified=false`, and
+`subscription_credit_verified=false`. It does **not** validate tenant
+RBAC, availability, model deployments, TPM quotas or Azure subscription
+credit balance. Operator confirmation in the Azure portal is mandatory.
 
 Operator separately checks the Azure account and cost through
 `az account show` and the Azure portal. Avoid dumping access tokens.
