@@ -9,7 +9,9 @@ from dataclasses import asdict
 
 from pitchvolt.foundry_adapter import FoundryRoles
 from pitchvolt.foundry_config import (
-    NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config,
+    NARRATIVE_ROLE_CALLS,
+    SMOKE_SETTINGS,
+    isolated_foundry_config,
     plausible_project_endpoint,
 )
 from pitchvolt.intelligence import InsightKind
