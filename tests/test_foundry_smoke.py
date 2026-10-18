@@ -145,3 +145,22 @@ def test_shadow_assertion_summary_never_prints_model_prose() -> None:
         "publishable": False,
     }
     assert secret not in str(report)
+
+
+def test_machine_report_writes_only_bounded_metadata(tmp_path) -> None:
+    import json
+
+    dest = tmp_path / "merge-smoke.json"
+    report = {"smoke_status": "PASS", "source": "controlled",
+              "token_usage_status": "unavailable_or_partial"}
+    foundry_smoke.write_machine_report(str(dest), report)
+    assert json.loads(dest.read_text()) == report
+    assert dest.stat().st_mode & 0o777 == 0o600
+
+
+def test_ci_report_refuses_unverified_model_prose_even_offline(tmp_path) -> None:
+    with pytest.raises(SystemExit, match="Cannot export model-authored prose"):
+        asyncio.run(foundry_smoke.run([
+            "--report-file", str(tmp_path / "report.json"), "--show-unverified-prose",
+        ]))
+    assert not (tmp_path / "report.json").exists()

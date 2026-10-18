@@ -103,6 +103,20 @@ def safe_assertion_audit(audit: object) -> dict[str, object]:
     }
 
 
+def write_machine_report(path: str | None, report: dict[str, object]) -> None:
+    """Write already-sanitized evidence/report metadata for merge-run artifacts.
+
+    Never write original model prose here. The paired CLI flags forbid it.
+    """
+    if path is None:
+        return
+    flags = os.O_CREAT | os.O_TRUNC | os.O_WRONLY
+    fd = os.open(path, flags, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        json.dump(report, handle, indent=2)
+        handle.write("\n")
+
+
 def fixture(name: str | None = None):
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
     selected = name if name is not None else SMOKE_SETTINGS.scenario
@@ -133,6 +147,10 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
         help="Confirm the approved one-Analyst/one-Storyteller budget",
     )
     parser.add_argument(
+        "--report-file", default=None,
+        help="Write a sanitized JSON report for an unattended merge-only CI run",
+    )
+    parser.add_argument(
         "--project-endpoint",
         default=os.getenv("PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT", ""),
         help="Exact Foundry project endpoint (do not enter any API key)",
@@ -142,6 +160,8 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
 
 async def run(argv: list[str] | None = None) -> int:
     args = arguments(argv)
+    if args.report_file and args.show_unverified_prose:
+        raise SystemExit("Cannot export model-authored prose in a CI report")
     bundle = fixture(args.scenario)
     description = {
         "mode": "LIVE" if args.execute else "DRY_RUN",
@@ -236,7 +256,6 @@ async def run(argv: list[str] | None = None) -> int:
                 "trace": [asdict(item) for item in result.trace],
                 "verified_narrative": result.narrative.model_dump(mode="json"),
             }
-            print(json.dumps(report, indent=2))
             valid = result.source == "controlled" and set(
                 roles.last_evidence_tool_calls
             ) == set(bundle.insight.evidence_event_ids) and len(roles.invocations) == 2
@@ -245,6 +264,9 @@ async def run(argv: list[str] | None = None) -> int:
                 and roles.last_shadow_assessment.publishable is False
                 and roles.last_authored_candidate is not None
             )
+            report["smoke_status"] = "PASS" if valid and shadow_ready else "FAIL"
+            write_machine_report(args.report_file, report)
+            print(json.dumps(report, indent=2))
             if not valid or not shadow_ready:
                 print("FAIL: required role execution or shadow candidate not confirmed")
                 return 1
@@ -269,6 +291,8 @@ async def run(argv: list[str] | None = None) -> int:
             report["last_attempted_role"] = roles.last_attempted_role
             report["attempted_role_count"] = sum(roles._attempts.values())
             report["completed_roles"] = [item.role for item in roles.invocations]
+            report["smoke_status"] = "FAIL"
+            write_machine_report(args.report_file, report)
             print("FAIL: " + json.dumps(report, sort_keys=True))
             return 1
     
