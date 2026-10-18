@@ -45,6 +45,8 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      # These are existing live Azure resource IDs; their legacy names are
+      # intentionally NOT modified during the PitchVolt code/repository rename.
       AZURE_RG: rg-matchpulse-dev
       AZURE_ACR: matchpulsea433a4e04d
       AZURE_APP: matchpulse-web

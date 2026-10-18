@@ -1,4 +1,4 @@
-# PitchVolt AI — durable handoff (16 October 2026)
+# PitchVolt AI — durable handoff (18 October 2026)
 
 **Deadline:** 27 October 2026. **Current authoritative source:** the main branch plus open GitHub issues and pull requests, not stale summaries here.
 
@@ -33,3 +33,13 @@
 - Architecture: D2 in `docs/architecture/diagrams`, generated SVGs in `docs/architecture/rendered`; CI publishes PDF/PPTX artifact.
 
 Always verify issue/PR status in GitHub before continuing.
+
+## Repository identity migration (18 October 2026)
+
+The authoritative product name is **PitchVolt AI**, GitHub target
+`niktolis/pitchvolt-ai`, Python package `pitchvolt`, npm package
+`pitchvolt-web`, and new narrative runtime variable
+`PITCHVOLT_NARRATIVE_PROVIDER`. See [GitHub and Entra OIDC cutover
+runbook](repository-rename.md). Existing Azure resources retain their original
+physical identifiers until a separate authorized migration. Avoid assuming
+that changing a source-code string renames any Azure resource.

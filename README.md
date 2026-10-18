@@ -77,8 +77,9 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 - [Live broadcast UI](docs/architecture/frontend.md)
 - [Accepted architecture decisions](docs/decisions/)
 - [Development workflow](docs/development.md)
+- [Repository rename and Azure OIDC cutover](docs/repository-rename.md)
 - [Judging traceability](docs/judging-traceability.md)
 
 ## Cost and deployment guardrail
 
-PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources, inference charges or increased spending require explicit approval. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend.
+PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources, inference charges or increased spending require explicit approval. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend. Existing legacy-named Azure resources are intentionally reused, not recreated during the repository rename.
