@@ -46,7 +46,7 @@ export function Pitch({ event, actorLabel, actorColor, children, playing, canRep
       </div>
 
       <div className="pitch">
-        {hasWebGL ? <BroadcastPitchScene event={locatedEvent} actorColor={actorColor} /> : null}
+        {hasWebGL ? <BroadcastPitchScene event={locatedEvent} actorColor={actorColor} actorLabel={actorLabel} /> : null}
         <svg
           className={hasWebGL ? "pitch-svg-fallback" : undefined}
           viewBox="0 0 105 68"
