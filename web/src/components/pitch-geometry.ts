@@ -98,3 +98,13 @@ export function sourceArrow(
     arrowLength,
   };
 }
+
+/** Orient the marker only when both recorded endpoints are valid; otherwise neutral. */
+export function sourceActorHeading(
+  location: PitchPoint,
+  destination: PitchPoint | null | undefined,
+): number {
+  if (!isSourcePitchPoint(location) || !isSourcePitchPoint(destination)) return 0;
+  if (location.x === destination.x && location.y === destination.y) return 0;
+  return Math.atan2(destination.x - location.x, destination.y - location.y);
+}
