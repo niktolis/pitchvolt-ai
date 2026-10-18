@@ -13,8 +13,8 @@ import {
   FIELD_WIDTH,
   isSourcePitchPoint,
   type PitchPoint,
-  sourceArrow,
   sourceActorHeading,
+  sourceArrow,
   toWorld,
 } from "./pitch-geometry";
 
