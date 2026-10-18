@@ -3,7 +3,6 @@ from pathlib import Path
 
 from scripts.foundry_merge_summary import summary
 
-
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/foundry-merge-smoke.yml"
 
