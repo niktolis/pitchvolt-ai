@@ -348,3 +348,17 @@ PR #124 merged as `1f92f4073c53116282aae1c38de495b2ef268f6d`. Branch `fix/ui-pit
 ## 15. Source-validated 3D actor heading (18 October 2026)
 
 PR #126 merged at `1bcd42e57b921434ba2b23eb7e258aa3f4ddf7f9`. The parallel editorial PR #125 is open and changes App/Timeline/CSS; do not overlap. Branch `fix/ui-source-validated-actor-heading` fixes the 3D actor body heading to depend only on valid in-field source destinations; missing, nonfinite or outside-field destinations result in neutral pose. A previously invalid destination could affect actor orientation despite its directional arrow being correctly suppressed. Shared pitch geometry and its regression tests are updated; no source coordinate, pitch camera, visuals, event schema, synthetic tracking or Azure changes. Source-backed correctness improvement only, not pixel-level visual acceptance. All CI required, explicit approval before merge.
+
+## 16. APPROVED NEXT PITCH TARGET — action ROI, camera, badges (18 October 2026)
+
+Owner feedback after merged PR #127 (main de4625e01bae9f7e830d1db7be08b19eee687553):
+
+- **Larger central pitch**: physically larger primary 3D viewport; maintain the three-column broadcast composition and keep the timeline and fully usable replay transport beneath it.
+- **Camera tracks the action**: frame a zoomed region of interest around a real source-recorded event; visibly pan between source actions as an editorial camera, rather than keeping all 105 x 68 metres onscreen.
+- **Participants**: prefer **selective attackers plus defenders who actually contribute to the action**, within that ROI. Showing all 22 is only an alternative if valid per-player positions exist. NEVER place illustrative formations, fictional off-ball defenders or a pretend ball. The current schema has one source actor per event; StatsBomb 360 freeze-frame ingest and validation would enable sparse participant snapshots, not continuous tracking.
+- **Player tags**: source-authored player **surname plus team crest/logo** (fictional validated emblem where no licensed image exists); label must sit beside/above the player and not obscure the body, with edge/overlap handling.
+- **Playback glyph**: central in-pitch play/pause is **completely invisible during playback**, and **very transparent when paused**. The real controls below the pitch remain visible and functional.
+
+Priority: fulfill these before further minor UI polish. This feedback is an additional binding acceptance requirement alongside the single approved Application Preview screenshot. Do not confuse visual goals with currently available tracking data.
+
+First bounded delivery: branch feat/ui-action-following-pitch-camera implements zoomed valid-source camera, smooth editorial pan, taller pitch viewport, offset actor label and unobtrusive central play overlay, with camera provenance tests. It does **not** manufacture multiple actors or ball tracking; emblem-tag wiring and selective ROI actor rendering require subsequent integrated source-data work. Editorial PR #125 remains separately open and edits App/Timeline/global CSS: avoid overlapping changes. Exact-SHA deployed screenshot still required for visual sign-off. All CI must pass; no merge without explicit approval, no Azure/Foundry paid resources.

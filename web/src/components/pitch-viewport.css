@@ -1,0 +1,28 @@
+/* Source-event ROI broadcast stage: make the central 3D surface taller without
+   affecting the event rail and functional replay controls beneath it. */
+.pitch-panel .pitch .broadcast-webgl {
+  aspect-ratio: 4 / 3;
+  min-height: 320px;
+}
+
+/* Inline pitch pause control is redundant while the footer transport is available.
+   Keep the paused state deliberately subdued and keyboard focus discernible. */
+.pitch-panel .pitch .pitch-play-overlay.is-playing {
+  opacity: 0;
+  pointer-events: none;
+}
+.pitch-panel .pitch .pitch-play-overlay.is-paused {
+  opacity: 0.18;
+}
+.pitch-panel .pitch .pitch-play-overlay.is-paused:hover {
+  opacity: 0.35;
+}
+.pitch-panel .pitch .pitch-play-overlay.is-paused:focus-visible {
+  opacity: 0.6;
+}
+
+@media (max-width: 720px) {
+  .pitch-panel .pitch .broadcast-webgl {
+    min-height: 260px;
+  }
+}
