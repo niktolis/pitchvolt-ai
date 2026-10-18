@@ -1,0 +1,644 @@
+/* Approved PitchVolt Application Preview — authoritative production visual layer.
+   Keep these rules together instead of appending more overrides to styles.css.
+   The stadium photograph is decorative scenery, never match evidence. */
+:root {
+  --pv-stage-glass: rgba(2, 14, 9, 0.91);
+  --pv-stage-border: rgba(143, 214, 127, 0.40);
+  --pv-stage-lime: #b6e64b;
+}
+
+body {
+  background: #020a07;
+}
+
+body::before {
+  opacity: .87;
+  background-image:
+    linear-gradient(180deg, rgba(0, 8, 5, .45), rgba(0, 12, 6, .42) 43%, rgba(0, 10, 5, .78) 82%),
+    url("https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Well_lit_soccer_stadium_%28Unsplash%29.jpg/1280px-Well_lit_soccer_stadium_%28Unsplash%29.jpg");
+  background-size: cover;
+  background-position: center 44%;
+  background-repeat: no-repeat;
+}
+
+body::after {
+  height: 24vh;
+  opacity: .60;
+  background:
+    linear-gradient(0deg, rgba(0, 8, 3, .55), transparent 70%),
+    radial-gradient(ellipse at 50% 100%, rgba(75, 140, 43, .30), transparent 74%);
+  mask-image: linear-gradient(transparent, black 45%);
+}
+
+.app-shell {
+  width: min(1568px, calc(100% - 80px));
+  padding-top: clamp(26px, 2.8vw, 46px);
+}
+
+.broadcast-top {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 0 18px 14px;
+  border: 1px solid rgba(149, 208, 151, .36);
+  border-radius: 17px;
+  background: rgba(2, 14, 10, .89);
+  box-shadow: 0 22px 56px rgba(0, 0, 0, .7), inset 0 0 28px rgba(7, 43, 20, .16);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.broadcast-navigation {
+  min-height: 88px;
+  gap: clamp(28px, 5vw, 78px);
+  padding: 12px 18px;
+}
+
+.brand-logo {
+  width: 63px;
+  height: 63px;
+}
+
+.broadcast-brand strong {
+  font-size: clamp(21px, 2.1vw, 29px);
+  font-weight: 900;
+  letter-spacing: -.055em;
+}
+
+.broadcast-primary-nav {
+  gap: clamp(18px, 3.1vw, 48px);
+  font-size: clamp(13px, 1.13vw, 16px);
+}
+
+.broadcast-primary-nav .current,
+.broadcast-tabs .selected {
+  border-color: var(--pv-stage-lime);
+}
+
+.broadcast-utilities {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 21px;
+  color: #e7f5ef;
+}
+
+.broadcast-utility-icon {
+  display: block;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+}
+
+.broadcast-utility-icon.profile {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(146, 174, 166, .19);
+}
+
+.broadcast-preview-label {
+  position: absolute;
+  top: 4px;
+  right: 92px;
+  font-size: 8px;
+  color: #829b84;
+  letter-spacing: .08em;
+}
+
+.broadcast-scoreboard {
+  min-height: 171px;
+  padding: 24px clamp(52px, 7vw, 118px);
+  border: 1px solid rgba(101, 173, 104, .32);
+  border-radius: 13px 13px 0 0;
+  background-image:
+    radial-gradient(ellipse at 3% 50%, rgba(162, 252, 52, .38), transparent 19%),
+    radial-gradient(ellipse at 98% 50%, rgba(162, 252, 52, .36), transparent 19%),
+    linear-gradient(180deg, rgba(0, 7, 4, .94), rgba(0, 12, 7, .77)),
+    url("https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Well_lit_soccer_stadium_%28Unsplash%29.jpg/1280px-Well_lit_soccer_stadium_%28Unsplash%29.jpg");
+  background-size: cover;
+  background-position: center 45%;
+}
+
+.broadcast-scoreboard::before {
+  opacity: .8;
+  background:
+    radial-gradient(ellipse 100px 60px at 2% 52%, rgba(198, 255, 113, .55), transparent 76%),
+    radial-gradient(ellipse 100px 60px at 98% 52%, rgba(198, 255, 113, .55), transparent 76%);
+}
+
+.broadcast-scoreboard::after {
+  opacity: .18;
+}
+
+.broadcast-score-content {
+  gap: clamp(16px, 3vw, 47px);
+}
+
+.broadcast-fixture-team {
+  gap: clamp(9px, 1.4vw, 24px);
+}
+
+.broadcast-fixture-team > strong {
+  font-weight: 850;
+  font-size: clamp(17px, 2vw, 31px);
+}
+
+.broadcast-team-shield {
+  width: 59px;
+  height: 68px;
+  font-size: 21px;
+  border-color: rgba(248, 255, 244, .83);
+  box-shadow: 0 0 12px rgba(192, 249, 142, .22), 0 2px 18px rgba(0, 0, 0, .75);
+}
+
+.broadcast-score-known,
+.broadcast-score-unavailable {
+  font-size: clamp(42px, 3.8vw, 66px);
+  line-height: 1;
+  font-weight: 900;
+}
+
+.broadcast-score-center {
+  min-width: clamp(110px, 10vw, 166px);
+}
+
+.broadcast-match-clock {
+  margin-top: 6px;
+  font-size: clamp(20px, 1.8vw, 27px);
+}
+
+.broadcast-live {
+  left: 26px;
+  bottom: 22px;
+  padding: 7px 9px;
+  border: 1px solid rgba(157, 229, 82, .27);
+  color: var(--pv-stage-lime);
+  background: rgba(1, 27, 9, .7);
+  box-shadow: 0 0 12px rgba(110, 190, 48, .15);
+}
+
+.state-live .live-light {
+  background: var(--pv-stage-lime);
+  box-shadow: 0 0 12px rgba(176, 255, 70, .85);
+}
+
+.broadcast-tabs {
+  min-height: 55px;
+  gap: clamp(20px, 4.5vw, 84px);
+  padding-inline: 10px;
+  border: 1px solid rgba(101, 173, 104, .23);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: rgba(2, 13, 10, .9);
+  font-size: clamp(12px, 1.14vw, 16px);
+}
+
+.broadcast-tabs span {
+  font-weight: 600;
+}
+
+.broadcast-grid {
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 1.90fr) minmax(0, 1.04fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.broadcast-grid > .insight-panel {
+  grid-column: 1;
+  grid-row: 1;
+}
+.broadcast-grid > .pitch-panel {
+  grid-column: 2;
+  grid-row: 1;
+}
+.broadcast-grid > .key-moment-panel {
+  grid-column: 3;
+  grid-row: 1;
+}
+.broadcast-grid > .pitch-replay-deck {
+  grid-column: 2;
+  grid-row: 2;
+}
+.broadcast-grid > .broadcast-detail-panels {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.broadcast-grid > .insight-panel,
+.broadcast-grid > .pitch-panel,
+.broadcast-grid > .key-moment-panel {
+  min-height: 0;
+  height: 100%;
+  border: 1px solid var(--pv-stage-border);
+  border-radius: 14px;
+  background: var(--pv-stage-glass);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .56), inset 0 0 20px rgba(16, 55, 27, .10);
+}
+
+.insight-panel .panel-heading,
+.key-moment-panel .panel-heading {
+  padding: 20px 23px 13px;
+}
+
+.insight-panel .panel-heading h2,
+.key-moment-panel .panel-heading h2 {
+  font-size: clamp(20px, 1.85vw, 30px);
+  font-weight: 850;
+  letter-spacing: -.035em;
+}
+
+.insight-panel .proof-badge {
+  color: #b9ed60;
+  border-color: rgba(143, 205, 73, .32);
+  background: rgba(16, 44, 10, .38);
+  font-size: 9px;
+}
+
+.insight-panel .insight-placeholder {
+  padding: 10px 23px 10px;
+  gap: 5px;
+  font-size: 12px;
+}
+
+.verified-insight-feed {
+  margin-inline: 23px;
+}
+
+.verified-insight-row {
+  gap: 13px;
+  padding: 15px 0;
+}
+
+.verified-insight-icon {
+  flex-basis: 49px;
+  width: 49px;
+  height: 49px;
+}
+
+.observed-action-feed {
+  display: grid;
+  margin: 7px 23px 18px;
+  border-top: 1px solid rgba(197, 229, 178, .12);
+}
+
+.observed-action-eyebrow {
+  padding-top: 11px;
+  font-size: 10px;
+  color: #83b25b;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.observed-action-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 13px;
+  padding: 15px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(204, 239, 180, .13);
+  color: var(--pv-text);
+  background: transparent;
+  text-align: left;
+}
+
+.observed-action-row:last-child {
+  border-bottom: 0;
+}
+
+.observed-action-row:hover,
+.observed-action-row:focus-visible {
+  color: var(--pv-primary);
+}
+
+.observed-action-symbol {
+  display: grid;
+  place-items: center;
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
+  font-size: 25px;
+  font-weight: 900;
+  color: #b6e64b;
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(77, 154, 38, .29), rgba(14, 52, 18, .82));
+}
+
+.observed-action-copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.observed-action-copy strong {
+  font-size: clamp(12px, .98vw, 15px);
+  font-weight: 700;
+  line-height: 1.34;
+}
+
+.observed-action-copy small {
+  font-size: 11px;
+  color: #a1b4a4;
+}
+
+.pitch-panel {
+  position: relative;
+  padding: 7px;
+}
+
+.pitch-panel > .panel-heading {
+  display: none;
+}
+
+.pitch-panel .pitch:has(.broadcast-webgl) {
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  outline: 0;
+  box-shadow: 0 0 24px rgba(112, 222, 48, .12);
+}
+
+.pitch-panel .pitch .broadcast-webgl {
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1.61;
+  border-radius: 8px;
+  border: 1px solid rgba(205, 255, 184, .28);
+  background: radial-gradient(ellipse, #174a24, #04140b);
+}
+
+.pitch-panel .pitch-note {
+  margin: 8px 8px 0;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1.35;
+  color: #839e8a;
+}
+
+.pitch-panel .pitch .pitch-play-overlay.is-playing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pitch-panel .pitch .pitch-play-overlay.is-paused {
+  opacity: .14;
+}
+
+.pitch-panel .pitch .pitch-play-overlay.is-paused:focus-visible {
+  opacity: .8;
+}
+
+.key-moment-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.key-moment-panel .key-moment-source-scene {
+  margin: 0 18px 12px;
+  border: 1px solid rgba(169, 232, 137, .24);
+  border-radius: 11px;
+  background-image:
+    radial-gradient(ellipse at 30% 10%, rgba(211, 255, 157, .15), transparent 60%),
+    repeating-linear-gradient(90deg, #163b20 0 12%, #1b502a 12% 24%);
+}
+
+.key-moment-panel .key-moment-copy {
+  margin: 0 18px 16px;
+}
+
+.key-moment-panel .key-moment-copy > strong {
+  font-size: clamp(18px, 1.5vw, 25px);
+  color: var(--pv-stage-lime);
+}
+
+.key-moment-panel .key-moment-button {
+  margin-top: auto;
+  margin-bottom: 15px;
+  border-color: rgba(170, 255, 73, .55);
+  color: var(--pv-stage-lime);
+  background: linear-gradient(135deg, rgba(31, 74, 12, .63), rgba(9, 38, 14, .81));
+  font-weight: 850;
+  font-size: 16px;
+}
+
+.pitch-replay-deck {
+  min-width: 0;
+  padding: 10px 13px 13px;
+  border: 1px solid rgba(136, 203, 112, .27);
+  border-radius: 12px;
+  background: rgba(1, 17, 9, .92);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+}
+
+.pitch-replay-deck > .timeline-panel {
+  max-height: none;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pitch-replay-deck .timeline-panel .panel-heading {
+  padding: 0 4px 10px;
+}
+
+.pitch-replay-deck .timeline-panel .panel-heading h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.pitch-replay-deck .recorded-action-feed {
+  padding: 8px 4px;
+  border-top: 1px solid rgba(170, 218, 139, .12);
+  border-bottom: 1px solid rgba(170, 218, 139, .12);
+}
+
+.pitch-replay-deck .timeline-panel .timeline {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+  min-height: 55px;
+  max-height: 87px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 4px 9px;
+  scrollbar-width: thin;
+  scrollbar-color: #63873e transparent;
+}
+
+.pitch-replay-deck .timeline-panel .timeline-item {
+  flex: 0 0 130px;
+  width: 130px;
+  min-height: 49px;
+  padding: 7px;
+  border: 1px solid rgba(156, 202, 112, .16);
+  border-radius: 8px;
+  background: rgba(14, 31, 17, .8);
+}
+
+.pitch-replay-deck .timeline-item.selected {
+  border-color: var(--pv-stage-lime);
+  background: rgba(125, 188, 61, .14);
+}
+
+.pitch-replay-deck > .control-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin: 9px 0 0;
+  padding: 12px 1px 0;
+  border: 0;
+  border-top: 1px solid rgba(174, 230, 142, .19);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pitch-replay-deck > .control-bar > label {
+  flex: 1 1 145px;
+}
+
+.pitch-replay-deck > .control-bar select {
+  width: 100%;
+  min-width: 0;
+}
+
+.pitch-replay-deck .replay-seek-controls {
+  order: -1;
+  flex: 1 1 100%;
+  min-width: 0;
+  padding: 0;
+  margin: 0 0 3px;
+  border: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.pitch-replay-deck .replay-seek-controls input[type="range"] {
+  accent-color: var(--pv-stage-lime);
+}
+
+.pitch-replay-deck .segmented,
+.pitch-replay-deck .replay-button {
+  min-height: 36px;
+  border-color: rgba(149, 208, 108, .2);
+  border-radius: 8px;
+  background: rgba(9, 35, 18, .85);
+}
+
+.pitch-replay-deck .segmented button.active {
+  color: var(--pv-stage-lime);
+  background: rgba(156, 232, 88, .18);
+}
+
+.pitch-replay-deck .audience-switch {
+  margin-left: auto;
+}
+
+.broadcast-roster {
+  margin-top: 18px;
+  padding: 13px 17px;
+  border: 1px solid rgba(159, 219, 138, .25);
+  border-radius: 11px;
+  background: rgba(3, 20, 11, .85);
+}
+
+.pitch-source-actor-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: max-content;
+  min-width: 0;
+  max-width: 175px;
+  padding: 5px 8px;
+  border: 1px solid rgba(189, 248, 120, .81);
+  border-radius: 7px;
+  background: rgba(1, 13, 7, .90);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, .75), 0 0 15px rgba(154, 236, 71, .15);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.source-actor-crest {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 32px;
+  place-items: center;
+  clip-path: polygon(6% 0, 94% 0, 100% 72%, 50% 100%, 0 72%);
+  color: white;
+  font-size: 9px;
+  font-weight: 900;
+  text-shadow: 0 1px 4px #000;
+}
+
+.source-actor-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pitch-source-actor-label .source-actor-text strong {
+  overflow: hidden;
+  font-size: 12px;
+  color: white;
+  text-overflow: ellipsis;
+}
+
+.pitch-source-actor-label .source-actor-text small {
+  color: #b6e64b;
+  font-size: 9px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1180px) {
+  .app-shell { width: min(100% - 40px, 1100px); }
+  .broadcast-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); }
+  .broadcast-grid > .insight-panel { grid-column: 1; grid-row: 1; }
+  .broadcast-grid > .pitch-panel { grid-column: 2; grid-row: 1; }
+  .broadcast-grid > .pitch-replay-deck { grid-column: 2; grid-row: 2; }
+  .broadcast-grid > .key-moment-panel { grid-column: 1 / -1; grid-row: 3; min-height: 320px; }
+  .broadcast-grid > .broadcast-detail-panels { grid-column: 1 / -1; grid-row: 4; }
+  .broadcast-utilities .broadcast-preview-label { display: none; }
+}
+
+@media (max-width: 760px) {
+  .app-shell { width: calc(100% - 22px); padding-top: 13px; }
+  .broadcast-top { padding: 0 7px 7px; }
+  .broadcast-navigation { padding: 12px 8px; gap: 10px; flex-wrap: wrap; min-height: 65px; }
+  .broadcast-brand strong { font-size: 19px; }
+  .brand-logo { width: 40px; height: 40px; }
+  .broadcast-primary-nav { order: 3; width: 100%; justify-content: space-around; gap: 7px; font-size: 11px; }
+  .broadcast-primary-nav span { padding: 8px 0; }
+  .broadcast-utilities { gap: 9px; }
+  .broadcast-utility-icon { width: 20px; height: 20px; }
+  .broadcast-utility-icon.profile { width: 29px; height: 29px; }
+  .broadcast-scoreboard { min-height: 125px; padding: 15px 11px; }
+  .broadcast-score-content { gap: 5px; }
+  .broadcast-fixture-team { gap: 5px; }
+  .broadcast-fixture-team > strong { font-size: 11px; }
+  .broadcast-team-shield { width: 26px; height: 32px; font-size: 10px; }
+  .broadcast-score-known, .broadcast-score-unavailable { font-size: 29px; }
+  .broadcast-score-center { min-width: 68px; }
+  .broadcast-match-clock { font-size: 15px; }
+  .broadcast-live { left: 8px; bottom: 4px; padding: 3px 5px; font-size: 9px; }
+  .broadcast-tabs { overflow-x: auto; gap: 21px; justify-content: flex-start; min-height: 42px; padding-left: 13px; font-size: 11px; }
+  .broadcast-tabs span { flex: 0 0 auto; }
+  .broadcast-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .broadcast-grid > .pitch-panel { grid-column: 1; grid-row: 1; }
+  .broadcast-grid > .pitch-replay-deck { grid-column: 1; grid-row: 2; }
+  .broadcast-grid > .insight-panel { grid-column: 1; grid-row: 3; }
+  .broadcast-grid > .key-moment-panel { grid-column: 1; grid-row: 4; min-height: 290px; }
+  .broadcast-grid > .broadcast-detail-panels { grid-column: 1; grid-row: 5; }
+  .pitch-panel .pitch .broadcast-webgl { aspect-ratio: 1.44; min-height: 0; }
+  .pitch-replay-deck .replay-seek-controls { order: -1; }
+  .pitch-replay-deck > .control-bar > label { flex: 1 1 100%; }
+  .pitch-replay-deck .audience-switch { margin-left: 0; }
+}
