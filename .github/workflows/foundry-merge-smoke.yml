@@ -1,0 +1,128 @@
+name: Foundry smoke on merged PR
+
+# OIDC uses the trusted default-branch subject, matching existing Azure CI federation.
+# pull_request_target is safe here ONLY because all executable code is checked out
+# from the already-merged main commit; never check out an unmerged PR head.
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundry-merge-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  foundry-live-smoke:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_CORE_OUTPUT: none
+      PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT: https://matchpulse-ai-resource.services.ai.azure.com/api/projects/matchpulse-ai
+      PITCHVOLT_NARRATIVE_PROVIDER: local
+      AZURE_RESOURCE_GROUP: rg-matchpulse-dev
+      AZURE_FOUNDRY_RESOURCE: matchpulse-ai-resource
+    steps:
+      - name: Checkout exactly the trusted merged commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          persist-credentials: false
+
+      - name: Validate merge event and existing identity configuration
+        shell: bash
+        env:
+          MERGED_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          [[ -n "$MERGED_SHA" && "$(git rev-parse HEAD)" == "$MERGED_SHA" ]]
+          git fetch --no-tags --depth=1 origin main
+          # The merge commit must be reachable from main, not a transient PR head.
+          git merge-base --is-ancestor "$MERGED_SHA" origin/main
+          for name in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing GitHub variable $name (see docs/github-azure-oidc.md)"
+              exit 1
+            fi
+          done
+          [[ "$AZURE_SUBSCRIPTION_ID" == "98d4eb09-a320-4b90-aa9c-e561835357af" ]]
+          [[ "$PITCHVOLT_NARRATIVE_PROVIDER" == "local" ]]
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: '0.10.0'
+
+      - name: Install pinned Foundry dependencies
+        run: |
+          uv lock --check
+          uv sync --frozen --extra dev --extra foundry
+
+      - name: No-cost structural Foundry preflight
+        run: uv run --frozen --extra foundry python -m pitchvolt.foundry_preflight
+
+      # Existing GitHub OIDC federated subject: repo:niktolis/pitchvolt-ai:ref:refs/heads/main
+      - name: Authenticate using existing short-lived Azure OIDC federation
+        uses: azure/login@v3
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify existing subscription and both ready deployments
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(az account show --query id -o tsv)" == "$AZURE_SUBSCRIPTION_ID" ]]
+          for deployment in matchpulse-gpt5-mini matchpulse-gpt4o; do
+            state="$(az cognitiveservices account deployment show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$AZURE_FOUNDRY_RESOURCE" \
+              --deployment-name "$deployment" \
+              --query properties.provisioningState -o tsv)"
+            [[ "$state" == "Succeeded" ]] || {
+              echo "::error::Foundry deployment $deployment is not Succeeded"
+              exit 1
+            }
+          done
+
+      - name: One billable Analyst / Storyteller / Verifier smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke \
+            --execute --acknowledge-billable-inference \
+            --report-file "$RUNNER_TEMP/pitchvolt-foundry-merge.json"
+          test -s "$RUNNER_TEMP/pitchvolt-foundry-merge.json"
+
+      - name: Publish sanitized GitHub run summary
+        if: always()
+        shell: bash
+        run: |
+          python scripts/foundry_merge_summary.py \
+            "$RUNNER_TEMP/pitchvolt-foundry-merge.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain sanitized machine-readable result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foundry-merge-pr-${{ github.event.pull_request.number }}-run-${{ github.run_id }}
+          path: ${{ runner.temp }}/pitchvolt-foundry-merge.json
+          if-no-files-found: warn
+          retention-days: 7
