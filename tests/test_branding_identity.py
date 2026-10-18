@@ -15,6 +15,9 @@ EXISTING_AZURE = (
     LEGACY + "-github-actions-deploy",
     LEGACY + "-ai-resource",
     LEGACY + "-ai",
+    # Existing Foundry deployment resource IDs are intentionally not rebranded.
+    LEGACY + "-gpt5-mini",
+    LEGACY + "-gpt4o",
 )
 TEXT_EXTENSIONS = frozenset({
     ".py", ".toml", ".lock", ".md", ".json", ".yml", ".yaml",
