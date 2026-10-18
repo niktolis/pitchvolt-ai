@@ -62,10 +62,10 @@ function Turf() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
 
-    ctx.fillStyle = "#275d30";
+    ctx.fillStyle = "#1c4825";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     for (let stripe = 0; stripe < 10; stripe += 1) {
-      ctx.fillStyle = stripe % 2 ? "#26582e" : "#31723b";
+      ctx.fillStyle = stripe % 2 ? "#1a4323" : "#265b30";
       ctx.fillRect(stripe * 102.4, 0, 103, 664);
     }
 
@@ -75,11 +75,11 @@ function Turf() {
       seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
       return seed / 4294967296;
     };
-    for (let i = 0; i < 32000; i += 1) {
+    for (let i = 0; i < 46000; i += 1) {
       const x = random() * 1024;
       const y = random() * 664;
       const light = random() > 0.53;
-      ctx.strokeStyle = light ? "rgba(170,210,116,0.16)" : "rgba(4,35,10,0.18)";
+      ctx.strokeStyle = light ? "rgba(188,226,136,0.22)" : "rgba(4,25,9,0.29)";
       ctx.lineWidth = 0.5 + random() * 0.65;
       ctx.beginPath();
       ctx.moveTo(x, y);
@@ -88,8 +88,8 @@ function Turf() {
     }
 
     const vignette = ctx.createRadialGradient(512, 240, 70, 512, 332, 700);
-    vignette.addColorStop(0, "rgba(171,233,125,0.07)");
-    vignette.addColorStop(1, "rgba(0,12,4,0.34)");
+    vignette.addColorStop(0, "rgba(177,231,123,0.09)");
+    vignette.addColorStop(1, "rgba(0,12,4,0.40)");
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -166,6 +166,51 @@ function FieldMarkings() {
   );
 
   return <primitive object={lines} />;
+}
+
+/** Fixed stadium infrastructure, not inferred football actor positions. */
+function GoalFrame({ side }: { side: -1 | 1 }) {
+  const x = side * (FIELD_WIDTH / 2 + 0.05);
+  const depth = side * 1.8;
+  const net = useMemo(() => {
+    const coordinates: number[] = [];
+    const add = (a: [number, number, number], b: [number, number, number]) => {
+      coordinates.push(...a, ...b);
+    };
+    for (let i = 0; i <= 16; i += 1) {
+      const z = -3.66 + (i * 7.32) / 16;
+      add([x, 0.05, z], [x + depth, 0.05, z]);
+      add([x + depth, 0.05, z], [x + depth, 2.44, z]);
+      add([x, 2.44, z], [x + depth, 2.44, z]);
+    }
+    for (let i = 0; i <= 7; i += 1) {
+      const y = (i * 2.44) / 7;
+      add([x + depth, y, -3.66], [x + depth, y, 3.66]);
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(coordinates, 3));
+    return geometry;
+  }, [x, depth]);
+
+  useEffect(() => () => net.dispose(), [net]);
+
+  return (
+    <group>
+      {[-3.66, 3.66].map((z) => (
+        <mesh key={z} position={[x, 1.22, z]} castShadow>
+          <cylinderGeometry args={[0.075, 0.075, 2.44, 8]} />
+          <meshStandardMaterial color="#f0f6ee" roughness={0.55} />
+        </mesh>
+      ))}
+      <mesh position={[x, 2.44, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.075, 0.075, 7.32, 8]} />
+        <meshStandardMaterial color="#f0f6ee" roughness={0.55} />
+      </mesh>
+      <lineSegments geometry={net}>
+        <lineBasicMaterial color="#d8e8dd" transparent opacity={0.23} depthWrite={false} />
+      </lineSegments>
+    </group>
+  );
 }
 
 function PlayerModel({
@@ -298,11 +343,11 @@ export function BroadcastPitchScene({
           focus={event && isSourcePitchPoint(event.location) ? event.location : null}
         />
         <color attach="background" args={["#06140b"]} />
-        <hemisphereLight args={["#ddf8d5", "#091b10", 2.15]} />
-        <ambientLight intensity={0.43} />
+        <hemisphereLight args={["#d5ecca", "#06170e", 1.4]} />
+        <ambientLight intensity={0.24} />
         <directionalLight
           position={[-35, 76, 18]}
-          intensity={3.15}
+          intensity={2.5}
           castShadow
           shadow-mapSize={[1024, 1024]}
           shadow-camera-left={-70}
@@ -311,9 +356,11 @@ export function BroadcastPitchScene({
           shadow-camera-bottom={-55}
           shadow-bias={-0.0001}
         />
-        <directionalLight position={[35, 70, -45]} intensity={1.5} color="#c8edb1" />
+        <directionalLight position={[35, 70, -45]} intensity={1.15} color="#c8edb1" />
         <Turf />
         <FieldMarkings />
+        <GoalFrame side={-1} />
+        <GoalFrame side={1} />
         {event && isSourcePitchPoint(event.location) && event.player_id.trim() ? (
           <>
             <Trajectory event={event} />
