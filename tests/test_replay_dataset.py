@@ -4,15 +4,15 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
-from pitchvolt.api import app, timeline
+from pitchvolt.api import _load, app, timeline
 from pitchvolt.events import EventType, Point
 from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
 from pitchvolt.providers.statsbomb_historical import HistoricalFixture
 from pitchvolt.replay_dataset import (
     HistoricalReplaySource,
-    ReplayDataset,
     SyntheticReplaySource,
 )
 from pitchvolt.scenarios import SCENARIO_NAMES, scenario
@@ -176,10 +176,6 @@ def test_replay_dataset_refuses_fiction_history_mixing_and_reordered_inputs() ->
 
 def test_source_coverage_does_not_implicitly_authorize_historical_api_or_ai() -> None:
     source = historical_source_fixture()
-    from pitchvolt.api import _load
-
-    from fastapi import HTTPException
-
     with pytest.raises(HTTPException) as exc:
         _load(source.manifest.match_id)
     assert exc.value.status_code == 404
