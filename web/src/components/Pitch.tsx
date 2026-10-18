@@ -73,7 +73,14 @@ export function Pitch({
             aria-label={locatedEvent ? eventLabel(locatedEvent) : "Pitch"}
           >
             <defs>
-              <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="4" refY="2" orient="auto">
+              <marker
+                id="arrowhead"
+                markerWidth="4"
+                markerHeight="4"
+                refX="4"
+                refY="2"
+                orient="auto"
+              >
                 <path d="M0,0 L4,2 L0,4 Z" className="pitch-arrow" />
               </marker>
               <radialGradient id="pv-active-kit" cx="30%" cy="20%" r="75%">
