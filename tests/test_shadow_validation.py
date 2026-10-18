@@ -2,8 +2,8 @@
 import pytest
 from pydantic import ValidationError
 
-from matchpulse.intelligence import analyze_stream
-from matchpulse.narrative import (
+from pitchvolt.intelligence import analyze_stream
+from pitchvolt.narrative import (
     Audience,
     Claim,
     ClaimKind,
@@ -12,8 +12,8 @@ from matchpulse.narrative import (
     NarrativeRejection,
     verify_narrative,
 )
-from matchpulse.scenarios import scenario
-from matchpulse.shadow_validation import ShadowStatus, assess_candidate
+from pitchvolt.scenarios import scenario
+from pitchvolt.shadow_validation import ShadowStatus, assess_candidate
 
 
 def _fixture() -> tuple[EvidenceBundle, NarrativeCandidate]:
@@ -68,7 +68,7 @@ def test_invalid_claim_manifests_remain_unpublishable(change: str) -> None:
 
 
 def test_assessment_cannot_be_marked_publishable() -> None:
-    from matchpulse.shadow_validation import ShadowAssessment
+    from pitchvolt.shadow_validation import ShadowAssessment
 
     with pytest.raises(ValidationError):
         ShadowAssessment(

@@ -1,8 +1,8 @@
 import pytest
 
-from matchpulse.events import EventType
-from matchpulse.intelligence import InsightKind, MatchProcessor, analyze_stream
-from matchpulse.scenarios import scenario
+from pitchvolt.events import EventType
+from pitchvolt.intelligence import InsightKind, MatchProcessor, analyze_stream
+from pitchvolt.scenarios import scenario
 
 
 @pytest.mark.parametrize(
