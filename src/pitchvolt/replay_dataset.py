@@ -93,7 +93,11 @@ class ReplayDataset:
             if not action.event_id or action.event_id in ids or action.source_index < 1:
                 raise ValueError("Duplicate, empty or invalid replay source event identity")
             key = (action.period, action.clock_ms, action.source_index)
-            if (\n                action.period < 1 or action.clock_ms < 0\n                or (prior is not None and key <= prior)\n                or (prior is not None and action.clock_ms < prior[1])\n            ):
+            if (
+                action.period < 1 or action.clock_ms < 0
+                or (prior is not None and key <= prior)
+                or (prior is not None and action.clock_ms < prior[1])
+            ):
                 raise ValueError("Replay events must be ordered by period, clock and source index")
             if synthetic and (not action.team_id or not action.player_id):
                 raise ValueError("Synthetic replay is missing canonical actor identity")
