@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from matchpulse.statsbomb_bundle_acquire import (
+from pitchvolt.statsbomb_bundle_acquire import (
     pinned_bundle_urls,
     pinned_three_sixty_urls,
     prepare_historical_bundle,

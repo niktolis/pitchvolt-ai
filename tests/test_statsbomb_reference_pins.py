@@ -1,5 +1,5 @@
 """Pin real historical source fixture measurements without redistributing files."""
-from matchpulse.statsbomb_reference import (
+from pitchvolt.statsbomb_reference import (
     REFERENCE_GOAL_COUNT,
     REFERENCE_GOAL_COUNTS_BY_TEAM,
     REFERENCE_LINEUP_SHA256,

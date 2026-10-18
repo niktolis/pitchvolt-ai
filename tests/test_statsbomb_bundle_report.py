@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
-from matchpulse.statsbomb_bundle_report import load_verified_historical_bundle
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.statsbomb_bundle_report import load_verified_historical_bundle
 
 
 def sample(tmp_path):

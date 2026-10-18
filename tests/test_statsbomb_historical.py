@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
-from matchpulse.providers.statsbomb_historical import load_historical_fixture
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.providers.statsbomb_historical import load_historical_fixture
 
 
 def make_fixture(tmp_path, records):
@@ -59,7 +59,7 @@ def test_hash_mismatch_fails_closed(tmp_path):
 def test_synthetic_rejected_by_historical_loader(tmp_path):
     path, manifest = make_fixture(tmp_path, [event(1, "Pass")])
     synthetic = manifest.model_copy(update={
-        "origin": FixtureOrigin.MATCHPULSE_SYNTHETIC, "source_url": None,
+        "origin": FixtureOrigin.PITCHVOLT_SYNTHETIC, "source_url": None,
         "generator_seed": 42,
     })
     with pytest.raises(ValueError, match="origin"):
