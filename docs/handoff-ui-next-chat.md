@@ -283,3 +283,39 @@ this document (current SHA, PRs, acceptance status, unresolved defects)
 before the next context switch. Keep general cross-workstream
 `handoff-next-chat.md` in sync after its owner has merged competing
 work and avoid edits to it while #118 is open.
+
+## 9. Copy/paste prompt for the next ChatGPT UI chat
+
+> Continue the **PitchVolt AI broadcast UI** implementation for the Microsoft
+> hackathon in repository **https://github.com/niktolis/pitchvolt-ai**.
+> Before making any code changes, read **docs/handoff-ui-next-chat.md**
+> (the UI handoff) and **docs/handoff-next-chat.md** (overall project state)
+> from current `main`. Confirm PR **#117** merged; inspect PR **#118**
+> and do not conflict with its pending fixture/score/substitution work.
+> 
+> The approved **PitchVolt Application Preview** from our brand kit is
+> the **exact visual specification**, not inspiration. Do not produce an
+> alternative design. If the target screenshot isn't accessible in this
+> chat, ask me to attach it; I will upload the latest `pitchvolt.app`
+> screenshot after deployments. The principal goal is pixel-faithful
+> stadium background, header/scoreboard, three-column **AI Insights /
+> 3D Pitch / Key Moment**, player-source overlays, responsive styling.
+> **Replay controls and event timeline must remain visible below the
+> pitch.** Investigate the rendered result, not just CI status.
+>
+> **Strictly source-backed player coordinates only.** No illustrative
+> 11v11 formations, inferred player tracking, guessed ball or player
+> positions, invented results/insights, or real club media without rights.
+> StatsBomb 360 is sparse historical freeze-frame data, not continuous
+> 22-player tracking. Preserve original source IDs and the canonical
+> replay cursor; hide future events/evidence/narratives when seeking
+> backwards. Only display verified synthetic team identities, badges,
+> score and substitutions when their API contracts are merged.
+>
+> Work on **one focused PR at a time**, branch from fresh `main`,
+> explain the UI architecture and football logic and update diagrams,
+> tests, and the UI handoff. Run Python, frontend, OpenAPI/TS and
+> architecture validation. **Do not merge without my explicit technical
+> manager approval**, even when all CI is green. Do not provision or
+> charge Azure/Foundry resources. Give me a concise technical-management
+> report per PR, including risks and remaining target-vs-actual gaps.
