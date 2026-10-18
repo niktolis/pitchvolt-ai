@@ -87,6 +87,22 @@ export function actionCameraPose(
   return { position: target.clone().addScaledVector(BROADCAST_DIRECTION, distance), target };
 }
 
+/**
+ * Position an on-screen player badge beside its source-linked avatar.
+ * A right-sided source actor receives a left-extending badge and vice versa,
+ * so the text does not cover the 3D body and stays inward at field boundaries.
+ */
+export function sourceActorBadgeAnchor(
+  point: PitchPoint | null | undefined,
+): { position: [number, number, number]; side: "left" | "right" } | null {
+  if (!isSourcePitchPoint(point)) return null;
+  const side = point.x > FIELD_WIDTH / 2 ? "left" : "right";
+  return {
+    position: [side === "left" ? -3 : 3, 2.72, 0],
+    side,
+  };
+}
+
 /** The source owns the destination. A missing shot endpoint is not invented. */
 export function eventPath(
   source: PitchPoint,
