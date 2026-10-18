@@ -1,14 +1,17 @@
 import type { ReplayMessage } from "../api/types";
 import { isMatchEvent, isTacticalInsight } from "../api/types";
+import { recentRecordedActions, recordedActionCopy } from "../domain/editorialActivity";
 import { clockLabel, displayName } from "../domain/presentation";
 
 interface EventTimelineProps {
   messages: ReplayMessage[];
   selectedId: number | null;
+  cursorMs: number;
   onSelect: (message: ReplayMessage) => void;
 }
 
-export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineProps) {
+export function EventTimeline({ messages, selectedId, cursorMs, onSelect }: EventTimelineProps) {
+  const sourceActivity = recentRecordedActions(messages, cursorMs);
   return (
     <section className="panel timeline-panel">
       <div className="panel-heading">
@@ -18,6 +21,38 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
         </div>
         <span className="count-badge">{messages.length}</span>
       </div>
+
+      <section className="recorded-action-feed" aria-label="Recorded match activity">
+        <div className="recorded-action-heading">
+          <strong>Match activity</strong>
+          <span>Recorded actions · not tactical insights</span>
+        </div>
+        {sourceActivity.length ? (
+          <div className="recorded-action-items">
+            {sourceActivity.map((message) => {
+              const copy = recordedActionCopy(message.payload);
+              return (
+                <button
+                  className="recorded-action-item"
+                  key={message.payload.event_id}
+                  type="button"
+                  onClick={() => onSelect(message)}
+                  aria-label={`${copy.time}, ${copy.heading}, ${copy.detail}`}
+                  title={`Source event ${message.payload.event_id}`}
+                >
+                  <time dateTime={`PT${message.payload.clock_ms / 1000}S`}>{copy.time}</time>
+                  <span className="recorded-action-copy">
+                    <strong>{copy.heading}</strong>
+                    <small>{copy.detail}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="recorded-action-empty">Waiting for the first recorded action.</p>
+        )}
+      </section>
 
       <section className="timeline" aria-label="Recorded replay events">
         {messages.length === 0 ? (

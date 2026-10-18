@@ -37,6 +37,8 @@ import {
   isEvidenceVisible,
   latestAtCursor,
   matchBounds,
+  narrativeStateKey,
+  publishedNarrativeAtCursor,
   recentInsightsAtCursor,
   selectedAtCursor,
 } from "./domain/replayClock";
@@ -146,7 +148,6 @@ export function App() {
     }
   }, [cursorMs, bounds.end, messages.length]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: replayNonce intentionally restarts the narrative replay together with the match replay.
   useEffect(() => {
     if (!scenario) return undefined;
     setNarratives({});
@@ -155,7 +156,10 @@ export function App() {
     const close = openNarrativeStream(scenario, mode, {
       onNarrative: (message) => {
         if (active) {
-          setNarratives((current) => ({ ...current, [message.insight_id]: message }));
+          setNarratives((current) => ({
+            ...current,
+            [narrativeStateKey(scenario, mode, replayNonce, message.insight_id)]: message,
+          }));
         }
       },
       onError: (message) => {
@@ -411,7 +415,15 @@ export function App() {
                   <InsightCard
                     mode={mode}
                     insight={latestInsight}
-                    narrative={narratives[latestInsight.insight_id] ?? null}
+                    narrative={publishedNarrativeAtCursor(
+                      messages,
+                      cursorMs,
+                      scenario,
+                      mode,
+                      replayNonce,
+                      latestInsight.insight_id,
+                      narratives,
+                    )}
                   />
                 </details>
               ) : null}
@@ -446,7 +458,12 @@ export function App() {
           canReplay={messages.length > 0}
           onTogglePlayback={togglePlayback}
         >
-          <EventTimeline messages={visibleMessages} selectedId={selectedId} onSelect={inspect} />
+          <EventTimeline
+            messages={visibleMessages}
+            selectedId={selectedId}
+            cursorMs={cursorMs}
+            onSelect={inspect}
+          />
           <section className="control-bar" aria-label="Replay controls">
             <label>
               Scenario

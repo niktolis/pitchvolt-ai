@@ -1,4 +1,4 @@
-import type { ReplayMessage } from "../api/types";
+import type { NarrativeUpdate, ReplayMessage } from "../api/types";
 import { isMatchEvent, isTacticalInsight } from "../api/types";
 
 /** All replay views derive from one authoritative, integer-millisecond cursor. */
@@ -74,4 +74,32 @@ export function selectedAtCursor(
   return (
     published.find((item) => item.id === selectedId && item.payload.clock_ms === cursorMs) ?? latest
   );
+}
+
+/** Namespace streamed narratives by scenario, audience and replay restart. */
+export function narrativeStateKey(
+  scenario: string,
+  audience: NarrativeUpdate["audience"],
+  replayNonce: number,
+  insightId: string,
+): string {
+  return JSON.stringify([scenario, audience, replayNonce, insightId]);
+}
+
+/**
+ * A prefetched narrative cannot publish until its own tactical insight exists
+ * at the cursor, nor escape into another scenario, audience or replay.
+ */
+export function publishedNarrativeAtCursor(
+  messages: readonly ReplayMessage[],
+  cursorMs: number,
+  scenario: string,
+  audience: NarrativeUpdate["audience"],
+  replayNonce: number,
+  insightId: string,
+  narratives: Readonly<Record<string, NarrativeUpdate>>,
+): NarrativeUpdate | null {
+  if (!isEvidenceVisible(messages, cursorMs, insightId)) return null;
+  const narrative = narratives[narrativeStateKey(scenario, audience, replayNonce, insightId)];
+  return narrative?.insight_id === insightId && narrative.audience === audience ? narrative : null;
 }
