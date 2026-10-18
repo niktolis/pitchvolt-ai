@@ -297,7 +297,7 @@ assistant-side inference, automatic retries, Azure resource creation, or merge.
 ## 18 October operator logs and connected Foundry discovery
 
 Operator preserved the ignored 192 KiB legacy Python bytecode cache tree
-outside the repository; `src/matchpulse` is no longer blocking local tests.
+outside the repository; the obsolete pre-rebrand package tree no longer blocks local tests.
 At the previous reviewed SHA, macOS passed **301 Python tests**, **29
 frontend tests**, and Foundry DRY_RUN plus the offline preflight with a
 real project URL. Local D2 --check validated the source diagrams but
