@@ -123,3 +123,38 @@ The separate transport below the pitch remains operable.
 
 The sole visual acceptance target remains the approved application preview
 compared to manual screenshots of the exact deployed revision.
+
+## Source event ball-contact context (18 October 2026)
+
+The synthetic canonical `MatchEvent` does include an event actor, exact action
+origin, `possession_team_id`, `event_type`, and optional
+`evidence.under_pressure`. It **does not** include continuous ball tracking,
+an independently observed ball coordinate, source duel membership, or an
+identified ball holder at arbitrary timestamps. `MatchProcessor.possession_team`
+is only a team-level possession ledger, not a player tracker.
+
+The opt-in UI projection `web/src/domain/ballAction.ts` exposes a **visible,
+explicitly labelled event-contact indicator** at the recorded action origin
+**only for carry/pass/shot/goal**. This graphic is NOT a claim that the physical
+ball was independently measured at that coordinate. The source actor controls
+the ball at the start of a `carry`; for passes/shots it is an initiator, not a
+persistent holder. The team possession attribution is qualified by **event
+time**; the last source event persists until another action, but a ball position
+or current holder does not. `under_pressure: true` means recorded pressure,
+not a completed tackle or 50:50 contested possession. `pressure` events
+identify the pressing player and the team attributed possession, but the ball
+is **unlocated**; `turnover` events record a team possession change, without
+locating the ball. The state is gated by the canonical replay cursor, so
+rewinding cannot leak a future ball position. No offsets, paths or fabricated
+ball/athlete movement are introduced.
+
+**Next real tracking requirement:** extend the provider-neutral schema with
+explicit source-verified ball samples, player-control identifiers, deliberate
+contest/duel classifications and observation timestamps when available.
+Historical StatsBomb events can supply event-specific starts/ends and pressure
+information, but sparse StatsBomb 360 supplies players, not an automatically
+tracked ball trajectory. Never reinterpret an event end_location as a
+continuous in-flight position or a field player in possession. Preserve
+null/unknown for missing evidence. If later connected to real sampling,
+validate time alignment, coverage, team/athlete IDs, coordinate transforms,
+licensing and no forward fill on replay rewind.

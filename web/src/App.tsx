@@ -461,6 +461,7 @@ export function App() {
           }
           actorColor={selectedTeam?.primary_color}
           actorEmblem={selectedTeam?.emblem_text}
+          cursorMs={cursorMs}
           playing={playing}
           canReplay={messages.length > 0}
           onTogglePlayback={togglePlayback}

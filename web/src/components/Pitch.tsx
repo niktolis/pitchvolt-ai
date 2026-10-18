@@ -1,6 +1,7 @@
 import { type ReactNode, useState } from "react";
 import type { MatchEvent } from "../api/types";
-import { displayName, eventLabel } from "../domain/presentation";
+import { ballActionAtCursor } from "../domain/ballAction";
+import { clockLabel, displayName, eventLabel } from "../domain/presentation";
 import { BroadcastPitchScene } from "./BroadcastPitchScene";
 import { isSourcePitchPoint } from "./pitch-geometry";
 import "./pitch-viewport.css";
@@ -10,6 +11,7 @@ interface PitchProps {
   actorLabel?: string;
   actorColor?: string;
   actorEmblem?: string;
+  cursorMs: number;
   children?: ReactNode;
   playing: boolean;
   canReplay: boolean;
@@ -29,12 +31,14 @@ export function Pitch({
   actorLabel,
   actorColor,
   actorEmblem,
+  cursorMs,
   children,
   playing,
   canReplay,
   onTogglePlayback,
 }: PitchProps) {
   const locatedEvent = event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
+  const ballContext = ballActionAtCursor(locatedEvent, cursorMs);
   const destination =
     locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
   const [hasWebGL] = useState(() => {
@@ -64,6 +68,7 @@ export function Pitch({
               actorColor={actorColor}
               actorLabel={actorLabel}
               actorEmblem={actorEmblem}
+              ballContact={ballContext}
             />
           ) : null}
           <svg
@@ -110,6 +115,18 @@ export function Pitch({
                 className="event-path"
                 markerEnd="url(#arrowhead)"
               />
+            ) : null}
+            {ballContext?.location ? (
+              <g transform={`translate(${ballContext.location.x} ${ballContext.location.y})`}>
+                <circle r="1.2" fill="#f9fff6" stroke="#203a2a" strokeWidth=".45" />
+                <circle
+                  r="1.55"
+                  fill="none"
+                  stroke="#ddffab"
+                  strokeDasharray=".6 .8"
+                  strokeWidth=".18"
+                />
+              </g>
             ) : null}
             {locatedEvent ? (
               <g transform={`translate(${locatedEvent.location.x} ${locatedEvent.location.y})`}>
@@ -165,10 +182,30 @@ export function Pitch({
           ) : null}
         </div>
 
-        <p className="pitch-note">
-          Only the recorded event actor is positioned on this pitch. No opponent, teammate, ball
-          position, or formation is inferred from missing tracking data.
-        </p>
+        <section className="pitch-ball-status" aria-label="Recorded ball action and possession">
+          <strong>
+            {ballContext?.location ? "Recorded ball-action origin" : "Ball position unavailable"}
+          </strong>
+          <span>
+            {ballContext
+              ? `Possession team at ${clockLabel(ballContext.clockMs)}: ${displayName(ballContext.teamInPossession)}`
+              : "Waiting for recorded action"}
+            {ballContext?.carrierId
+              ? ` · Carry by ${actorLabel ?? displayName(ballContext.carrierId)}`
+              : ""}
+            {ballContext?.initiatedBy && !ballContext.carrierId
+              ? ` · Initiated by ${actorLabel ?? displayName(ballContext.initiatedBy)}`
+              : ""}
+            {ballContext?.pressingPlayerId
+              ? ` · Pressed by ${actorLabel ?? displayName(ballContext.pressingPlayerId)}`
+              : ""}
+            {ballContext?.pressured && !ballContext.pressingPlayerId ? " · Under pressure" : ""}
+          </span>
+          <small>
+            Event-time location only. No continuous ball position, contested possession, or flight
+            path is inferred.
+          </small>
+        </section>
       </section>
       <section className="pitch-replay-deck" aria-label="Replay timeline and controls">
         {children}

@@ -433,3 +433,30 @@ controls and sourced data remain intact. No media/AI/Foundry resource
 changes. Run CI, seek explicit manager approval for any merge, then
 compare with an exact-SHA deployed image at matched browser zoom and
 same aspect ratio. The current screenshot is *not* visual acceptance.
+
+## 19. Event-grounded ball marker & possession/pressure presentation (18 Oct 2026)
+
+Owner explicitly requested visible ball and accurate knowledge of who has
+possession, whether the ball is challenged, and its position. Current synthetic
+`MatchEvent` has `location` of **action actor**, `possession_team_id`,
+`player_id` and `evidence.under_pressure` where explicitly authored; no
+independent ball tracking or duel-player locations. Even real 360 frames do
+not automatically include continuous ball locations.
+
+On branch `feat/ui-source-ball-action-context-133`, an explicit pure
+`ballActionAtCursor` presentation contract shows a rendered *event-contact*
+ball graphic at the **source event origin** only for carry/pass/shot/goal,
+with provenance label disclosing it is NOT independently tracked ball motion.
+Carry actor controls the ball at the recorded action start. Passer/shooter is
+identified as initiator, not ongoing holder. Team possession is attributed
+to the event clock; pressure identifies the pressing actor, no ball placed,
+and `evidence.under_pressure` marks pressured action but not confirmed duel.
+Turnover awards team possession but keeps ball location unknown. Full replay
+seek/restart/rewind tests are required. SVG fallback matches WebGL data semantics.
+
+Unfinished: explicit independent ball observations, exact challenged/duel
+participants, real timestamped trajectories, StatsBomb historical 360 data
+transport and selective source-observed attackers/defenders (Issue #129).
+This milestone must not be misrepresented as continuous football tracking.
+Keep the target preview's chrome/layout as implemented post-#132, no
+extra Azure/Foundry charges, no merge before manager approval.

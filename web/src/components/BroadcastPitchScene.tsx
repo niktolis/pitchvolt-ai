@@ -6,6 +6,7 @@ import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 import type { MatchEvent } from "../api/types";
+import type { BallActionContext } from "../domain/ballAction";
 import { clockLabel, displayName } from "../domain/presentation";
 import {
   actionCameraPose,
@@ -297,6 +298,28 @@ function PlayerModel({
   );
 }
 
+/** A highlighted event-contact indicator: not live ball tracking or a flight path. */
+function RecordedBallContact({ contact }: { contact: BallActionContext }) {
+  if (!contact.location) return null;
+  const position = toWorld(contact.location);
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.235, 0]} castShadow>
+        <sphereGeometry args={[0.235, 20, 14]} />
+        <meshStandardMaterial color="#f7fff7" roughness={0.65} />
+      </mesh>
+      <mesh position={[0, 0.235, 0]}>
+        <icosahedronGeometry args={[0.239, 1]} />
+        <meshBasicMaterial color="#192523" wireframe transparent opacity={0.45} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.048, 0]}>
+        <ringGeometry args={[0.58, 0.72, 36]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.6} depthWrite={false} />
+      </mesh>
+    </group>
+  );
+}
+
 function Trajectory({ event }: { event: MatchEvent }) {
   const arrow = sourceArrow(event.location, event.destination);
   if (!arrow) return null;
@@ -330,11 +353,13 @@ export function BroadcastPitchScene({
   actorColor,
   actorLabel,
   actorEmblem,
+  ballContact,
 }: {
   event: MatchEvent | null;
   actorColor?: string;
   actorLabel?: string;
   actorEmblem?: string;
+  ballContact?: BallActionContext | null;
 }) {
   return (
     <div
@@ -370,6 +395,7 @@ export function BroadcastPitchScene({
         <FieldMarkings />
         <GoalFrame side={-1} />
         <GoalFrame side={1} />
+        {ballContact?.location ? <RecordedBallContact contact={ballContact} /> : null}
         {event && isSourcePitchPoint(event.location) && event.player_id.trim() ? (
           <>
             <Trajectory event={event} />
