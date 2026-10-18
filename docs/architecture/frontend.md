@@ -82,8 +82,10 @@ uses exactly the event's `team_id`, `event_type`, `outcome`, and
 **Match activity** strip above the existing recorded-event rail, directly
 under the pitch. Selecting an action reuses `onSelect`/the single
 `inspect` path. This is separate from the source-published tactical insight
-feed (#117) and from independently streamed, guarded local narrative
-updates (#121). Rewind and scenario transitions make future activity
+feed (#117) and independently streamed local narrative
+updates (#121). Those updates are also **namespaced by scenario, audience
+and replay restart**, and only render if the matching tactical insight has
+been published at or before the canonical cursor (#58/#63). Rewind and scenario transitions make future activity
 disappear immediately; when there is no source event yet, the strip says so.
 No API, historical import, source positions, AI model calls or dedicated
 fourth broadcast column is introduced.

@@ -7,6 +7,8 @@ import {
   isEvidenceVisible,
   latestAtCursor,
   matchBounds,
+  narrativeStateKey,
+  publishedNarrativeAtCursor,
   recentInsightsAtCursor,
   selectedAtCursor,
   visibleNarrativeIds,
@@ -69,6 +71,47 @@ describe("canonical replay cursor", () => {
     expect(selectedAtCursor(timeline, 1, 8_000, true)?.id).toBe(4);
     expect(selectedAtCursor(timeline, 4, 3_000, false)?.id).toBe(1);
     expect(selectedAtCursor([], 1, 1_000, false)).toBeNull();
+  });
+
+  it("does not leak prefetched narratives across cursor, mode, scenario, or replay reset", () => {
+    const fact = {
+      insight_id: "insight-3",
+      audience: "casual" as const,
+      headline: "Verified source-only explanation",
+      text: "Source event is recorded.",
+      source: "local_controlled" as const,
+      evidence_event_ids: ["event-2"],
+    };
+    const scoped = {
+      [narrativeStateKey("high_press", "casual", 0, "insight-3")]: fact,
+    };
+    const find = (
+      cursorMs: number,
+      scenario = "high_press",
+      audience: "casual" | "analyst" | "club" = "casual",
+      replayNonce = 0,
+    ) => publishedNarrativeAtCursor(
+      timeline, cursorMs, scenario, audience, replayNonce, "insight-3", scoped,
+    );
+    expect(find(4_999)).toBeNull();
+    expect(find(5_000)).toEqual(fact);
+    expect(find(8_000)).toEqual(fact);
+    expect(find(1_000)).toBeNull();
+    expect(find(5_000, "counterattack")).toBeNull();
+    expect(find(5_000, "high_press", "analyst")).toBeNull();
+    expect(find(5_000, "high_press", "casual", 1)).toBeNull();
+    expect(publishedNarrativeAtCursor(
+      timeline, 5_000, "high_press", "casual", 0, "missing-insight", scoped,
+    )).toBeNull();
+    const mismatched = {
+      [narrativeStateKey("high_press", "casual", 0, "insight-3")]: {
+        ...fact,
+        audience: "club" as const,
+      },
+    };
+    expect(publishedNarrativeAtCursor(
+      timeline, 5_000, "high_press", "casual", 0, "insight-3", mismatched,
+    )).toBeNull();
   });
 
   it("clamps rewind, fast-forward and empty playback bounds", () => {
