@@ -6,6 +6,7 @@ import {
   eventPath,
   isSourcePitchPoint,
   sourceArrow,
+  sourceActorHeading,
   toWorld,
 } from "./pitch-geometry";
 
@@ -68,6 +69,16 @@ describe("source-aligned pitch camera", () => {
     expect(tip.distanceTo(arrow.end)).toBeLessThan(1e-6);
     expect(shaftEnd.distanceTo(headStart)).toBeLessThan(1e-6);
     expect(arrow.shaftLength + arrow.arrowLength).toBeCloseTo(arrow.start.distanceTo(arrow.end));
+  });
+
+  it("never orients a source actor toward invalid or absent destinations", () => {
+    const location = { x: 40, y: 20 };
+    expect(sourceActorHeading(location, { x: 50, y: 20 })).toBeCloseTo(Math.PI / 2);
+    expect(sourceActorHeading(location, { x: 40, y: 30 })).toBe(0);
+    expect(sourceActorHeading(location, { x: 1000, y: 20 })).toBe(0);
+    expect(sourceActorHeading(location, { x: Number.NaN, y: 20 })).toBe(0);
+    expect(sourceActorHeading(location, null)).toBe(0);
+    expect(sourceActorHeading(location, location)).toBe(0);
   });
 
   it("does not synthesize a trajectory without a destination", () => {
