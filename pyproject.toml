@@ -3,7 +3,7 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
-name = "matchpulse-ai"
+name = "pitchvolt-ai"
 version = "0.1.0"
 description = "Deterministic synthetic football event intelligence"
 requires-python = ">=3.11"
@@ -14,7 +14,7 @@ dev = ["pytest>=8,<10", "ruff>=0.8,<1", "httpx>=0.28,<1"]
 foundry = ["agent-framework-foundry>=1.15,<2", "azure-identity>=1.17,<2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/matchpulse"]
+packages = ["src/pitchvolt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -3,11 +3,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from matchpulse.foundry_adapter import sanitized_response_metadata, usage_counts
-from matchpulse.intelligence import analyze_stream
-from matchpulse.narrative import Audience, EvidenceBundle
-from matchpulse.scenarios import scenario
-from matchpulse.workflow import (
+from pitchvolt.foundry_adapter import sanitized_response_metadata, usage_counts
+from pitchvolt.intelligence import analyze_stream
+from pitchvolt.narrative import Audience, EvidenceBundle
+from pitchvolt.scenarios import scenario
+from pitchvolt.workflow import (
     AnalystPlan,
     Angle,
     FactSlot,

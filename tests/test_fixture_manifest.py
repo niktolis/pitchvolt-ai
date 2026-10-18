@@ -2,7 +2,7 @@
 import pytest
 from pydantic import ValidationError
 
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
 
 BASE = {
     "fixture_id": "match-1",
@@ -32,21 +32,21 @@ def test_real_open_data_requires_attribution_and_pinned_source() -> None:
 
 def test_synthetic_cannot_claim_historical_source() -> None:
     synthetic = FixtureManifest(
-        **BASE, origin=FixtureOrigin.MATCHPULSE_SYNTHETIC, generator_seed=42
+        **BASE, origin=FixtureOrigin.PITCHVOLT_SYNTHETIC, generator_seed=42
     )
-    assert synthetic.origin == FixtureOrigin.MATCHPULSE_SYNTHETIC
+    assert synthetic.origin == FixtureOrigin.PITCHVOLT_SYNTHETIC
     with pytest.raises(ValidationError):
-        FixtureManifest(**BASE, origin=FixtureOrigin.MATCHPULSE_SYNTHETIC,
+        FixtureManifest(**BASE, origin=FixtureOrigin.PITCHVOLT_SYNTHETIC,
                         generator_seed=42,
                         source_url="https://github.com/hudl/open-data/blob/master/data/events/123.json")
     with pytest.raises(ValidationError):
-        FixtureManifest(**BASE, origin=FixtureOrigin.MATCHPULSE_SYNTHETIC)
+        FixtureManifest(**BASE, origin=FixtureOrigin.PITCHVOLT_SYNTHETIC)
 
 
 def test_corpus_manifest_requires_hash_and_explicit_coverage() -> None:
     with pytest.raises(ValidationError):
         FixtureManifest(**{**BASE, "event_sha256": "unverified"},
-                        origin=FixtureOrigin.MATCHPULSE_SYNTHETIC, generator_seed=42)
+                        origin=FixtureOrigin.PITCHVOLT_SYNTHETIC, generator_seed=42)
     with pytest.raises(ValidationError):
         FixtureManifest(**{**BASE, "event_coverage": "unknown"},
-                        origin=FixtureOrigin.MATCHPULSE_SYNTHETIC, generator_seed=42)
+                        origin=FixtureOrigin.PITCHVOLT_SYNTHETIC, generator_seed=42)

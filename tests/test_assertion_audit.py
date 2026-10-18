@@ -1,9 +1,9 @@
 """Offline assertion audit must abstain on unconstrained free prose."""
 import pytest
 
-from matchpulse.assertion_audit import AssertionStatus, audit_assertions
-from matchpulse.foundry_smoke import fixture
-from matchpulse.narrative import Audience, Claim, ClaimKind, NarrativeCandidate
+from pitchvolt.assertion_audit import AssertionStatus, audit_assertions
+from pitchvolt.foundry_smoke import fixture
+from pitchvolt.narrative import Audience, Claim, ClaimKind, NarrativeCandidate
 
 
 @pytest.mark.parametrize(

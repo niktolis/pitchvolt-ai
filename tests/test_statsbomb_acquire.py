@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from matchpulse.providers.statsbomb_historical import load_historical_fixture
-from matchpulse.statsbomb_acquire import prepare_fixture, source_urls
+from pitchvolt.providers.statsbomb_historical import load_historical_fixture
+from pitchvolt.statsbomb_acquire import prepare_fixture, source_urls
 
 COMMIT = "a" * 40
 

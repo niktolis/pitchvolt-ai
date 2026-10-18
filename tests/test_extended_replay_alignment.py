@@ -4,9 +4,9 @@ import json
 
 from fastapi.testclient import TestClient
 
-from matchpulse.api import app, timeline
-from matchpulse.intelligence import analyze_stream
-from matchpulse.scenarios import scenario
+from pitchvolt.api import app, timeline
+from pitchvolt.intelligence import analyze_stream
+from pitchvolt.scenarios import scenario
 
 
 def test_extended_timeline_and_evidence_match_detector() -> None:

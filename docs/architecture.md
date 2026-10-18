@@ -1,4 +1,4 @@
-# MatchPulse AI — Architecture Compatibility Entry Point
+# PitchVolt AI — Architecture Compatibility Entry Point
 
 The canonical architecture documentation is **[docs/architecture/README.md](architecture/README.md)**. Accepted decisions live under **[docs/decisions/](decisions/)**.
 

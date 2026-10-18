@@ -9,7 +9,7 @@ set -euo pipefail
 : "${AZURE_IMAGE:?Set an immutable, prebuilt OCI image reference}"
 : "${AZURE_REGISTRY_SERVER:?Set the approved container registry hostname}"
 
-if [[ "${MATCHPULSE_NARRATIVE_PROVIDER:-local}" != "local" ]]; then
+if [[ "${PITCHVOLT_NARRATIVE_PROVIDER:-local}" != "local" ]]; then
   echo "Refusing deployment with remote inference enabled" >&2
   exit 1
 fi

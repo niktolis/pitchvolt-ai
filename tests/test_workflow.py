@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 import pytest
 
-from matchpulse.intelligence import analyze_stream
-from matchpulse.narrative import Audience, EvidenceBundle, InMemoryEvidenceTool
-from matchpulse.scenarios import scenario
-from matchpulse.workflow import (
+from pitchvolt.intelligence import analyze_stream
+from pitchvolt.narrative import Audience, EvidenceBundle, InMemoryEvidenceTool
+from pitchvolt.scenarios import scenario
+from pitchvolt.workflow import (
     AnalystPlan,
     Angle,
     FactSlot,

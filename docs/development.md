@@ -61,8 +61,8 @@ The long-lived `dev` service remains available for VS Code Dev Containers.
 ## Production-style runtime
 
 ~~~sh
-docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-runtime:test .
-docker run --rm -p 8000:8000 matchpulse-runtime:test
+docker build --target runtime -f docker/backend.Dockerfile -t pitchvolt-runtime:test .
+docker run --rm -p 8000:8000 pitchvolt-runtime:test
 ~~~
 
 The multi-stage build compiles React and copies the static bundle into the non-root FastAPI runtime. FastAPI serves the UI same-origin after explicit API routes. This deliberately gives the hackathon one deployable workload while keeping Python and React source boundaries separate.

@@ -1,14 +1,14 @@
 """Bounded grammar: assertions absent from the evidence never pass publication."""
 import pytest
 
-from matchpulse.foundry_smoke import fixture
-from matchpulse.grounded_prose import (
+from pitchvolt.foundry_smoke import fixture
+from pitchvolt.grounded_prose import (
     GroundingStatus,
     approved_phrasings,
     assess_grounded_prose,
     publish_eligible_candidate,
 )
-from matchpulse.narrative import (
+from pitchvolt.narrative import (
     Audience,
     Claim,
     ClaimKind,

@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
-from matchpulse.providers.statsbomb_360 import load_historical_360
-from matchpulse.providers.statsbomb_historical import HistoricalFixture
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.providers.statsbomb_360 import load_historical_360
+from pitchvolt.providers.statsbomb_historical import HistoricalFixture
 
 
 def fixture():
@@ -120,7 +120,7 @@ def test_overpopulated_side_is_not_accepted_as_twenty_two(tmp_path):
 def test_origin_and_match_filename_must_agree(tmp_path):
     source = fixture()
     synthetic_manifest = source.manifest.model_copy(update={
-        "origin": FixtureOrigin.MATCHPULSE_SYNTHETIC, "generator_seed": 12,
+        "origin": FixtureOrigin.PITCHVOLT_SYNTHETIC, "generator_seed": 12,
         "source_url": None,
     })
     synthetic = HistoricalFixture(
@@ -145,7 +145,7 @@ def test_genuine_off_pitch_source_position_is_preserved_not_clamped(tmp_path):
 
 
 def test_replay_moment_exact_source_event_never_reuses_future_or_prior_frame(tmp_path):
-    from matchpulse.providers.statsbomb_360_replay import historical_moment_at_event
+    from pitchvolt.providers.statsbomb_360_replay import historical_moment_at_event
 
     source = fixture()
     frames = load(tmp_path, sample())
@@ -169,7 +169,7 @@ def test_replay_moment_exact_source_event_never_reuses_future_or_prior_frame(tmp
 
 
 def test_replay_moment_keeps_off_field_source_evidence_without_drawing_it(tmp_path):
-    from matchpulse.providers.statsbomb_360_replay import historical_moment_at_event
+    from pitchvolt.providers.statsbomb_360_replay import historical_moment_at_event
 
     frame = sample()
     frame[0]["freeze_frame"][1]["location"] = [-2, 82]
@@ -181,7 +181,7 @@ def test_replay_moment_keeps_off_field_source_evidence_without_drawing_it(tmp_pa
 
 
 def test_replay_rejects_wrong_match_fingerprint_or_event_id(tmp_path):
-    from matchpulse.providers.statsbomb_360_replay import historical_moment_at_event
+    from pitchvolt.providers.statsbomb_360_replay import historical_moment_at_event
 
     source = fixture()
     frames = load(tmp_path, sample())

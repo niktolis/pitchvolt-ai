@@ -1,4 +1,4 @@
-# MatchPulse AI — Software Architecture
+# PitchVolt AI — Software Architecture
 
 This is the architectural entry point. **D2 source is authoritative**, while embedded SVGs are generated automatically to make the design readable in GitHub. The views explicitly distinguish *implemented* and *planned* behaviors.
 

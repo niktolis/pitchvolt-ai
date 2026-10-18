@@ -2,7 +2,7 @@
 
 ## Business purpose
 
-The React broadcast is the first judge-visible vertical slice of MatchPulse AI. It turns the deterministic replay transport into an inspectable experience without creating a second source of football truth:
+The React broadcast is the first judge-visible vertical slice of PitchVolt AI. It turns the deterministic replay transport into an inspectable experience without creating a second source of football truth:
 
 1. **Ingest** — FastAPI publishes canonical `MatchEvent` and deterministic tactical-insight messages over SSE.
 2. **Interpret** — `MatchProcessor` remains the only component that classifies high press or counterattack and calculates metrics.
@@ -22,7 +22,7 @@ The pitch does not interpolate player tracking, infer pressure geometry or inven
 
 FastAPI response models are the transport source of truth. `scripts/export-openapi.py` writes the OpenAPI document and `openapi-typescript` generates `web/src/api/generated.ts`. Hand-written UI code imports those generated component schemas rather than duplicating backend DTO definitions.
 
-The scenario registry also lives once in `matchpulse.scenarios.SCENARIO_NAMES`; both scenario validation and the catalog endpoint use it.
+The scenario registry also lives once in `pitchvolt.scenarios.SCENARIO_NAMES`; both scenario validation and the catalog endpoint use it.
 
 CI regenerates OpenAPI and TypeScript contracts and fails if committed generated files drift. Frontend formatting, lint, type checking, tests and production build share one npm check command.
 

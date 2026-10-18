@@ -7,15 +7,15 @@ from copy import deepcopy
 import pytest
 from pydantic import ValidationError
 
-from matchpulse.events import EventType, Outcome, Point, Provenance
-from matchpulse.intelligence import InsightKind, analyze_stream
-from matchpulse.providers.statsbomb import (
+from pitchvolt.events import EventType, Outcome, Point, Provenance
+from pitchvolt.intelligence import InsightKind, analyze_stream
+from pitchvolt.providers.statsbomb import (
     StatsBombSyntheticSource,
     point_to_statsbomb,
     statsbomb_to_point,
     synthetic_to_statsbomb,
 )
-from matchpulse.scenarios import scenario
+from pitchvolt.scenarios import scenario
 
 
 def _fixture(name: str = "high_press"):
@@ -68,7 +68,7 @@ def test_statsbomb_synthetic_json_shape_and_reproducibility() -> None:
     assert records[2]["possession"] == 2
     assert records[-1]["shot"]["outcome"]["name"] == "Saved"
     assert len(records[-1]["shot"]["end_location"]) == 2  # no fabricated height
-    assert all("matchpulse" not in record for record in records)
+    assert all("pitchvolt" not in record for record in records)
     events = StatsBombSyntheticSource(match, records, prov).events()
     assert [e.event_type for e in events] == [e.event_type for e in native]
     assert events[1].outcome == Outcome.FAILURE
@@ -100,7 +100,7 @@ def test_statsbomb_scenario_uses_same_truth_and_existing_stream() -> None:
     native_match, native = scenario("high_press")
     assert match.match_id != native_match.match_id
     assert events == scenario("statsbomb_high_press")[1]
-    assert all(e.provenance.generator == "matchpulse-statsbomb-shaped" for e in events)
+    assert all(e.provenance.generator == "pitchvolt-statsbomb-shaped" for e in events)
     statsbomb = analyze_stream(match, events)
     reference = analyze_stream(native_match, native)
     assert [e.kind for e in statsbomb] == [InsightKind.HIGH_PRESS]

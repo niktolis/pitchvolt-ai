@@ -10,8 +10,8 @@ receive Azure OIDC authentication. Production Foundry inference stays off.
 
 Use a **dedicated Entra app registration and service principal with federated
 GitHub Actions OIDC credentials**, not an interactive human account, password,
-registry admin credential or client secret. Federation matches only
-`repo:niktolis/matchpulse-ai:ref:refs/heads/main` and audience
+registry admin credential or client secret. After the repository rename, federation must match
+`repo:niktolis/pitchvolt-ai:ref:refs/heads/main` and audience
 `api://AzureADTokenExchange`. The GitHub job requests `id-token: write`
 only for the deployment job. The separate existing user-assigned managed
 identity `matchpulse-acr-pull` continues to serve private ACR image pulls at
@@ -23,59 +23,34 @@ The deployment identity requires only:
   (replace with a narrower tested deployment role if supported). It must not
   receive Owner, subscription Contributor, directory admin or Foundry access.
 
-## One-time operator configuration (fish shell)
+## Existing Azure identity — repository rename
 
-These steps make Azure directory/RBAC changes and require existing admin
-permissions to create application registrations and role assignments.
-Inspect each scope before running. The authorized existing resources are
-subscription `98d4eb09-a320-4b90-aa9c-e561835357af`, resource group
-`rg-matchpulse-dev`, Azure region `swedencentral`.
+The production deployment already uses an approved Entra application with
+GitHub Actions OIDC. **Reuse it**: do not create an application registration,
+service principal, Azure resource, managed identity or new RBAC assignment.
+The existing GitHub variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and
+`AZURE_SUBSCRIPTION_ID` are retained by the GitHub repository rename.
 
-```fish
-set -gx SUB 98d4eb09-a320-4b90-aa9c-e561835357af
-az account set --subscription $SUB
-set -gx TENANT_ID (az account show --query tenantId -o tsv)
-set -gx CI_APP_ID (az ad app create --display-name matchpulse-github-actions-deploy --query appId -o tsv)
-set -gx CI_APP_OBJECT_ID (az ad app show --id $CI_APP_ID --query id -o tsv)
-az ad sp create --id $CI_APP_ID
-```
+The new canonical GitHub repository is `niktolis/pitchvolt-ai`. A
+repository-name change changes the OIDC token's exact `sub` claim, so an
+additional federated credential for that name must be configured on the
+**existing** Entra application **before** the rename. Keep the old subject
+during cutover and remove it only after confirming the new identity works.
+No Foundry model invocation or paid resource provisioning is involved.
 
-Create the exact federated identity trust (no secrets). Use standard Bash
-`printf`/JSON utilities if you prefer; the following fish command uses
-`string join` to construct the JSON object:
-
-```fish
-set -l credential '{"name":"matchpulse-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:niktolis/matchpulse-ai:ref:refs/heads/main","description":"Only GitHub main can deploy MatchPulse","audiences":["api://AzureADTokenExchange"]}'
-az ad app federated-credential create --id $CI_APP_OBJECT_ID --parameters $credential
-
-set -gx CI_PRINCIPAL_ID (az ad sp show --id $CI_APP_ID --query id -o tsv)
-set -gx ACR_ID (az acr show -n matchpulsea433a4e04d --query id -o tsv)
-set -gx ACA_ID (az containerapp show -g rg-matchpulse-dev -n matchpulse-web --query id -o tsv)
-az role assignment create --assignee-object-id $CI_PRINCIPAL_ID --assignee-principal-type ServicePrincipal --role AcrPush --scope $ACR_ID
-az role assignment create --assignee-object-id $CI_PRINCIPAL_ID --assignee-principal-type ServicePrincipal --role Contributor --scope $ACA_ID
-
-gh variable set AZURE_CLIENT_ID --repo niktolis/matchpulse-ai --body $CI_APP_ID
-gh variable set AZURE_TENANT_ID --repo niktolis/matchpulse-ai --body $TENANT_ID
-gh variable set AZURE_SUBSCRIPTION_ID --repo niktolis/matchpulse-ai --body $SUB
-```
-
-`gh auth status` and `az account show` must reference the expected GitHub
-and Azure accounts. **Do not paste bearer tokens or passwords.** If identity
-creation fails due to Entra permissions, stop and request a directory
-administrator to approve only these narrow operations; do not enable registry
-admin access or create a long-lived secret as a workaround.
+See [repository-name migration runbook](repository-rename.md) for the exact
+operator sequence, fish commands, physical Azure resource identifiers,
+rollback and verification.
 
 ## Readiness and rollout
 
-1. Merge the deployment workflow through normal PR checks. Its new `main`
-   run fails closed at the identity-configuration stage until the repository
-   variables are available.
-2. Provision the federated identity/role assignments once and allow Azure RBAC
-   propagation.
-3. In Actions, manually run **Deploy Azure Container App** once using
-   `workflow_dispatch` to verify authentication and image push. Thereafter,
-   pushes/merges to `main` trigger deploys automatically. Avoid another
-   simultaneous operator-side container update.
+1. Verify the existing `main` workflow remains operational on the
+   original repository after the code refactor.
+2. Add only the new exact-subject federated credential on the existing Entra
+   app, then rename the GitHub repository as documented in the runbook.
+3. Inspect repository variables and the new OIDC identity. Verify the normal
+   **Deploy Azure Container App** workflow after cutover; do not deploy
+   concurrently from another operator session.
 4. Read the action logs and verify the hosted React UI and both SSE endpoints.
    The health check verifies availability, not full product correctness.
 5. Rollback by updating the existing app to the last verified immutable digest.

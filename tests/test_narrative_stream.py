@@ -4,9 +4,9 @@ import json
 
 from fastapi.testclient import TestClient
 
-from matchpulse.api import app, timeline
-from matchpulse.narrative import Audience
-from matchpulse.narrative_stream import narrative_updates
+from pitchvolt.api import app, timeline
+from pitchvolt.narrative import Audience
+from pitchvolt.narrative_stream import narrative_updates
 
 client = TestClient(app)
 
@@ -68,7 +68,7 @@ def test_local_narrative_uses_no_remote_provider_and_keeps_audience() -> None:
 
 
 def test_provider_failure_returns_evidence_backed_fallback(monkeypatch) -> None:
-    from matchpulse import narrative_stream
+    from pitchvolt import narrative_stream
 
     async def fail(self, evidence):
         raise RuntimeError("Local agent unavailable")
@@ -90,7 +90,7 @@ def test_provider_failure_returns_evidence_backed_fallback(monkeypatch) -> None:
 
 
 def test_role_timeout_falls_back_without_failing_sse(monkeypatch) -> None:
-    from matchpulse import narrative_stream
+    from pitchvolt import narrative_stream
 
     async def timeout(awaitable, **kwargs):
         # The mocked wait_for never schedules its coroutine; close it to
@@ -107,8 +107,8 @@ def test_role_timeout_falls_back_without_failing_sse(monkeypatch) -> None:
 
 
 def test_provider_selection_defaults_to_local(monkeypatch) -> None:
-    from matchpulse import narrative_stream
-    monkeypatch.delenv("MATCHPULSE_NARRATIVE_PROVIDER", raising=False)
+    from pitchvolt import narrative_stream
+    monkeypatch.delenv("PITCHVOLT_NARRATIVE_PROVIDER", raising=False)
     analyst, storyteller, source = narrative_stream._provider_roles()
     assert isinstance(analyst, narrative_stream.LocalAnalyst)
     assert isinstance(storyteller, narrative_stream.LocalStoryteller)
@@ -116,12 +116,12 @@ def test_provider_selection_defaults_to_local(monkeypatch) -> None:
 
 
 def test_foundry_mode_remains_blocked_even_with_valid_settings(monkeypatch) -> None:
-    monkeypatch.setenv("MATCHPULSE_NARRATIVE_PROVIDER", "foundry")
+    monkeypatch.setenv("PITCHVOLT_NARRATIVE_PROVIDER", "foundry")
     monkeypatch.setenv(
-        "MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT",
+        "PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT",
         "https://example.services.ai.azure.com/api/projects/sample",
     )
-    monkeypatch.setenv("MATCHPULSE_FOUNDRY_MODEL", "not-deployed")
+    monkeypatch.setenv("PITCHVOLT_FOUNDRY_MODEL", "not-deployed")
     response = client.get("/api/matches/high_press/narratives/stream")
     assert response.status_code == 200
     assert '"source":"deterministic_fallback"' in response.text
@@ -129,7 +129,7 @@ def test_foundry_mode_remains_blocked_even_with_valid_settings(monkeypatch) -> N
 
 
 def test_unknown_narrative_provider_fails_closed(monkeypatch) -> None:
-    monkeypatch.setenv("MATCHPULSE_NARRATIVE_PROVIDER", "unexpected")
+    monkeypatch.setenv("PITCHVOLT_NARRATIVE_PROVIDER", "unexpected")
     response = client.get("/api/matches/high_press/narratives/stream")
     assert response.status_code == 200
     assert '"source":"deterministic_fallback"' in response.text

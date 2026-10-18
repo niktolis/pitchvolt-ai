@@ -7,9 +7,9 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles
-from matchpulse.narrative import Audience
-from matchpulse.workflow import AnalystPlan, StorytellerSelection
+from pitchvolt.foundry_adapter import FoundryConfig, FoundryRoles
+from pitchvolt.narrative import Audience
+from pitchvolt.workflow import AnalystPlan, StorytellerSelection
 
 
 def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatch) -> None:
@@ -31,7 +31,7 @@ def test_foundry_sdk_constructor_and_structured_calls_without_network(monkeypatc
         async def run(self, prompt: str, *, options: dict[str, object], tools=None) -> object:
             calls.append(("run", (self.name, options, prompt)))
             assert "tools" not in options
-            if self.name == "MatchPulseAnalyst":
+            if self.name == "PitchVoltAnalyst":
                 assert tools is not None and tools[0]("event-1")
                 return SimpleNamespace(value={
                     "insight_id": "insight-1",
@@ -171,7 +171,7 @@ def test_heterogeneous_clients_and_optional_editorial_are_isolated(monkeypatch) 
     ]
     assert len({id(client["credential"]) for client in clients}) == 1
     assert [name for kind, name in created if kind == "agent"] == [
-        "MatchPulseAnalyst", "MatchPulseStoryteller", "MatchPulseEditorial",
+        "PitchVoltAnalyst", "PitchVoltStoryteller", "PitchVoltEditorial",
     ]
     assert roles._analyst is roles._agents["analyst"]
     assert roles._storyteller is roles._agents["storyteller"]
@@ -179,7 +179,7 @@ def test_heterogeneous_clients_and_optional_editorial_are_isolated(monkeypatch) 
 
 
 def test_sanitized_response_metadata_excludes_payload() -> None:
-    from matchpulse.foundry_adapter import sanitized_response_metadata
+    from pitchvolt.foundry_adapter import sanitized_response_metadata
 
     payload = "SECRET generated answer or bearer token"
     response = SimpleNamespace(
@@ -198,7 +198,7 @@ def test_sanitized_response_metadata_excludes_payload() -> None:
 
 
 def test_response_metadata_unknown_status_and_missing_usage() -> None:
-    from matchpulse.foundry_adapter import sanitized_response_metadata
+    from pitchvolt.foundry_adapter import sanitized_response_metadata
 
     response = SimpleNamespace(
         value=None, status="PRIVATE_USER_TEXT", finish_reason="PRIVATE_USER_TEXT",

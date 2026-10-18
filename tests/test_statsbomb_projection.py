@@ -1,7 +1,7 @@
 """Historical projection preserves source evidence and does not infer tactics."""
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
-from matchpulse.providers.statsbomb_historical import HistoricalFixture
-from matchpulse.providers.statsbomb_projection import project_historical_actions
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.providers.statsbomb_historical import HistoricalFixture
+from pitchvolt.providers.statsbomb_projection import project_historical_actions
 
 
 def fixture(records):

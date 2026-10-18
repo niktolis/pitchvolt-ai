@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from matchpulse.events import EventType, MatchEvent, Point, Provenance, validate_stream
-from matchpulse.simulation import MATCH, high_press_replay
+from pitchvolt.events import EventType, MatchEvent, Point, Provenance, validate_stream
+from pitchvolt.simulation import MATCH, high_press_replay
 
 
 def test_deterministic_replay() -> None:

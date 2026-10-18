@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from matchpulse.narrative_eval import EvaluationCase, benchmark_cases, evaluate, main
-from matchpulse.shadow_validation import ShadowStatus
+from pitchvolt.narrative_eval import EvaluationCase, benchmark_cases, evaluate, main
+from pitchvolt.shadow_validation import ShadowStatus
 
 
 def test_benchmark_classifies_synthetic_negatives_and_never_publishes() -> None:

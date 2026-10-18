@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from matchpulse.events import Point
-from matchpulse.providers.statsbomb_360 import (
+from pitchvolt.events import Point
+from pitchvolt.providers.statsbomb_360 import (
     Historical360Frame,
     Observed360Player,
 )
-from matchpulse.providers.statsbomb_360_replay import HistoricalReplayMoment
-from matchpulse.statsbomb_360_preview import render_historical_frame_html
+from pitchvolt.providers.statsbomb_360_replay import HistoricalReplayMoment
+from pitchvolt.statsbomb_360_preview import render_historical_frame_html
 
 
 def moment(*, on_pitch=2, off_pitch=1):
@@ -69,7 +69,7 @@ def test_user_controlled_event_identifier_is_html_escaped():
 
 
 def test_missing_local_bundle_cannot_generate_a_preview(tmp_path: Path):
-    from matchpulse.statsbomb_360_preview import create_local_preview
+    from pitchvolt.statsbomb_360_preview import create_local_preview
 
     out = tmp_path / "frame.html"
     with pytest.raises(FileNotFoundError):

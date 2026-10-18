@@ -26,4 +26,4 @@ jobs:
       - name: Run shared frontend checks
         run: uv run --frozen bash scripts/check-web.sh
       - name: Build frontend development container
-        run: docker build --target web-development -f docker/backend.Dockerfile -t matchpulse-web:test .
+        run: docker build --target web-development -f docker/backend.Dockerfile -t pitchvolt-web:test .

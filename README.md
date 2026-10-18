@@ -2,7 +2,7 @@
 
 ![PitchVolt AI — Football intelligence. Electrified.](docs/assets/pitchvolt-readme-banner.svg)
 
-[![Python checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml) [![Azure deployment](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml)
+[![Python checks](https://github.com/niktolis/pitchvolt-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/pitchvolt-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/pitchvolt-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/pitchvolt-ai/actions/workflows/frontend-checks.yml) [![Azure deployment](https://github.com/niktolis/pitchvolt-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/pitchvolt-ai/actions/workflows/azure-container-apps-deploy.yml)
 
 
 Football intelligence. Electrified. Real-time, explainable football intelligence and personalized storytelling for the Microsoft Premier League AI Hackathon.
@@ -61,8 +61,8 @@ uv run --frozen bash scripts/check-web.sh
 ### Production-style single container
 
 ~~~sh
-docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-ai .
-docker run --rm -p 8000:8000 matchpulse-ai
+docker build --target runtime -f docker/backend.Dockerfile -t pitchvolt-ai .
+docker run --rm -p 8000:8000 pitchvolt-ai
 ~~~
 
 Open http://localhost:8000.
@@ -77,8 +77,9 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 - [Live broadcast UI](docs/architecture/frontend.md)
 - [Accepted architecture decisions](docs/decisions/)
 - [Development workflow](docs/development.md)
+- [Repository rename and Azure OIDC cutover](docs/repository-rename.md)
 - [Judging traceability](docs/judging-traceability.md)
 
 ## Cost and deployment guardrail
 
-PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources, inference charges or increased spending require explicit approval. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend.
+PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources, inference charges or increased spending require explicit approval. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend. Existing legacy-named Azure resources are intentionally reused, not recreated during the repository rename.

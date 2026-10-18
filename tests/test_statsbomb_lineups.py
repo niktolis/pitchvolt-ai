@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from matchpulse.providers.statsbomb_lineups import load_historical_lineups
+from pitchvolt.providers.statsbomb_lineups import load_historical_lineups
 
 
 def setup(tmp_path, teams):

@@ -1,7 +1,7 @@
 """Evidence links are useful provenance metadata, never publication authority."""
-from matchpulse.evidence_links import LinkedClaim, LinkStatus, assess_evidence_links
-from matchpulse.foundry_smoke import fixture
-from matchpulse.narrative import Audience, Claim, ClaimKind, NarrativeCandidate
+from pitchvolt.evidence_links import LinkedClaim, LinkStatus, assess_evidence_links
+from pitchvolt.foundry_smoke import fixture
+from pitchvolt.narrative import Audience, Claim, ClaimKind, NarrativeCandidate
 
 
 def test_original_text_can_be_linked_in_shadow_without_publication() -> None:

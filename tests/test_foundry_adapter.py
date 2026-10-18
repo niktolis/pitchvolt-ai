@@ -1,7 +1,7 @@
 """Cloud inference is never enabled by importing or constructing default config."""
 import pytest
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles, RoleSettings
+from pitchvolt.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles, RoleSettings
 
 
 def test_foundry_inference_is_explicitly_opt_in() -> None:

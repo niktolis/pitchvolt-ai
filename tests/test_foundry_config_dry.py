@@ -1,7 +1,7 @@
 """Configuration is the only owner of Foundry defaults and effective smoke settings."""
 import pytest
 
-from matchpulse.foundry_config import (
+from pitchvolt.foundry_config import (
     DEFAULT_OUTPUT_TOKENS,
     MAX_OUTPUT_TOKENS,
     NARRATIVE_ROLE_CALLS,
@@ -38,7 +38,7 @@ def test_default_policy_is_not_billable_and_has_no_smoke_override() -> None:
 def test_no_redefined_smoke_policy_in_callers() -> None:
     from pathlib import Path
 
-    root = Path(__file__).resolve().parents[1] / "src" / "matchpulse"
+    root = Path(__file__).resolve().parents[1] / "src" / "pitchvolt"
     for name in ("foundry_smoke.py", "foundry_preview.py"):
         source = (root / name).read_text()
         assert "SMOKE_ANALYST_OUTPUT_TOKENS =" not in source

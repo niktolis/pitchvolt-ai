@@ -13,22 +13,22 @@ and deterministic verification. The default is **offline dry-run**.
    with `az account show --query '{name:name,id:id}'`. Never paste access tokens or keys.
 5. Copy **your own project endpoint** from Microsoft Foundry project overview. It should
    look like `https://<account>.services.ai.azure.com/api/projects/<project>`.
-   Set `MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT` to that URL. The project endpoint is
+   Set `PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT` to that URL. The project endpoint is
    **not** the `.../openai/v1/` model-inference base URL shown on a deployment page.
    Role-based authorization for the signed-in identity may be required.
 
 ## Commands
 
 ```bash
-uv run --frozen --extra foundry python -m matchpulse.foundry_smoke
+uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke
 
 # Only after reviewing the dry run and verifying the endpoint/active Azure account:
-uv run --frozen --extra foundry python -m matchpulse.foundry_smoke --execute --acknowledge-billable-inference
+uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke --execute --acknowledge-billable-inference
 ```
 
 Under fish shell, set the endpoint with:
 ```fish
-set -x MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT 'https://<account>.services.ai.azure.com/api/projects/<project>'
+set -x PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT 'https://<account>.services.ai.azure.com/api/projects/<project>'
 ```
 
 No secrets belong in source, CLI history, screenshots, PR comments or test reports.
@@ -47,7 +47,7 @@ timeout or fallback can still incur token charges, even when the report shows no
 - Returns nonzero unless both roles, model-initiated evidence retrieval, and final
   verified publication succeeded. Reports observable SDK token counts (if available),
   durations and evidence IDs; missing SDK usage is not proof of zero consumption.
-- Do not change `MATCHPULSE_NARRATIVE_PROVIDER`, application SSE opt-in or Azure
+- Do not change `PITCHVOLT_NARRATIVE_PROVIDER`, application SSE opt-in or Azure
   resource settings; the usual application path stays deterministic/offline.
 - A 1,000 TPM allocation on each deployment may be insufficient for a single
   GPT-5 mini tool-calling run. 15-second local timeout likewise may be insufficient.
@@ -121,10 +121,10 @@ an explicitly authorized operator demonstration:
 
 No production, CI, or normal application request enables this path.
 The operator must separately set
-`MATCHPULSE_FOUNDRY_PREVIEW_ENABLED=true`, a random, private
-`MATCHPULSE_FOUNDRY_PREVIEW_TOKEN` (at least 32 characters), and the
-existing `MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT`. The HTTP request must
-originate from localhost and carry `X-MatchPulse-Inference-Token` with
+`PITCHVOLT_FOUNDRY_PREVIEW_ENABLED=true`, a random, private
+`PITCHVOLT_FOUNDRY_PREVIEW_TOKEN` (at least 32 characters), and the
+existing `PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT`. The HTTP request must
+originate from localhost and carry `X-PitchVolt-Inference-Token` with
 the exact value. Keep the token outside shell history, source control,
 logs, URLs and screenshots. A fresh local server process accepts at most
 **one** authorized HTTP preview request; concurrent/repeated requests

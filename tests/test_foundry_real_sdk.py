@@ -5,8 +5,8 @@ import asyncio
 
 import pytest
 
-from matchpulse.foundry_adapter import FoundryConfig, FoundryRoles
-from matchpulse.foundry_smoke import create_smoke_project_client
+from pitchvolt.foundry_adapter import FoundryConfig, FoundryRoles
+from pitchvolt.foundry_smoke import create_smoke_project_client
 
 
 def test_actual_foundry_sdk_uses_async_bounded_retry_clients_for_both_roles() -> None:

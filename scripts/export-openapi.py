@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from matchpulse.api import app
+from pitchvolt.api import app
 
 TARGET = Path(__file__).resolve().parents[1] / "web" / "openapi.json"
 TARGET.write_text(

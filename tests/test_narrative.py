@@ -1,8 +1,8 @@
 """No model-generated free text can cross the narrative truth boundary unverified."""
 import pytest
 
-from matchpulse.intelligence import analyze_stream
-from matchpulse.narrative import (
+from pitchvolt.intelligence import analyze_stream
+from pitchvolt.narrative import (
     Audience,
     Claim,
     ClaimKind,
@@ -13,7 +13,7 @@ from matchpulse.narrative import (
     verify_claims,
     verify_narrative,
 )
-from matchpulse.scenarios import scenario
+from pitchvolt.scenarios import scenario
 
 
 def _bundle() -> EvidenceBundle:
