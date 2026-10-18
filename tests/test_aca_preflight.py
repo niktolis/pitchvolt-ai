@@ -6,11 +6,11 @@ from pathlib import Path
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "aca-preflight.sh"
 
 BASE = {
-    "AZURE_RESOURCE_GROUP": "rg-matchpulse-demo",
-    "AZURE_CONTAINER_APP": "matchpulse-web",
-    "AZURE_CONTAINER_ENV": "matchpulse-demo-env",
+    "AZURE_RESOURCE_GROUP": "rg-pitchvolt-demo",
+    "AZURE_CONTAINER_APP": "pitchvolt-web",
+    "AZURE_CONTAINER_ENV": "pitchvolt-demo-env",
     "AZURE_REGION": "swedencentral",
-    "AZURE_IMAGE": "example.azurecr.io/matchpulse@sha256:" + "a" * 64,
+    "AZURE_IMAGE": "example.azurecr.io/pitchvolt@sha256:" + "a" * 64,
     "AZURE_REGISTRY_SERVER": "example.azurecr.io",
 }
 
@@ -31,12 +31,12 @@ def test_preflight_describes_only_offline_plan() -> None:
 
 
 def test_preflight_refuses_remote_inference() -> None:
-    result = preflight(MATCHPULSE_NARRATIVE_PROVIDER="foundry")
+    result = preflight(PITCHVOLT_NARRATIVE_PROVIDER="foundry")
     assert result.returncode != 0
 
 
 def test_preflight_refuses_mutable_images() -> None:
-    result = preflight(AZURE_IMAGE="example.azurecr.io/matchpulse:latest")
+    result = preflight(AZURE_IMAGE="example.azurecr.io/pitchvolt:latest")
     assert result.returncode != 0
 
 

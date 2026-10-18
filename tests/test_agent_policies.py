@@ -1,7 +1,7 @@
 """Role boundaries and all audience flavors are source-controlled contracts."""
 import pytest
 
-from matchpulse.agent_policies import (
+from pitchvolt.agent_policies import (
     ANALYST_INSTRUCTIONS,
     AUDIENCE_POLICIES,
     CORE_POLICY,
@@ -10,7 +10,7 @@ from matchpulse.agent_policies import (
     STORYTELLER_INSTRUCTIONS,
     audience_instruction,
 )
-from matchpulse.narrative import Audience
+from pitchvolt.narrative import Audience
 
 
 def test_role_policy_contracts() -> None:

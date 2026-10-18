@@ -1,11 +1,11 @@
 """Baseline invariants for deterministic, explicitly uncalibrated replay."""
 from fastapi.testclient import TestClient
 
-from matchpulse.api import app
-from matchpulse.events import EventType, Outcome, validate_stream
-from matchpulse.intelligence import InsightKind, analyze_stream
-from matchpulse.scenarios import scenario
-from matchpulse.statsbomb_reference import (
+from pitchvolt.api import app
+from pitchvolt.events import EventType, Outcome, validate_stream
+from pitchvolt.intelligence import InsightKind, analyze_stream
+from pitchvolt.scenarios import scenario
+from pitchvolt.statsbomb_reference import (
     REFERENCE_ACTION_COUNTS,
     REFERENCE_PROJECTED_COUNT,
     calibrated_action_quotas,
@@ -113,7 +113,7 @@ def test_multiple_grounded_insights_distributed_across_halves() -> None:
 def test_offline_extended_smoke_scenario_without_inference(capsys) -> None:
     import asyncio
 
-    from matchpulse import foundry_smoke
+    from pitchvolt import foundry_smoke
 
     assert asyncio.run(foundry_smoke.run(["--scenario", "extended_match"])) == 0
     output = capsys.readouterr().out

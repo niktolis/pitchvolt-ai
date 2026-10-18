@@ -2,8 +2,8 @@
 
 from fastapi.testclient import TestClient
 
-from matchpulse.api import app, timeline
-from matchpulse.scenarios import SCENARIO_NAMES
+from pitchvolt.api import app, timeline
+from pitchvolt.scenarios import SCENARIO_NAMES
 
 client = TestClient(app)
 
