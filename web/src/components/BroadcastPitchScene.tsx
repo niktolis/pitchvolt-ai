@@ -24,7 +24,7 @@ function BroadcastCamera({ focus }: { focus: PitchPoint | null }) {
   const initialized = useRef(false);
   const pose = useMemo(
     () => actionCameraPose(size.width / Math.max(size.height, 1), focus),
-    [size.width, size.height, focus?.x, focus?.y],
+    [size.width, size.height, focus],
   );
 
   useLayoutEffect(() => {
@@ -283,7 +283,9 @@ export function BroadcastPitchScene({
         shadows
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       >
-        <BroadcastCamera focus={event && isSourcePitchPoint(event.location) ? event.location : null} />
+        <BroadcastCamera
+          focus={event && isSourcePitchPoint(event.location) ? event.location : null}
+        />
         <color attach="background" args={["#06140b"]} />
         <hemisphereLight args={["#ddf8d5", "#091b10", 2.15]} />
         <ambientLight intensity={0.43} />
