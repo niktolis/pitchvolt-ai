@@ -1,4 +1,10 @@
-import type { EvidenceResponse, MatchPresentation, NarrativeUpdate, ReplayMessage, ScenarioCatalog } from "./types";
+import type {
+  EvidenceResponse,
+  MatchPresentation,
+  NarrativeUpdate,
+  ReplayMessage,
+  ScenarioCatalog,
+} from "./types";
 
 async function readJson<T>(response: Response): Promise<T> {
   if (!response.ok) {

@@ -147,7 +147,15 @@ function FieldMarkings() {
   return <primitive object={lines} />;
 }
 
-function PlayerModel({ event, color, actorLabel }: { event: MatchEvent; color?: string; actorLabel?: string }) {
+function PlayerModel({
+  event,
+  color,
+  actorLabel,
+}: {
+  event: MatchEvent;
+  color?: string;
+  actorLabel?: string;
+}) {
   const position = toWorld(event.location);
   const heading = event.destination
     ? Math.atan2(event.destination.x - event.location.x, event.destination.y - event.location.y)
@@ -235,7 +243,15 @@ function Trajectory({ event }: { event: MatchEvent }) {
   );
 }
 
-export function BroadcastPitchScene({ event, actorColor, actorLabel }: { event: MatchEvent | null; actorColor?: string; actorLabel?: string }) {
+export function BroadcastPitchScene({
+  event,
+  actorColor,
+  actorLabel,
+}: {
+  event: MatchEvent | null;
+  actorColor?: string;
+  actorLabel?: string;
+}) {
   return (
     <div
       className="broadcast-webgl"

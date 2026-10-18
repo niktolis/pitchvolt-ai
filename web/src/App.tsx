@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { fetchEvidence, fetchPresentation, fetchScenarios, fetchTimeline, openNarrativeStream } from "./api/client";
+import {
+  fetchEvidence,
+  fetchPresentation,
+  fetchScenarios,
+  fetchTimeline,
+  openNarrativeStream,
+} from "./api/client";
 import type {
   EvidenceResponse,
   MatchEvent,
@@ -13,6 +19,12 @@ import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
 import { SourceMomentPreview } from "./components/SourceMomentPreview";
+import {
+  lineupAtCursor,
+  playerLabel,
+  scoreAtCursor,
+  teamLabel,
+} from "./domain/fixturePresentation";
 import {
   type AudienceMode,
   clockLabel,
@@ -27,7 +39,6 @@ import {
   matchBounds,
   recentInsightsAtCursor,
 } from "./domain/replayClock";
-import { lineupAtCursor, playerLabel, scoreAtCursor, teamLabel } from "./domain/fixturePresentation";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -222,55 +233,95 @@ export function App() {
           <div className="broadcast-score-content">
             <div className="broadcast-fixture-team broadcast-fixture-home">
               <strong>{homeName}</strong>
-              <span className="broadcast-team-shield shield-home" aria-hidden="true"
-                style={presentation ? { background: `linear-gradient(155deg, ${presentation.home.primary_color}, ${presentation.home.secondary_color})` } : undefined}>
+              <span
+                className="broadcast-team-shield shield-home"
+                aria-hidden="true"
+                style={
+                  presentation
+                    ? {
+                        background: `linear-gradient(155deg, ${presentation.home.primary_color}, ${presentation.home.secondary_color})`,
+                      }
+                    : undefined
+                }
+              >
                 {presentation?.home.emblem_text ?? homeName.slice(0, 1)}
               </span>
             </div>
             <div className="broadcast-score-center">
               <span
                 className={replayScore ? "broadcast-score-known" : "broadcast-score-unavailable"}
-                title={replayScore ? "Score from explicit canonical goal events" : "Score not established by this excerpt"}
+                title={
+                  replayScore
+                    ? "Score from explicit canonical goal events"
+                    : "Score not established by this excerpt"
+                }
               >
                 {replayScore ? `${replayScore.home} : ${replayScore.away}` : "– : –"}
               </span>
               <span className="broadcast-match-clock">{clockLabel(matchClock)}</span>
             </div>
             <div className="broadcast-fixture-team broadcast-fixture-away">
-              <span className="broadcast-team-shield shield-away" aria-hidden="true"
-                style={presentation ? { background: `linear-gradient(155deg, ${presentation.away.primary_color}, ${presentation.away.secondary_color})` } : undefined}>
+              <span
+                className="broadcast-team-shield shield-away"
+                aria-hidden="true"
+                style={
+                  presentation
+                    ? {
+                        background: `linear-gradient(155deg, ${presentation.away.primary_color}, ${presentation.away.secondary_color})`,
+                      }
+                    : undefined
+                }
+              >
                 {presentation?.away.emblem_text ?? awayName.slice(0, 1)}
               </span>
               <strong>{awayName}</strong>
             </div>
           </div>
         </div>
-        <details className="broadcast-roster" >
-          <summary>Team rosters &amp; substitutions <span>Source-authored fiction</span></summary>
+        <details className="broadcast-roster">
+          <summary>
+            Team rosters &amp; substitutions <span>Source-authored fiction</span>
+          </summary>
           {presentation ? (
             <div className="broadcast-roster-grid">
               {[presentation.home, presentation.away].map((team) => {
-                const active = team.team_id === presentation.home.team_id ? replayLineup?.home_active : replayLineup?.away_active;
-                const playerById = new Map(team.players.map((player) => [player.player_id, player]));
+                const active =
+                  team.team_id === presentation.home.team_id
+                    ? replayLineup?.home_active
+                    : replayLineup?.away_active;
+                const playerById = new Map(
+                  team.players.map((player) => [player.player_id, player]),
+                );
                 const visibleChanges = presentation.substitutions.filter(
                   (change) => change.team_id === team.team_id && change.clock_ms <= cursorMs,
                 );
                 return (
                   <section key={team.team_id} aria-label={`${team.name} roster`}>
-                    <h3>{team.name} <small>Coach: {team.coach}</small></h3>
+                    <h3>
+                      {team.name} <small>Coach: {team.coach}</small>
+                    </h3>
                     {active ? (
                       <ol className="roster-active-list">
                         {active.map((id) => (
-                          <li key={id}><span>{playerById.get(id)?.jersey_number ?? "–"}</span> {playerById.get(id)?.surname ?? "Unknown"}</li>
+                          <li key={id}>
+                            <span>{playerById.get(id)?.jersey_number ?? "–"}</span>{" "}
+                            {playerById.get(id)?.surname ?? "Unknown"}
+                          </li>
                         ))}
                       </ol>
-                    ) : <p>Starting XI not established for this excerpt.</p>}
+                    ) : (
+                      <p>Starting XI not established for this excerpt.</p>
+                    )}
                     <div className="roster-substitutions" aria-live="polite">
                       {visibleChanges.map((change) => (
                         <p key={change.event_id}>
                           <strong>{clockLabel(change.clock_ms)}</strong>
-                          <span className="roster-out">↓ {playerById.get(change.outgoing_player_id)?.surname ?? "Unknown"}</span>
-                          <span className="roster-in">↑ {playerById.get(change.incoming_player_id)?.surname ?? "Unknown"}</span>
+                          <span className="roster-out">
+                            ↓ {playerById.get(change.outgoing_player_id)?.surname ?? "Unknown"}
+                          </span>
+                          <span className="roster-in">
+                            ↑ {playerById.get(change.incoming_player_id)?.surname ?? "Unknown"}
+                          </span>
                         </p>
                       ))}
                     </div>
@@ -278,7 +329,9 @@ export function App() {
                 );
               })}
             </div>
-          ) : <p>Loading verified fixture metadata…</p>}
+          ) : (
+            <p>Loading verified fixture metadata…</p>
+          )}
         </details>
         <nav className="broadcast-tabs" aria-label="Match sections">
           <span className="selected" aria-current="page">
@@ -359,9 +412,14 @@ export function App() {
 
         <Pitch
           event={selectedEvent}
-          actorLabel={selectedEvent ? playerLabel(presentation, selectedEvent.player_id) : undefined}
-          actorColor={presentation && selectedEvent?.team_id === presentation.away.team_id
-            ? presentation.away.primary_color : presentation?.home.primary_color}
+          actorLabel={
+            selectedEvent ? playerLabel(presentation, selectedEvent.player_id) : undefined
+          }
+          actorColor={
+            presentation && selectedEvent?.team_id === presentation.away.team_id
+              ? presentation.away.primary_color
+              : presentation?.home.primary_color
+          }
           playing={playing}
           canReplay={messages.length > 0}
           onTogglePlayback={togglePlayback}
@@ -471,7 +529,8 @@ export function App() {
             <div className="key-moment-copy">
               <strong>{eventLabel(selectedEvent)}</strong>
               <p>
-                {playerLabel(presentation, selectedEvent.player_id)} · {teamLabel(presentation, selectedEvent.team_id)}
+                {playerLabel(presentation, selectedEvent.player_id)} ·{" "}
+                {teamLabel(presentation, selectedEvent.team_id)}
               </p>
               <span>Source-backed synthetic match event</span>
             </div>

@@ -25,18 +25,6 @@ jobs:
         run: uv sync --frozen --extra dev
       - name: Install exact frontend dependencies
         run: npm ci --prefix web
-      - name: Temporary canonical source formatter extraction (PR only)
-        run: |
-          cd web
-          ./node_modules/.bin/biome check --write src/App.tsx src/api/client.ts src/components/BroadcastPitchScene.tsx src/components/Pitch.tsx src/domain/fixturePresentation.ts src/domain/fixturePresentation.test.ts
-          cd ..
-          for path in web/src/App.tsx web/src/api/client.ts web/src/components/BroadcastPitchScene.tsx web/src/components/Pitch.tsx web/src/domain/fixturePresentation.ts web/src/domain/fixturePresentation.test.ts; do
-            id=$(echo "$path" | sed 's#[^[:alnum:]]#_#g')
-            echo "PITCHFMT_BEGIN_${id}"
-            base64 -w0 "$path"
-            echo
-            echo "PITCHFMT_END_${id}"
-          done
       - name: Run shared frontend checks
         run: uv run --frozen bash scripts/check-web.sh
       - name: Build frontend development container

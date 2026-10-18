@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { MatchPresentation } from "../api/types";
-import {
-  lineupAtCursor,
-  playerLabel,
-  scoreAtCursor,
-  teamLabel,
-} from "./fixturePresentation";
+import { lineupAtCursor, playerLabel, scoreAtCursor, teamLabel } from "./fixturePresentation";
 
 const known: MatchPresentation = {
   match_id: "fictional-fixture",
@@ -38,23 +33,25 @@ const known: MatchPresentation = {
     players: [{ player_id: "ridge-1", surname: "North", jersey_number: 1 }],
     starters: ["ridge-1"],
   },
-  goals: [
-    { event_id: "goal-1", period: 2, clock_ms: 3_500_000, home: 1, away: 0 },
+  goals: [{ event_id: "goal-1", period: 2, clock_ms: 3_500_000, home: 1, away: 0 }],
+  substitutions: [
+    {
+      event_id: "sub-1",
+      clock_ms: 3_660_000,
+      period: 2,
+      team_id: "harbor-fc",
+      outgoing_player_id: "harbor-1",
+      incoming_player_id: "harbor-12",
+    },
   ],
-  substitutions: [{
-    event_id: "sub-1",
-    clock_ms: 3_660_000,
-    period: 2,
-    team_id: "harbor-fc",
-    outgoing_player_id: "harbor-1",
-    incoming_player_id: "harbor-12",
-  }],
-  lineup_samples: [{
-    event_id: "sub-1",
-    clock_ms: 3_660_000,
-    home_active: ["harbor-12"],
-    away_active: ["ridge-1"],
-  }],
+  lineup_samples: [
+    {
+      event_id: "sub-1",
+      clock_ms: 3_660_000,
+      home_active: ["harbor-12"],
+      away_active: ["ridge-1"],
+    },
+  ],
 };
 
 describe("backend-authored replay presentation", () => {

@@ -22,7 +22,15 @@ function pctY(value: number): number {
   return (value / 68) * 100;
 }
 
-export function Pitch({ event, actorLabel, actorColor, children, playing, canReplay, onTogglePlayback }: PitchProps) {
+export function Pitch({
+  event,
+  actorLabel,
+  actorColor,
+  children,
+  playing,
+  canReplay,
+  onTogglePlayback,
+}: PitchProps) {
   const locatedEvent = event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
   const destination =
     locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
@@ -46,7 +54,13 @@ export function Pitch({ event, actorLabel, actorColor, children, playing, canRep
       </div>
 
       <div className="pitch">
-        {hasWebGL ? <BroadcastPitchScene event={locatedEvent} actorColor={actorColor} actorLabel={actorLabel} /> : null}
+        {hasWebGL ? (
+          <BroadcastPitchScene
+            event={locatedEvent}
+            actorColor={actorColor}
+            actorLabel={actorLabel}
+          />
+        ) : null}
         <svg
           className={hasWebGL ? "pitch-svg-fallback" : undefined}
           viewBox="0 0 105 68"
