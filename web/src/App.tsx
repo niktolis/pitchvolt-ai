@@ -231,7 +231,6 @@ export function App() {
               <span
                 className={replayScore ? "broadcast-score-known" : "broadcast-score-unavailable"}
                 title={replayScore ? "Score from explicit canonical goal events" : "Score not established by this excerpt"}
-                aria-label={replayScore ? `Score ${replayScore.home} to ${replayScore.away}` : "Score unavailable"}
               >
                 {replayScore ? `${replayScore.home} : ${replayScore.away}` : "– : –"}
               </span>
