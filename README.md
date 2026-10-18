@@ -2,7 +2,7 @@
 
 ![PitchVolt AI — Football intelligence. Electrified.](docs/assets/pitchvolt-readme-banner.svg)
 
-[![Python checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/frontend-checks.yml) [![Azure deployment](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/matchpulse-ai/actions/workflows/azure-container-apps-deploy.yml)
+[![Python checks](https://github.com/niktolis/pitchvolt-ai/actions/workflows/python-checks.yml/badge.svg)](https://github.com/niktolis/pitchvolt-ai/actions/workflows/python-checks.yml) [![Frontend checks](https://github.com/niktolis/pitchvolt-ai/actions/workflows/frontend-checks.yml/badge.svg)](https://github.com/niktolis/pitchvolt-ai/actions/workflows/frontend-checks.yml) [![Azure deployment](https://github.com/niktolis/pitchvolt-ai/actions/workflows/azure-container-apps-deploy.yml/badge.svg)](https://github.com/niktolis/pitchvolt-ai/actions/workflows/azure-container-apps-deploy.yml)
 
 
 Football intelligence. Electrified. Real-time, explainable football intelligence and personalized storytelling for the Microsoft Premier League AI Hackathon.
@@ -61,8 +61,8 @@ uv run --frozen bash scripts/check-web.sh
 ### Production-style single container
 
 ~~~sh
-docker build --target runtime -f docker/backend.Dockerfile -t matchpulse-ai .
-docker run --rm -p 8000:8000 matchpulse-ai
+docker build --target runtime -f docker/backend.Dockerfile -t pitchvolt-ai .
+docker run --rm -p 8000:8000 pitchvolt-ai
 ~~~
 
 Open http://localhost:8000.

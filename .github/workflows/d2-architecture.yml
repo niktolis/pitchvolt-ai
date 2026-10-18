@@ -22,7 +22,7 @@ jobs:
       - name: Upload documentation renders
         uses: actions/upload-artifact@v4
         with:
-          name: matchpulse-architecture
+          name: pitchvolt-architecture
           path: |
             docs/architecture/rendered/*.svg
             build/architecture/*.pdf

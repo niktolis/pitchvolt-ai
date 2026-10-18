@@ -16,7 +16,7 @@ RUN npm run build && sed -i "s/__PITCHVOLT_BUILD_SHA__/${PITCHVOLT_BUILD_SHA}/g"
 
 FROM ${PYTHON_IMAGE} AS base
 COPY --from=ghcr.io/astral-sh/uv:0.10.0@sha256:78a7ff97cd27b7124a5f3c2aefe146170793c56a1e03321dd31a289f6d82a04f /uv /uvx /usr/local/bin/
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PROJECT_ENVIRONMENT=/opt/matchpulse-venv
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_PROJECT_ENVIRONMENT=/opt/pitchvolt-venv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
@@ -25,18 +25,18 @@ RUN uv sync --frozen --no-dev --no-editable
 FROM base AS development
 RUN uv sync --frozen --extra dev --no-editable
 COPY tests ./tests
-ENV PATH="/opt/matchpulse-venv/bin:${PATH}"
+ENV PATH="/opt/pitchvolt-venv/bin:${PATH}"
 CMD ["python", "-m", "pytest", "-q"]
 
 FROM ${PYTHON_IMAGE} AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PATH="/opt/matchpulse-venv/bin:${PATH}" \
-    MATCHPULSE_WEB_DIST=/app/web
+    PATH="/opt/pitchvolt-venv/bin:${PATH}" \
+    PITCHVOLT_WEB_DIST=/app/web
 WORKDIR /app
-RUN useradd --create-home --uid 10001 matchpulse
-COPY --from=base /opt/matchpulse-venv /opt/matchpulse-venv
+RUN useradd --create-home --uid 10001 pitchvolt
+COPY --from=base /opt/pitchvolt-venv /opt/pitchvolt-venv
 COPY --from=web-builder /web/dist /app/web
-USER matchpulse
+USER pitchvolt
 EXPOSE 8000
-CMD ["uvicorn", "matchpulse.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "pitchvolt.api:app", "--host", "0.0.0.0", "--port", "8000"]

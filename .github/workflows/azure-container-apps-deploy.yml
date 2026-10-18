@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: matchpulse-production-deploy
+  group: pitchvolt-production-deploy
   cancel-in-progress: false
 
 jobs:
@@ -49,7 +49,7 @@ jobs:
       AZURE_ACR: matchpulsea433a4e04d
       AZURE_APP: matchpulse-web
       AZURE_REGISTRY_HOST: matchpulsea433a4e04d.azurecr.io
-      MATCHPULSE_NARRATIVE_PROVIDER: local
+      PITCHVOLT_NARRATIVE_PROVIDER: local
     steps:
       - uses: actions/checkout@v4
       - name: Fail closed without approved identity configuration
@@ -63,7 +63,7 @@ jobs:
             fi
           done
           [[ "$AZURE_SUBSCRIPTION_ID" == "98d4eb09-a320-4b90-aa9c-e561835357af" ]]
-          [[ "$MATCHPULSE_NARRATIVE_PROVIDER" == "local" ]]
+          [[ "$PITCHVOLT_NARRATIVE_PROVIDER" == "local" ]]
       - uses: azure/login@v2
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
@@ -85,20 +85,20 @@ jobs:
           docker buildx build --platform linux/amd64 \
             --file docker/backend.Dockerfile --target runtime \
             --build-arg "PITCHVOLT_BUILD_SHA=${GITHUB_SHA}" \
-            --tag "$AZURE_REGISTRY_HOST/matchpulse:git-${GITHUB_SHA}" \
-            --metadata-file "$RUNNER_TEMP/matchpulse-image.json" --push .
-          digest=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["containerimage.digest"])' "$RUNNER_TEMP/matchpulse-image.json")
+            --tag "$AZURE_REGISTRY_HOST/pitchvolt:git-${GITHUB_SHA}" \
+            --metadata-file "$RUNNER_TEMP/pitchvolt-image.json" --push .
+          digest=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["containerimage.digest"])' "$RUNNER_TEMP/pitchvolt-image.json")
           [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
-          echo "IMAGE=$AZURE_REGISTRY_HOST/matchpulse@$digest" >> "$GITHUB_ENV"
+          echo "IMAGE=$AZURE_REGISTRY_HOST/pitchvolt@$digest" >> "$GITHUB_ENV"
           echo "Published digest: $digest"
       - name: Update existing Container App only
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$IMAGE" == "$AZURE_REGISTRY_HOST/matchpulse@sha256:"* ]]
+          [[ "$IMAGE" == "$AZURE_REGISTRY_HOST/pitchvolt@sha256:"* ]]
           az containerapp update --resource-group "$AZURE_RG" --name "$AZURE_APP" \
             --image "$IMAGE" --min-replicas 0 --max-replicas 1 \
-            --set-env-vars MATCHPULSE_NARRATIVE_PROVIDER=local --output none
+            --set-env-vars PITCHVOLT_NARRATIVE_PROVIDER=local --output none
       - name: Verify deployed health endpoint
         shell: bash
         run: |

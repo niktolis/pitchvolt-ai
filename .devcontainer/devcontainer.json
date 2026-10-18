@@ -1,5 +1,5 @@
 {
-  "name": "MatchPulse AI (Python)",
+  "name": "PitchVolt AI (Python)",
   "dockerComposeFile": "../compose.yaml",
   "service": "dev",
   "workspaceFolder": "/workspace",
