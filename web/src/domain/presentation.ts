@@ -46,8 +46,10 @@ export function modeCopy(mode: AudienceMode, insight: TacticalInsight): string {
     const team = displayName(insight.team_id);
     const duration = insight.metrics.sequence_duration_ms;
     const passes = insight.metrics.passes;
-    const time = typeof duration === "number" ? `${(duration / 1000).toFixed(1)}s` : "unknown duration";
-    const count = typeof passes === "number" ? `${passes} recorded passes` : "passes not quantified";
+    const time =
+      typeof duration === "number" ? `${(duration / 1000).toFixed(1)}s` : "unknown duration";
+    const count =
+      typeof passes === "number" ? `${passes} recorded passes` : "passes not quantified";
     if (mode === "analyst") {
       return `Sustained possession · ${time} · ${count} · ${insight.evidence_event_ids.length} evidence events`;
     }
