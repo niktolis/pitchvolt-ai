@@ -7,6 +7,7 @@ import {
   isEvidenceVisible,
   latestAtCursor,
   matchBounds,
+  recentInsightsAtCursor,
   visibleNarrativeIds,
 } from "./replayClock";
 
@@ -44,6 +45,21 @@ describe("canonical replay cursor", () => {
     expect(atOrBefore(timeline, 4_999).map((item) => item.id)).toEqual([1]);
     expect(atOrBefore(timeline, 5_000).map((item) => item.id)).toEqual([1, 2, 3]);
     expect(visibleNarrativeIds(timeline, 5_000).has("insight-3")).toBe(true);
+  });
+
+  it("uses only published insights and caps the broadcast feed", () => {
+    const many = [
+      insight(11, 1_000),
+      insight(12, 2_000),
+      event(13, 3_000),
+      insight(14, 4_000),
+      insight(15, 5_000),
+      insight(16, 6_000),
+    ];
+    expect(recentInsightsAtCursor(many, 4_500).map((m) => m.id)).toEqual([14, 12, 11]);
+    expect(recentInsightsAtCursor(many, 6_000).map((m) => m.id)).toEqual([16, 15, 14]);
+    expect(recentInsightsAtCursor(many, 6_000, 0)).toEqual([]);
+    expect(recentInsightsAtCursor(many, 1_500).map((m) => m.id)).toEqual([11]);
   });
 
   it("clamps rewind, fast-forward and empty playback bounds", () => {
