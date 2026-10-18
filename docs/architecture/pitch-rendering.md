@@ -13,8 +13,9 @@ application has been reviewed against that exact image.
 - **@types/three 0.186.0**: compile-time types for geometry and scene APIs.
 - **Existing React + CSS**: stadium background, scoreboard, responsive three-card
   layout, navigation, accessibility, and replay controls.
-- **Existing Playwright 1.58.0 in deployment CI**: real-browser screenshots
-  after the deployed page confirms the exact expected revision.
+- **Optional local Playwright 1.58.0 capture script**: real-browser screenshots
+  on operator request after the deployed page confirms the exact expected revision;
+  not a post-deployment GitHub Actions job.
 - **Existing Vitest + TypeScript + Biome**: deterministic conversion/geometry
   unit tests, strict type-checking, formatting and lint.
 - **Existing npm lockfile**: reproducible `npm ci` without dynamic dependency

@@ -8,7 +8,7 @@ The same canonical football-intelligence package runs natively, in Docker Compos
 
 - Python 3.12 for the CI-equivalent native workflow.
 - `uv 0.10.0`.
-- Node.js 24.22.x and npm 11 for frontend development.
+- Node.js **26.10.0** (pinned by `.node-version`) and its bundled npm 11 for frontend development; Node 26 is the current stable release, not yet LTS as of 18 October 2026.
 - Docker Desktop or a compatible Docker/Compose runtime.
 - D2 v0.9.0 only when rendering architecture locally.
 
@@ -73,9 +73,10 @@ For the non-billable Azure Container Apps rollout plan, see [deployment readines
 
 - `uv.lock` fixes Python transitive versions and hashes; CI uses `uv lock --check` and `uv sync --frozen`.
 - `web/package-lock.json` fixes the npm dependency graph; CI uses `npm ci`.
-- Python, uv and Node container images are pinned by immutable OCI digests.
+- Python, uv and Node container images are pinned by immutable OCI digests; the Node base uses the same exact `.node-version` release as the CI jobs.
 - D2 is pinned to v0.9.0 in CI.
-- GitHub Action references are still version tags rather than immutable action SHAs; pinning them is a separate supply-chain hardening task.
+- GitHub Actions use Node 24-compatible action majors and fixed Ubuntu 24.04 runners. GitHub Action references remain version tags rather than immutable action SHAs; immutable action pinning is a separate supply-chain hardening task.
+- Automated production deployment retains explicit backend health and exact-public-commit checks; browser screenshot capture is a **local opt-in** tool, not a mandatory deployment workflow job.
 
 Apple Silicon development builds ARM64 locally by default. Any eventual Azure image build must explicitly target the intended Container Apps architecture or publish a tested multi-architecture manifest.
 
