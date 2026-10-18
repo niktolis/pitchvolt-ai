@@ -1626,3 +1626,108 @@ body::after {
     transition: none;
   }
 }
+
+/* Approved preview: compact multi-insight rail, only published source insights. */
+.verified-insight-feed {
+  display: grid;
+  margin: 0 18px 10px;
+}
+.verified-insight-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(198, 233, 172, 0.16);
+  background: transparent;
+  color: var(--pv-text);
+  text-align: left;
+}
+.verified-insight-row:last-child {
+  border-bottom: 0;
+}
+.verified-insight-row:hover,
+.verified-insight-row:focus-visible {
+  color: var(--pv-primary);
+}
+.verified-insight-icon {
+  display: grid;
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(140deg, rgba(101, 179, 50, 0.28), rgba(19, 49, 23, 0.87));
+  color: var(--pv-primary);
+  font-size: 30px;
+}
+.verified-insight-copy {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+}
+.verified-insight-copy strong {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+.verified-insight-copy > span {
+  color: #e0e9df;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.verified-insight-copy small {
+  color: #8aa28e;
+  font-size: 10px;
+}
+.insight-metrics-details {
+  margin: 0 18px 18px;
+  border-top: 1px solid rgba(182, 230, 75, 0.15);
+  color: var(--pv-muted);
+}
+.insight-metrics-details summary {
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.insight-metrics-details .insight-card {
+  padding: 6px 0 12px;
+}
+.pitch-source-actor-label {
+  display: grid;
+  gap: 3px;
+  min-width: 110px;
+  padding: 7px 10px;
+  border: 1px solid rgba(182, 230, 75, 0.75);
+  border-radius: 7px;
+  background: rgba(2, 17, 9, 0.95);
+  box-shadow: 0 0 14px rgba(182, 230, 75, 0.3);
+  color: var(--pv-text);
+  font-size: 12px;
+  white-space: nowrap;
+  text-align: center;
+}
+.pitch-source-actor-label strong {
+  color: var(--pv-primary);
+}
+.pitch-source-actor-label span {
+  color: #aec4ae;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+@media (max-width: 720px) {
+  .verified-insight-row {
+    gap: 10px;
+    padding: 12px 0;
+  }
+  .verified-insight-icon {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
+}
