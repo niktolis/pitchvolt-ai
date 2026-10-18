@@ -266,7 +266,8 @@ function PlayerModel({
       </mesh>
       <group rotation={[0, heading, 0]}>
         <FootballActorAvatar kitColor={color} />
-      </group>    </group>
+      </group>
+    </group>
   );
 }
 
