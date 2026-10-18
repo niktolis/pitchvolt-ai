@@ -1,3 +1,47 @@
+# Foundry merge automation checkpoint — 19 October 2026
+
+**CURRENT POLICY OVERRIDES HISTORICAL OPERATOR STOP NOTES BELOW.**
+PR #130 remains open. The technical manager has standing-authorized one
+billable Analyst → Storyteller → deterministic Verifier smoke test **after
+each PR is reviewed and merged into `main`**. New
+`.github/workflows/foundry-merge-smoke.yml` uses
+`pull_request_target: closed` plus `merged=true`, checks out the
+trusted merge commit, reuses existing GitHub Azure OIDC vars, verifies
+existing subscription and two deployments, runs the canonical CLI once,
+and attaches sanitized 7-day JSON / GitHub job summary. No `push`,
+`workflow_dispatch`, cron, PR-sync or automatic reruns. The project
+retains deterministic public SSE with Foundry disabled. New resources
+and broader paid inference still require explicit approval.
+
+18 October live evidence: user executed
+`pitchvolt.foundry_smoke --execute --acknowledge-billable-inference`
+on the authentic Foundry project and **PASS** was returned: six exact
+read-only tool calls, typed Analyst + Storyteller decisions,
+`fact_order=[team,tactic,transition,actions]`, verified controlled
+publication; Analyst ~14.93 s, Storyteller ~3.84 s. Original model prose
+was unverified/shadow-only; usage counters were null/unknown.
+This is live proof for **one synthetic insight**, not generalized semantic
+LLM publication approval.
+
+**One-time dependency:** existing production GitHub CI Entra principal
+is documented as lacking Foundry access; an Azure administrator must verify
+or assign **Foundry User** on the existing Foundry project once. This
+assistant's GitHub tools cannot apply Azure IAM. If OIDC or inference
+RBAC fails in the first automated run, read the CI job and fix IAM without
+creating new resources. Verify trial spending limit remains enabled.
+
+The operator's Mac regenerated `deployment.svg` with a small
+cross-platform D2/font-layout difference (5516 vs 5499 view width and
+embedded font changes). Do not apply that local SVG diff to the PR:
+Linux D2 CI remains authoritative pending a deterministic cross-platform
+rendering fix.
+
+Read `docs/architecture/foundry-smoke-test.md`,
+`docs/github-azure-oidc.md`, and `docs/judging-traceability.md`.
+No PR merge without manager approval; preserve independent UI work.
+
+---
+
 # PitchVolt AI — authoritative project and next-chat handover
 
 **Updated:** 18 October 2026, after PR #125 and #128 merges and during #4 Foundry milestone A/B preparation.
@@ -135,10 +179,12 @@ than implying full professional match-tracking support.
    Match 3764440 had 4,160 events, 3,914 360 frames and **only 8** frames
    with 11+11 observed players. No continuous all-player tracking can be
    claimed. Historical original files remain offline pending legal review.
-3. **No new Azure charges or Foundry model calls** without explicit approval.
-   Public app runs deterministic/local controlled narratives; paid
-   Microsoft Foundry inference is disabled. Budget alerts are not a
-   hard spending cap; ask before any live model smoke.
+3. **Standing authorization:** one bounded real Microsoft Foundry Analyst →
+   Storyteller → Verifier smoke runs unattended **after each manager-approved
+   PR merges into main**. Ordinary commits and PR updates cause no billable
+   smoke. Public production inference remains disabled. New resources,
+   larger model workloads and removal of the trial spending limit require
+   explicit approval. Budget alerts are not a hard spending cap.
 4. One coherent PR at a time within a workstream; check current main and
    open PRs, preserve independent merged work, require green Python,
    frontend + generated TypeScript/OpenAPI, and D2 checks. **Ask the
@@ -170,10 +216,9 @@ than implying full professional match-tracking support.
   reports that endpoint existence, model deployment and Azure credits
   remain unverified. Request the **real** Foundry project endpoint from
   Microsoft Foundry project overview and validate it locally.
-- Remain at milestone B **STOP** until the user reviews and merges #130,
-  reports green full local checks, verifies actual endpoint/deployments/
-  remaining trial budget, and separately authorizes the one-shot
-  billable smoke. Do not issue live inference from this chat.
+- Historical milestone B instruction is superseded: the 18 October Mac
+  smoke **passed**; ongoing verification is the merge-only CI job. No
+  operator workstation test or separate authorization is required.
 
 ## Active Foundry milestone — PR #130, not yet merged
 
@@ -191,23 +236,22 @@ than implying full professional match-tracking support.
   `pitchvolt.foundry_preflight` plus fake-SDK complete two-role tests.
   Public model inference stays hard-disabled. CI, exact PR head, reviewed
   code, and documentation must be checked before merging.
-- **Critical stop condition:** Before the first next billable Foundry
-  inference, **STOP and request operator to run the test locally**.
-  Exact fish-shell commands and no-cloud preflight are in
-  `docs/architecture/foundry-smoke-test.md`. Do not run inference
-  through connectors/CI/this assistant. The user must inspect the
-  subscription budget, confirm actual Foundry project endpoint, run
-  one isolated command, and return sanitized logs. No retries or extra
-  cloud allocations without separate authorization.
-- One prior real smoke had 6/6 evidence lookups and both role decisions,
-  but failed strict `fact_order` (only two of four slots). **Do not**
-  describe that as completed verified publication. The source-backed
-  verifier's deterministic fallback is correct. Model-authored prose
-  remains shadow-only until an independently reviewed semantic policy.
-- Following the user test, interpret `source`, `trace`, tool IDs,
-  typed decisions, `token_usage_status` and Azure billing. No production
-  switch during this milestone. The real test can still bill multiple
-  model-tool rounds even when max role count is two.
+- **Current automation:** One CI Foundry smoke is authorized after each
+  reviewed PR merges to `main`. No billable inference runs on PR commits,
+  unmerged closures or GitHub workflow reruns. CI uses Azure OIDC; operator
+  PC execution is not part of the acceptance flow. A one-time Foundry User
+  IAM grant for the existing CI service principal may be required.
+  Merge remains manager-controlled, and no production Foundry switch
+  or new Azure provisioning is authorized. See `docs/architecture/foundry-smoke-test.md`.
+- Historical smoke failure: incomplete `fact_order` triggered correct
+  deterministic fallback. **18 October successful smoke supersedes it**:
+  all six evidence events, full four-slot `fact_order`, Analyst and
+  Storyteller typed output, verifier publish, controlled source.
+  Model-authored prose remains shadow-only.
+- After future merge-triggered CI runs, inspect GitHub Job Summary and
+  its 7-day sanitized JSON artifact for `source`, `trace`, event IDs,
+  decisions, latency and optional token usage. Do not repeat failures
+  automatically. No production inference switch is authorized.
 
 ## Next prioritized implementation after #118
 
@@ -230,8 +274,9 @@ than implying full professional match-tracking support.
    `docs/architecture/foundry-smoke-test.md`,
    `docs/architecture/foundry-runtime-guardrails.md`. Previous smoke
    successfully exercised multiple Analyst evidence tool calls, but final
-   publication fell back on `fact_order` validation. Require separate
-   approval, token/latency limit and measured costs for new billable smoke.
+   publication historically fell back on `fact_order`, but the
+   18 October end-to-end live test passed. Ongoing live acceptance is the
+   standing-authorized merge-only GitHub Actions smoke; analyze its results.
 4. **Hackathon submission freeze by Oct 25–27:** issues #8/#31/#6:
    measured E2E replay latency, deterministic demo, Azure operating cost
    controls, accurate architecture/judging traceability, accessible
@@ -266,10 +311,10 @@ First check actual main/CI, merged #118/#120/#121/#122/#123,
 and open #124/#125 before touching UI or general handoff.
 Finish PR #125 (#58) without overwriting PR #124, then
 remaining #63 temporal tests and Foundry offline readiness.
-Use only source-backed positions. No paid Foundry inference or new
-Azure charges without my separate approval. Update the general
-handover with every merged delivery, run complete tests, and wait
-for my merge approval."
+Use only source-backed positions. One isolated Foundry smoke is
+authorized per PR merged to main using GitHub Actions OIDC; no
+operator-run local tests. No new Azure resources or larger inference
+workloads without approval. Run CI and wait for merge approval."
 
 ## Latest Foundry review — 18 October 2026, PR #130
 
@@ -289,10 +334,10 @@ inspected via the GitHub connector. Inspect tracked, untracked, ignored,
 symlink and nested-repository data locally before moving it to a safe
 out-of-repository backup. Preserve the branding regression test.
 
-**STOP before live inference.** Operator must run full local and preflight
-checks using their actual project endpoint, confirm subscription/deployments/
-credits separately, then explicitly authorize exactly one paid smoke. No
-assistant-side inference, automatic retries, Azure resource creation, or merge.
+**Historical stop boundary superseded:** the operator successfully ran
+live inference 18 October; future smoke execution is merge-only CI with
+standing authorization. No operator PC execution or per-run approval.
+No automatic retries, Azure resource creation or unapproved merge.
 
 ## 18 October operator logs and connected Foundry discovery
 
@@ -320,5 +365,6 @@ Analyst / 1024 Storyteller output tokens and 30 seconds per role, with
 a 70-second local preview total timeout. Production defaults stay at 256
 and Foundry remains disabled there. Zero HTTP and role-level retries remain
 for reproducible failure diagnosis. The engineer must not merge without
-approval. Run the next one-shot billable test only where Azure credentials
-are actually available, after checking subscription credit.
+approval. The next authorized live test runs in GitHub Actions after
+a PR merge, using OIDC. One-time IAM verification for the CI principal
+may still be necessary; no PC involvement.
