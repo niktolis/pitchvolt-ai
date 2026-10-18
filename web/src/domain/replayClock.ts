@@ -60,3 +60,15 @@ export function recentInsightsAtCursor(
     .slice(-Math.floor(limit))
     .reverse();
 }
+
+/** A manual selection is valid only at its own source timestamp while paused. */
+export function selectedAtCursor(
+  visible: readonly ReplayMessage[],
+  selectedId: number | null,
+  cursorMs: number,
+  playing: boolean,
+): ReplayMessage | null {
+  const latest = visible.at(-1) ?? null;
+  if (selectedId === null || playing) return latest;
+  return visible.find((item) => item.id === selectedId && item.payload.clock_ms === cursorMs) ?? latest;
+}
