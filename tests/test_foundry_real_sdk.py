@@ -53,7 +53,7 @@ def test_real_installed_sdk_offline_preflight_has_no_model_access() -> None:
     pytest.importorskip("azure.identity.aio")
     from pitchvolt.foundry_preflight import evaluate
 
-    report = evaluate("https://example.services.ai.azure.com/api/projects/offline")
+    report = evaluate("https://offline-fixture.services.ai.azure.com/api/projects/contract-check")
     assert report["status"] == "READY_FOR_OPERATOR_APPROVAL"
     assert report["cloud_requests_made"] == 0
     assert not report["billable_inference_permitted"]

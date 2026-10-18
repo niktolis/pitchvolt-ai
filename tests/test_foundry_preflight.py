@@ -49,6 +49,12 @@ def test_preflight_is_offline_and_redacts_project_identity(monkeypatch, capsys):
     "https://valid-resource.services.ai.azure.com/api/projects/YOUR-PROJECT",
     "https://replace-me.services.ai.azure.com/api/projects/demo",
     "https://valid-resource.services.ai.azure.com/api/projects/placeholder",
+    "https://example.services.ai.azure.com/api/projects/prod",
+    "https://valid-resource.services.ai.azure.com/api/projects/sample",
+    "https://youraccount.services.ai.azure.com/api/projects/yourproject",
+    "https://valid-resource.services.ai.azure.com:8443/api/projects/prod",
+    "https://nested.account.services.ai.azure.com/api/projects/prod",
+    "https://valid-resource.services.ai.azure.com/api/projects/prod%2Fother",
 ])
 def test_preflight_blocks_invalid_or_missing_endpoint(monkeypatch, endpoint):
     monkeypatch.setattr(foundry_preflight.metadata, "version", lambda name: "installed")

@@ -111,3 +111,33 @@ def test_wrapped_pydantic_error_exposes_only_safe_category() -> None:
     assert report["cause_type"] == "ValidationError"
     assert report["validation_diagnostics"][0]["type"] == "int_parsing"
     assert "secret" not in str(report)
+
+
+
+def test_live_flag_rejects_documentation_endpoint_before_creating_credentials(capsys) -> None:
+    endpoint = "https://YOUR-ACCOUNT.services.ai.azure.com/api/projects/YOUR-PROJECT"
+    result = asyncio.run(foundry_smoke.run([
+        "--execute", "--acknowledge-billable-inference", "--project-endpoint", endpoint,
+    ]))
+    output = capsys.readouterr().out
+    assert result == 2
+    assert "BLOCKED" in output
+    assert "AUTH:" not in output
+    assert endpoint not in output
+
+
+def test_shadow_assertion_summary_never_prints_model_prose() -> None:
+    from pitchvolt.assertion_audit import AssertionAudit, AssertionFinding, AssertionStatus
+
+    secret = "PRIVATE_MODEL_GENERATED_TEXT"
+    audit = AssertionAudit(findings=(AssertionFinding(
+        excerpt=secret, status=AssertionStatus.UNVERIFIABLE, basis=secret,
+    ),), complete_coverage=False)
+    report = foundry_smoke.safe_assertion_audit(audit)
+    assert report == {
+        "finding_count": 1,
+        "finding_statuses": ["unverifiable"],
+        "complete_coverage": False,
+        "publishable": False,
+    }
+    assert secret not in str(report)
