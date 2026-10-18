@@ -651,9 +651,7 @@ export function App() {
                 team.team_id === presentation.home.team_id
                   ? replayLineup?.home_active
                   : replayLineup?.away_active;
-              const playerById = new Map(
-                team.players.map((player) => [player.player_id, player]),
-              );
+              const playerById = new Map(team.players.map((player) => [player.player_id, player]));
               const visibleChanges = presentation.substitutions.filter(
                 (change) => change.team_id === team.team_id && change.clock_ms <= cursorMs,
               );
