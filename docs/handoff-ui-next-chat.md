@@ -261,7 +261,7 @@ what is visually accepted.
 6. No new Azure resources, billable Foundry deployments or model
    inference, licensing assumptions, GitHub corporate org app
    permissions, or financial consumption without explicit user approval.
-   Existing Azure resource names intentionally still use `matchpulse`.
+   Existing Azure resource names are intentionally retained; see the deployment workflow.
 
 ## 8. Starting point for the next UI chat
 
