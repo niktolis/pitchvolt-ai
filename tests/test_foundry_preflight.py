@@ -34,6 +34,8 @@ def test_preflight_is_offline_and_redacts_project_identity(monkeypatch, capsys):
     assert report["billable_inference_permitted"] is False
     assert report["http_max_retries"] == 0
     assert report["analyst_deployment"] == "matchpulse-gpt5-mini"
+    assert report["analyst_output_token_cap"] == 6144
+    assert report["storyteller_output_token_cap"] == 1024
     assert report["storyteller_deployment"] == "matchpulse-gpt4o"
     assert report["evidence_event_count"] == len(fixture().events)
     assert endpoint not in json.dumps(report)

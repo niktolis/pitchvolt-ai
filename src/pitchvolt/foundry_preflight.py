@@ -60,6 +60,7 @@ def evaluate(endpoint: str) -> dict[str, object]:
         "storyteller_deployment": SMOKE_SETTINGS.storyteller_deployment,
         "role_invocation_ceiling": NARRATIVE_ROLE_CALLS,
         "analyst_output_token_cap": SMOKE_SETTINGS.analyst_output_tokens,
+        "storyteller_output_token_cap": SMOKE_SETTINGS.storyteller_output_tokens,
         "http_max_retries": SMOKE_SETTINGS.http_max_retries,
         "role_level_retries": SMOKE_SETTINGS.role_level_retries,
         "cloud_requests_made": 0,

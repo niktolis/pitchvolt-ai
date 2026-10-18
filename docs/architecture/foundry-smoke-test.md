@@ -49,8 +49,7 @@ timeout or fallback can still incur token charges, even when the report shows no
   durations and evidence IDs; missing SDK usage is not proof of zero consumption.
 - Do not change `PITCHVOLT_NARRATIVE_PROVIDER`, application SSE opt-in or Azure
   resource settings; the usual application path stays deterministic/offline.
-- A 1,000 TPM allocation on each deployment may be insufficient for a single
-  GPT-5 mini tool-calling run. 15-second local timeout likewise may be insufficient.
+- Both existing deployments have 20,000 TPM capacity (read-only Foundry discovery, 18 October 2026). TPM is not available trial credit. A 30-second per-role timeout may still be insufficient for multiple SDK tool rounds.
   If the first run fails for rate limit, incomplete output or SDK incompatibility,
   **stop** and report sanitized results before any modification or second billable test.
 - A successful output proves this one fixture only, not general runtime correctness.
@@ -86,7 +85,7 @@ The 17 Oct Analyst request returned in ~5.3 seconds without a structured value o
 
 ### Isolated Analyst budget experiment (not a live-test approval)
 
-Historical note: the CLI formerly budgeted 512 Analyst output tokens. The current reviewed isolated smoke uses **4096** Analyst output tokens, while Storyteller and production defaults remain at 256. An earlier Analyst response exhausted a smaller token allocation; this does not establish the outcome of the next call. GPT-5 reasoning tokens may consume part of the response budget. The higher cap can increase charges or exceed a deployment's TPM allocation; do not change quotas or run inference without explicit approval. The CLI dry run displays the proposed budget without Azure requests.
+Historical note: the CLI formerly budgeted 512 Analyst output tokens. The reviewed isolated smoke uses **6144** Analyst and **1024** Storyteller output tokens; production defaults remain at 256. An earlier Analyst response exhausted a smaller token allocation; this does not establish the outcome of the next call. GPT-5 reasoning tokens may consume part of the response budget. The higher cap can increase charges or exceed a deployment's TPM allocation; do not change quotas or run inference without explicit approval. The CLI dry run displays the proposed budget without Azure requests.
 
 ### Local OpenAI HTTP retry policy
 
@@ -136,7 +135,7 @@ with its opt-in environment setting enabled.
 The authorized route runs at most one tactical insight through the same
 async Azure CLI credential / Foundry client and two-role orchestrator
 validated in the standalone smoke test. HTTP transport retries are
-disabled, the Analyst output cap remains 512, and each role is limited
+disabled, the Analyst output cap is 6144 and Storyteller cap 1024, and each role is limited
 to one invocation (SDK tool rounds may still consume additional requests).
 The existing deterministic verifier produces the publishable narrative;
 provider failure returns evidence-backed fallback, not unverified prose.
@@ -201,7 +200,7 @@ uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke \
 
 **Stop after one result, whether PASS or FAIL.** The smoke has exactly
 one explicit `Agent.run` attempt per role, a six-observation evidence
-cap, an Analyst output cap of 4096 tokens, and **zero HTTP retries**
+cap, an Analyst output cap of 6144 tokens, a Storyteller cap of 1024 tokens, and **zero HTTP retries**
 for its SDK client; Agent Framework may still use several *billable*
 model/tool rounds inside one role, and client timeouts do not guarantee
 charges stop immediately. These controls **are not a hard monetary limit**.
@@ -229,3 +228,32 @@ fixed code, and shadow assertion findings report only their status and count,
 never model-generated excerpts. Avoid `--show-unverified-prose` for shared logs.
 A single Agent.run can still make multiple paid tool/model rounds: stop after
 one operator-authorized invocation, even on failure.
+
+### Existing Foundry resources and relaxed isolated-test profile (18 October 2026)
+
+Operator Azure CLI output and the connected read-only Foundry account query
+both verified the existing project endpoint
+`https://matchpulse-ai-resource.services.ai.azure.com/api/projects/matchpulse-ai`.
+The provisioned deployments are `matchpulse-gpt5-mini` (GPT-5 mini Global
+Standard) and `matchpulse-gpt4o` (GPT-4o Standard), **20,000 TPM each**.
+Do not create duplicate deployments to match PitchVolt branding.
+
+Manager-approved smoke-only settings: 6144 Analyst output tokens, 1024
+Storyteller output tokens, 30 seconds per role, 70 seconds for the localhost
+preview's outer timeout. Production remains Foundry-disabled with its 256-token
+default. The isolated test still uses zero HTTP/role-level retries.
+
+The Foundry connector can inspect account deployments/quota but lists **zero
+persistent agents**. Creating and calling a separate Foundry prompt agent
+would not test PitchVolt's ephemeral two-role Python orchestrator, evidence
+tool calls, or deterministic verifier. This assistant's compute environment
+has neither the operator's Azure CLI sign-in nor a usable Azure credential.
+Therefore the read-only Azure connection is **not** a successful billable
+end-to-end integration smoke. Run the application's smoke only in an
+authenticated operator environment; no new Azure resources are necessary.
+
+Mac verification: 301 Python tests and 29 frontend tests passed; an ignored
+192 KiB legacy bytecode directory was backed up safely. D2 source validation
+passed, but macOS generated `deployment.svg` differs from tracked output.
+Review the specific `git diff` after a local render rather than silently
+committing platform-dependent SVG output.
