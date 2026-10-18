@@ -86,3 +86,38 @@ same viewport (recommended 1672 × 941) after browser cache refresh, then
 quantify header/sidebar/center/pitch/CTA differences. Frontend CI is not
 screenshot or pixel-match acceptance. No new external runtime AI model
 inference or fictional player tracking is approved.
+
+## Post-PR #131 actual screenshot comparison — 18 October 2026
+
+The technical manager uploaded a current screenshot
+`image(20261018-211708).png` at **2048 × 1153** following the
+successful deployment of PR #131 (merged main
+`3e787da7de4efa1eaca7041c2a0bea9e80c8b984`). The authoritative
+reference remains `Neon Football Analytics Dashboard(2).png` at
+**1672 × 941**. These are conversation attachments; they are not
+tracked repository images.
+
+Measurable primary discrepancy: screenshot broadcast shell occupies
+approximately 68% of screenshot width, versus ~94% in the approved
+preview. Browser zoom/scaling cannot be established from the screenshot
+alone; the stylesheet did impose a 1568px fixed maximum. The next
+stage changes the desktop shell to 93.8% viewport width at the
+reference size, retaining responsive mobile layouts.
+
+The 3D field also occupies only the upper part of the center viewport,
+leaving an extensive black lower region when the current source actor
+is close to a field edge. The camera was aimed directly at the recorded
+actor even if it sat on a touchline, revealing WebGL void beyond the
+105×68m measured field. The follow-up clamps *camera aim only* within
+the source field, keeps the actor itself at its exact source position,
+and renders non-playable dark textured turf beyond the boundary as
+fixed **stadium infrastructure**, not a claimed playable/tracked area.
+Regression tests cover goal-line/touchline actor visibility and
+screen ratios.
+
+The remaining high-priority divergence is player/crowd realism and the
+number of visible *observed* action participants. Source snapshot work
+from Issue #129 remains mandatory; no illustrative teammates or
+ball can be inserted. After merge, compare desktop at the same aspect
+ratio and browser zoom, using a cache-busted deployment SHA and
+screenshot before claiming visual acceptance.
