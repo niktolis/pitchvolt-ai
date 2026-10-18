@@ -31,7 +31,8 @@ body::after {
 }
 
 .app-shell {
-  width: min(1568px, calc(100% - 80px));
+  /* Keep the same ~94% viewport occupancy as the approved 1672px preview. */
+  width: min(2400px, calc(100% - 6.2vw));
   padding-top: clamp(26px, 2.8vw, 46px);
 }
 
