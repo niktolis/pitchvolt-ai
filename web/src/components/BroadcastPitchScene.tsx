@@ -1,3 +1,4 @@
+import { Html } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useEffect, useLayoutEffect, useMemo } from "react";
 import * as THREE from "three";
@@ -5,6 +6,7 @@ import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 import type { MatchEvent } from "../api/types";
+import { clockLabel, displayName } from "../domain/presentation";
 import {
   broadcastCameraPosition,
   FIELD_HEIGHT,
@@ -153,6 +155,12 @@ function PlayerModel({ event }: { event: MatchEvent }) {
 
   return (
     <group position={position}>
+      <Html position={[0, 3.25, 0]} center distanceFactor={24} style={{ pointerEvents: "none" }}>
+        <div className="pitch-source-actor-label">
+          <strong>{displayName(event.player_id)}</strong>
+          <span>Recorded {clockLabel(event.clock_ms)}</span>
+        </div>
+      </Html>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.082, 0]}>
         <ringGeometry args={[1.75, 2.15, 64]} />
         <meshBasicMaterial color="#b6e64b" side={THREE.DoubleSide} toneMapped={false} />

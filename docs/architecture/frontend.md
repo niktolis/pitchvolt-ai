@@ -43,3 +43,21 @@ Azure Container Apps and Microsoft Foundry are still **planned, not provisioned 
 - Sustained possession remains a negative-control fixture and emits no tactical insight.
 
 The fourth scenario, `statsbomb_high_press`, validates that StatsBomb-native synthetic pitch coordinates are normalized before UI delivery: the React pitch **always** receives canonical 105 × 68m event positions and never interprets 120 × 80 provider coordinates.
+
+
+## Source-backed broadcast insight feed (October 2026)
+
+The approved PitchVolt Application Preview is the only visual target. The Insights panel now
+shows up to three **already published** tactical insights at the authoritative replay cursor,
+newest first, using the existing `TacticalInsightPayload` and audience-specific deterministic
+copy. It must not pad the panel with fabricated possession statistics, interpretations or
+events. A disclosure preserves detailed metrics for the most recently published insight.
+Selecting a row seeks to its recorded timestamp and requests its evidence using the existing
+contract. Backward seeks hide later insights, narratives and evidence.
+
+`sustained_possession` uses `sequence_duration_ms` and `passes`; it must never be described
+using recovery-to-shot transition language. The 3D pitch may display the **single recorded event
+actor**, at that original source coordinate, and explicitly labels the timestamp as *recorded*.
+The actor is not a tracked player at intermediate times. Do not create 22-player positions,
+invent a formation, invent a ball location, or interpolate between source events. Short
+synthetic excerpts remain fictional; historical Open Data transport is outside this UI slice.

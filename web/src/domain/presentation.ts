@@ -42,6 +42,22 @@ export function insightFacts(insight: TacticalInsight): InsightFacts {
 }
 
 export function modeCopy(mode: AudienceMode, insight: TacticalInsight): string {
+  if (insight.kind === "sustained_possession") {
+    const team = displayName(insight.team_id);
+    const duration = insight.metrics.sequence_duration_ms;
+    const passes = insight.metrics.passes;
+    const time =
+      typeof duration === "number" ? `${(duration / 1000).toFixed(1)}s` : "unknown duration";
+    const count =
+      typeof passes === "number" ? `${passes} recorded passes` : "passes not quantified";
+    if (mode === "analyst") {
+      return `Sustained possession · ${time} · ${count} · ${insight.evidence_event_ids.length} evidence events`;
+    }
+    if (mode === "club") {
+      return `${team} maintained possession over ${time} with ${count}.`;
+    }
+    return `${team} maintained possession for ${time} with ${count}.`;
+  }
   const facts = insightFacts(insight);
   const seconds = facts.transitionSeconds.toFixed(1);
 

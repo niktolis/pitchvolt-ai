@@ -19,7 +19,13 @@ import {
   eventLabel,
   modeCopy,
 } from "./domain/presentation";
-import { clampCursor, isEvidenceVisible, latestAtCursor, matchBounds } from "./domain/replayClock";
+import {
+  clampCursor,
+  isEvidenceVisible,
+  latestAtCursor,
+  matchBounds,
+  recentInsightsAtCursor,
+} from "./domain/replayClock";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -145,6 +151,10 @@ export function App() {
   const visibleMessages = replay.visible;
   const selected = visibleMessages.find((item) => item.id === selectedId) ?? replay.selected;
   const latestInsight = replay.insight;
+  const recentInsights = useMemo(
+    () => recentInsightsAtCursor(messages, cursorMs),
+    [messages, cursorMs],
+  );
   const displayEvidence =
     evidence && isEvidenceVisible(messages, cursorMs, evidence.insight_id) ? evidence : null;
   const selectedEvent: MatchEvent | null =
@@ -254,12 +264,44 @@ export function App() {
             <span className="proof-badge">Evidence-backed</span>
           </div>
 
-          {latestInsight ? (
-            <InsightCard
-              mode={mode}
-              insight={latestInsight}
-              narrative={narratives[latestInsight.insight_id] ?? null}
-            />
+          {recentInsights.length > 0 ? (
+            <>
+              <div className="verified-insight-feed">
+                {recentInsights.map((message) => (
+                  <button
+                    className="verified-insight-row"
+                    key={message.payload.insight_id}
+                    type="button"
+                    onClick={() => void inspect(message)}
+                  >
+                    <span className="verified-insight-icon" aria-hidden="true">
+                      ◈
+                    </span>
+                    <span className="verified-insight-copy">
+                      <strong>
+                        {message.payload.kind.replaceAll("_", " ")} ·{" "}
+                        {displayName(message.payload.team_id)}
+                      </strong>
+                      <span>{modeCopy(mode, message.payload)}</span>
+                      <small>
+                        {clockLabel(message.payload.clock_ms)} ·{" "}
+                        {message.payload.evidence_event_ids.length} source events
+                      </small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {latestInsight ? (
+                <details className="insight-metrics-details">
+                  <summary>Detailed verified metrics</summary>
+                  <InsightCard
+                    mode={mode}
+                    insight={latestInsight}
+                    narrative={narratives[latestInsight.insight_id] ?? null}
+                  />
+                </details>
+              ) : null}
+            </>
           ) : (
             <div className="insight-placeholder" aria-live="polite">
               <strong>
