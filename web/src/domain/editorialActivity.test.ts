@@ -74,17 +74,17 @@ describe("recorded action editorial activity", () => {
     expect(
       recordedActionCopy(action(1, 51_050, "pressure", "neutral").payload as MatchEvent),
     ).toEqual({
-        heading: "Harbor FC · pressure",
-        detail: "Recorded action",
-        time: "0:51",
-      });
+      heading: "Harbor FC · pressure",
+      detail: "Recorded action",
+      time: "0:51",
+    });
     expect(
       recordedActionCopy(action(2, 3_600_000, "pass", "failure").payload as MatchEvent),
     ).toEqual({
-        heading: "Harbor FC · pass",
-        detail: "Recorded failure",
-        time: "60:00",
-      });
+      heading: "Harbor FC · pass",
+      detail: "Recorded failure",
+      time: "60:00",
+    });
     expect(
       recordedActionCopy(action(3, 4_000_000, "goal", "success").payload as MatchEvent).detail,
     ).toBe("Recorded success");
