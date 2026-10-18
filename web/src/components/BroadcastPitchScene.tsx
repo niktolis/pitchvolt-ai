@@ -1,6 +1,6 @@
 import { Html } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
@@ -8,7 +8,7 @@ import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js
 import type { MatchEvent } from "../api/types";
 import { clockLabel, displayName } from "../domain/presentation";
 import {
-  broadcastCameraPosition,
+  actionCameraPose,
   FIELD_HEIGHT,
   FIELD_WIDTH,
   isSourcePitchPoint,
@@ -18,18 +18,38 @@ import {
   toWorld,
 } from "./pitch-geometry";
 
-function BroadcastCamera() {
+function BroadcastCamera({ focus }: { focus: PitchPoint | null }) {
   const { camera, size } = useThree();
+  const lookAt = useRef(new THREE.Vector3());
+  const initialized = useRef(false);
+  const pose = useMemo(
+    () => actionCameraPose(size.width / Math.max(size.height, 1), focus),
+    [size.width, size.height, focus?.x, focus?.y],
+  );
 
   useLayoutEffect(() => {
     if (!(camera instanceof THREE.PerspectiveCamera) || !size.height) return;
     camera.fov = 40;
     camera.aspect = size.width / size.height;
-    camera.position.copy(broadcastCameraPosition(camera.aspect));
-    camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
-    camera.updateMatrixWorld();
-  }, [camera, size.width, size.height]);
+    if (!initialized.current) {
+      camera.position.copy(pose.position);
+      lookAt.current.copy(pose.target);
+      camera.lookAt(lookAt.current);
+      camera.updateMatrixWorld();
+      initialized.current = true;
+    }
+  }, [camera, size.width, size.height, pose]);
+
+  useFrame((_, delta) => {
+    if (!(camera instanceof THREE.PerspectiveCamera) || !initialized.current) return;
+    // Only the camera moves between source observations; player positions never interpolate.
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const alpha = reduceMotion ? 1 : 1 - Math.exp(-4.5 * Math.min(delta, 0.1));
+    camera.position.lerp(pose.position, alpha);
+    lookAt.current.lerp(pose.target, alpha);
+    camera.lookAt(lookAt.current);
+  });
 
   return null;
 }
@@ -162,7 +182,7 @@ function PlayerModel({
 
   return (
     <group position={position}>
-      <Html position={[0, 3.25, 0]} center distanceFactor={24} style={{ pointerEvents: "none" }}>
+      <Html position={[2.5, 3.5, 0]} distanceFactor={24} style={{ pointerEvents: "none" }}>
         <div className="pitch-source-actor-label">
           <strong>{actorLabel ?? displayName(event.player_id)}</strong>
           <span>Recorded {clockLabel(event.clock_ms)}</span>
@@ -263,7 +283,7 @@ export function BroadcastPitchScene({
         shadows
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       >
-        <BroadcastCamera />
+        <BroadcastCamera focus={event && isSourcePitchPoint(event.location) ? event.location : null} />
         <color attach="background" args={["#06140b"]} />
         <hemisphereLight args={["#ddf8d5", "#091b10", 2.15]} />
         <ambientLight intensity={0.43} />
