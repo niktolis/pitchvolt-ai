@@ -213,3 +213,19 @@ accounting is unavailable, mark it *unknown* and check Azure billing.
 This preparation is not a production model-enable approval. Normal
 `/narratives/stream` stays deterministic and the localhost preview stays
 disabled without its separate operator gate.
+
+### Final offline review: template endpoints and diagnostics (18 October)
+
+The common no-network project URL guard runs in **both** the preflight and
+`foundry_smoke --execute`, before Azure credentials or SDK clients are created.
+In addition to `YOUR-ACCOUNT/YOUR-PROJECT`, it rejects obvious `example`,
+`sample`, `dummy`, `placeholder`, `youraccount/yourproject`, `replace-me`
+and `insert-` template labels, nested account hosts, encoded project path
+segments, and explicit ports. Passing this check still **does not establish
+cloud existence**, model availability, credits, authentication or billing limits.
+
+For safe collaboration, verifier fallback reason strings are replaced by a
+fixed code, and shadow assertion findings report only their status and count,
+never model-generated excerpts. Avoid `--show-unverified-prose` for shared logs.
+A single Agent.run can still make multiple paid tool/model rounds: stop after
+one operator-authorized invocation, even on failure.

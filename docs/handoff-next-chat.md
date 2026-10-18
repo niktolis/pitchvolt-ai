@@ -270,3 +270,26 @@ Use only source-backed positions. No paid Foundry inference or new
 Azure charges without my separate approval. Update the general
 handover with every merged delivery, run complete tests, and wait
 for my merge approval."
+
+## Latest Foundry review — 18 October 2026, PR #130
+
+Live `main` reached `3e787da7de4efa1eaca7041c2a0bea9e80c8b984` after
+the independently merged UI PR #131. PR #130 remains open; retain all UI work.
+At review start, PR #130 head `47c869cbb635497674d745310ab599a23806a04f`
+had three green GitHub workflows. Recheck CI on the new head.
+
+PR #130 already addressed the literal YOUR-* template error. Further
+hardening uses a shared, zero-network URL guard in preflight **and** live smoke
+before credential creation, and redacts verifier rejection messages and
+shadow assertion excerpts in the operator report. Cloud existence, model
+deployments and trial credits are still **not verified**.
+
+The operator's obsolete pre-rebrand Python directory on macOS has not been
+inspected via the GitHub connector. Inspect tracked, untracked, ignored,
+symlink and nested-repository data locally before moving it to a safe
+out-of-repository backup. Preserve the branding regression test.
+
+**STOP before live inference.** Operator must run full local and preflight
+checks using their actual project endpoint, confirm subscription/deployments/
+credits separately, then explicitly authorize exactly one paid smoke. No
+assistant-side inference, automatic retries, Azure resource creation, or merge.

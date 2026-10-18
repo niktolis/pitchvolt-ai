@@ -51,3 +51,13 @@ settings, including zero automatic HTTP retries. This is **not** live
 Foundry inference, a completed agentic demonstration or a measured Azure
 cost; judge-facing claims must wait for the user's single separately
 authorized local run and sanitized evidence.
+
+### Foundry isolated-test gate (PR #130 follow-up, 18 October)
+
+Offline fake-SDK evidence testing covers all six fixture observations and
+complete four-slot composition. The common offline endpoint guard only rejects
+noncanonical URLs and known template values: it does not prove that Azure
+projects, deployments or credits exist. Rejection diagnostics and shadow
+assertions are redacted. The live Foundry two-role verification is still
+**unverified pending a separately approved operator-run smoke**. No model
+prose is claimed as semantically verified public output.
