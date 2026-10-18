@@ -16,10 +16,7 @@ export function recentRecordedActions(
   limit = 3,
 ): Array<ReplayMessage & { kind: "match_event"; payload: MatchEvent }> {
   if (!Number.isFinite(cursorMs) || !Number.isFinite(limit) || limit <= 0) return [];
-  return atOrBefore(messages, cursorMs)
-    .filter(isMatchEvent)
-    .slice(-Math.floor(limit))
-    .reverse();
+  return atOrBefore(messages, cursorMs).filter(isMatchEvent).slice(-Math.floor(limit)).reverse();
 }
 
 /** Readable play-by-play from source fields only; no inferred success or score. */

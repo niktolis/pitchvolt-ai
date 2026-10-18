@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MatchEvent, ReplayMessage } from "../api/types";
-import { recordedActionCopy, recentRecordedActions } from "./editorialActivity";
+import { recentRecordedActions, recordedActionCopy } from "./editorialActivity";
 
 const action = (
   id: number,
@@ -64,25 +64,29 @@ describe("recorded action editorial activity", () => {
 
   it("preserves source event order for tied clocks without inventing events", () => {
     expect(
-      recentRecordedActions([action(8, 1_000), action(9, 1_000), insight(10, 1_000)], 1_000)
-        .map((m) => m.payload.event_id),
+      recentRecordedActions([action(8, 1_000), action(9, 1_000), insight(10, 1_000)], 1_000).map(
+        (m) => m.payload.event_id,
+      ),
     ).toEqual(["event-9", "event-8"]);
   });
 
   it("uses only exact source fields and does not infer event outcome", () => {
-    expect(recordedActionCopy(action(1, 51_050, "pressure", "neutral").payload as MatchEvent))
-      .toEqual({
+    expect(
+      recordedActionCopy(action(1, 51_050, "pressure", "neutral").payload as MatchEvent),
+    ).toEqual({
         heading: "Harbor FC · pressure",
         detail: "Recorded action",
         time: "0:51",
       });
-    expect(recordedActionCopy(action(2, 3_600_000, "pass", "failure").payload as MatchEvent))
-      .toEqual({
+    expect(
+      recordedActionCopy(action(2, 3_600_000, "pass", "failure").payload as MatchEvent),
+    ).toEqual({
         heading: "Harbor FC · pass",
         detail: "Recorded failure",
         time: "60:00",
       });
-    expect(recordedActionCopy(action(3, 4_000_000, "goal", "success").payload as MatchEvent).detail)
-      .toBe("Recorded success");
+    expect(
+      recordedActionCopy(action(3, 4_000_000, "goal", "success").payload as MatchEvent).detail,
+    ).toBe("Recorded success");
   });
 });
