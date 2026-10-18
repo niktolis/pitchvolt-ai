@@ -64,7 +64,10 @@ export function actionCameraPose(
   const fullFieldDistance = broadcastCameraPosition(aspect).length();
   const distance = fullFieldDistance * (located ? 0.58 : 1);
   if (!located) {
-    return { position: BROADCAST_DIRECTION.clone().multiplyScalar(distance), target: new THREE.Vector3() };
+    return {
+      position: BROADCAST_DIRECTION.clone().multiplyScalar(distance),
+      target: new THREE.Vector3(),
+    };
   }
 
   // Pan the *camera*, never observed player positions. Near a touchline,
