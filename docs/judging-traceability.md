@@ -61,3 +61,5 @@ projects, deployments or credits exist. Rejection diagnostics and shadow
 assertions are redacted. The live Foundry two-role verification is still
 **unverified pending a separately approved operator-run smoke**. No model
 prose is claimed as semantically verified public output.
+
+**Foundry resource discovery, 18 October:** Existing Sweden Central GPT-5 mini and GPT-4o deployments (legacy deployment identifiers, both 20,000 TPM) were verified read-only. Smoke-only budgets increased to 6144/1024 output tokens and 30 seconds per role; no production model enablement. Foundry agent list is empty; resource discovery is not evidence of a successful Analyst→Storyteller→Verifier inference. A genuine application smoke remains pending in an Azure-authenticated execution environment.

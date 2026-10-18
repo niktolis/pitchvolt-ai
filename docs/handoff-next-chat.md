@@ -293,3 +293,32 @@ out-of-repository backup. Preserve the branding regression test.
 checks using their actual project endpoint, confirm subscription/deployments/
 credits separately, then explicitly authorize exactly one paid smoke. No
 assistant-side inference, automatic retries, Azure resource creation, or merge.
+
+## 18 October operator logs and connected Foundry discovery
+
+Operator preserved the ignored 192 KiB legacy Python bytecode cache tree
+outside the repository; `src/matchpulse` is no longer blocking local tests.
+At the previous reviewed SHA, macOS passed **301 Python tests**, **29
+frontend tests**, and Foundry DRY_RUN plus the offline preflight with a
+real project URL. Local D2 --check validated the source diagrams but
+reported a difference in generated `deployment.svg`, although Linux
+CI passed. Collect `git diff` of the SVG after local regeneration before
+changing renderer logic or committing generated artwork.
+
+Connected read-only Foundry account access confirmed project
+`matchpulse-ai`, deployment names `matchpulse-gpt5-mini` and
+`matchpulse-gpt4o` (not `pitchvolt-*`), both Succeeded/20,000 TPM.
+The existing resource identities remain unchanged. The linked Foundry
+project has **no persistent agents**; creating one would not reproduce
+the ephemeral SDK role/tool/verifier pipeline. This assistant's
+container has no Azure CLI sign-in or available credentials, and no
+billable model request was run through the connector.
+
+The technical manager authorized relaxing the isolated test token policy.
+PR #130 now uses the verified deployments; smoke-only budgets become 6144
+Analyst / 1024 Storyteller output tokens and 30 seconds per role, with
+a 70-second local preview total timeout. Production defaults stay at 256
+and Foundry remains disabled there. Zero HTTP and role-level retries remain
+for reproducible failure diagnosis. The engineer must not merge without
+approval. Run the next one-shot billable test only where Azure credentials
+are actually available, after checking subscription credit.
