@@ -45,7 +45,8 @@ export function Pitch({
   });
 
   return (
-    <section className="panel pitch-panel" aria-label="Interactive football pitch">
+    <>
+      <section className="panel pitch-panel" aria-label="Interactive football pitch">
       <div className="panel-heading">
         <div>
           <span className="eyebrow">Tactical replay</span>
@@ -158,7 +159,10 @@ export function Pitch({
         Only the recorded event actor is positioned on this pitch. No opponent, teammate, ball
         position, or formation is inferred from missing tracking data.
       </p>
-      {children}
-    </section>
+      </section>
+      <section className="pitch-replay-deck" aria-label="Replay timeline and controls">
+        {children}
+      </section>
+    </>
   );
 }
