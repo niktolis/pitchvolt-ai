@@ -6,6 +6,8 @@ import { isSourcePitchPoint } from "./pitch-geometry";
 
 interface PitchProps {
   event: MatchEvent | null;
+  actorLabel?: string;
+  actorColor?: string;
   children?: ReactNode;
   playing: boolean;
   canReplay: boolean;
@@ -20,7 +22,7 @@ function pctY(value: number): number {
   return (value / 68) * 100;
 }
 
-export function Pitch({ event, children, playing, canReplay, onTogglePlayback }: PitchProps) {
+export function Pitch({ event, actorLabel, actorColor, children, playing, canReplay, onTogglePlayback }: PitchProps) {
   const locatedEvent = event?.player_id.trim() && isSourcePitchPoint(event.location) ? event : null;
   const destination =
     locatedEvent && isSourcePitchPoint(locatedEvent.destination) ? locatedEvent.destination : null;
@@ -44,7 +46,7 @@ export function Pitch({ event, children, playing, canReplay, onTogglePlayback }:
       </div>
 
       <div className="pitch">
-        {hasWebGL ? <BroadcastPitchScene event={locatedEvent} /> : null}
+        {hasWebGL ? <BroadcastPitchScene event={locatedEvent} actorColor={actorColor} /> : null}
         <svg
           className={hasWebGL ? "pitch-svg-fallback" : undefined}
           viewBox="0 0 105 68"
@@ -130,7 +132,7 @@ export function Pitch({ event, children, playing, canReplay, onTogglePlayback }:
             }}
           >
             <strong>{locatedEvent.event_type}</strong>
-            <span>{displayName(locatedEvent.player_id)}</span>
+            <span>{actorLabel ?? displayName(locatedEvent.player_id)}</span>
           </div>
         ) : null}
       </div>

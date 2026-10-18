@@ -1,5 +1,7 @@
 import type { components } from "./generated";
 
+export type MatchPresentation = components["schemas"]["MatchPresentation"];
+export type TeamPresentation = components["schemas"]["TeamPresentation"];
 export type MatchEvent = components["schemas"]["MatchEvent"];
 export type ReplayMessage = components["schemas"]["ReplayMessage"];
 export type TacticalInsight = components["schemas"]["TacticalInsightPayload"];

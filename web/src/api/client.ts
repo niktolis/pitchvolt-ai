@@ -1,10 +1,16 @@
-import type { EvidenceResponse, NarrativeUpdate, ReplayMessage, ScenarioCatalog } from "./types";
+import type { EvidenceResponse, MatchPresentation, NarrativeUpdate, ReplayMessage, ScenarioCatalog } from "./types";
 
 async function readJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status} ${response.statusText}`);
   }
   return (await response.json()) as T;
+}
+
+export async function fetchPresentation(scenario: string): Promise<MatchPresentation> {
+  return readJson<MatchPresentation>(
+    await fetch(`/api/matches/${encodeURIComponent(scenario)}/presentation`),
+  );
 }
 
 export async function fetchTimeline(scenario: string): Promise<ReplayMessage[]> {

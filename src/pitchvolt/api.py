@@ -20,6 +20,7 @@ from pitchvolt.events import MatchEvent, MatchMetadata
 from pitchvolt.foundry_preview import router as foundry_preview_router
 from pitchvolt.intelligence import MatchProcessor, TacticalInsight, analyze_stream
 from pitchvolt.narrative_stream import router as narrative_router
+from pitchvolt.presentation import MatchPresentation, build_presentation
 from pitchvolt.replay_dataset import SyntheticReplaySource
 from pitchvolt.scenarios import SCENARIO_NAMES
 
@@ -125,6 +126,15 @@ def health() -> dict[str, str]:
 @app.get("/api/scenarios", response_model=ScenarioCatalog)
 def list_scenarios() -> ScenarioCatalog:
     return ScenarioCatalog(scenarios=list(SCENARIO_NAMES))
+
+
+@app.get("/api/matches/{name}/presentation", response_model=MatchPresentation)
+def match_presentation(name: str) -> MatchPresentation:
+    """Read-only authored synthetic fixture facts + source-event score ledger."""
+    if name not in SCENARIO_NAMES:
+        raise HTTPException(status_code=404, detail="Unknown scenario")
+    dataset = SyntheticReplaySource(name).load()
+    return build_presentation(name, dataset)
 
 
 @app.get("/api/matches/{name}/timeline", response_model=list[ReplayMessage])

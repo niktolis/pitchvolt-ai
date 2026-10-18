@@ -49,6 +49,34 @@
         "title": "EvidenceResponse",
         "type": "object"
       },
+      "FictionalPlayer": {
+        "additionalProperties": false,
+        "properties": {
+          "jersey_number": {
+            "maximum": 99.0,
+            "minimum": 1.0,
+            "title": "Jersey Number",
+            "type": "integer"
+          },
+          "player_id": {
+            "minLength": 1,
+            "title": "Player Id",
+            "type": "string"
+          },
+          "surname": {
+            "minLength": 1,
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "player_id",
+          "surname",
+          "jersey_number"
+        ],
+        "title": "FictionalPlayer",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -60,6 +88,42 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "LineupSample": {
+        "additionalProperties": false,
+        "properties": {
+          "away_active": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Away Active",
+            "type": "array"
+          },
+          "clock_ms": {
+            "minimum": 0.0,
+            "title": "Clock Ms",
+            "type": "integer"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "home_active": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Home Active",
+            "type": "array"
+          }
+        },
+        "required": [
+          "event_id",
+          "clock_ms",
+          "home_active",
+          "away_active"
+        ],
+        "title": "LineupSample",
         "type": "object"
       },
       "MatchEvent": {
@@ -204,6 +268,72 @@
           "away_team_id"
         ],
         "title": "MatchMetadata",
+        "type": "object"
+      },
+      "MatchPresentation": {
+        "additionalProperties": false,
+        "properties": {
+          "away": {
+            "$ref": "#/components/schemas/TeamPresentation"
+          },
+          "coverage": {
+            "enum": [
+              "full_match",
+              "excerpt"
+            ],
+            "title": "Coverage",
+            "type": "string"
+          },
+          "goals": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreSample"
+            },
+            "title": "Goals",
+            "type": "array"
+          },
+          "home": {
+            "$ref": "#/components/schemas/TeamPresentation"
+          },
+          "initial_score_known": {
+            "title": "Initial Score Known",
+            "type": "boolean"
+          },
+          "lineup_samples": {
+            "items": {
+              "$ref": "#/components/schemas/LineupSample"
+            },
+            "title": "Lineup Samples",
+            "type": "array"
+          },
+          "match_id": {
+            "title": "Match Id",
+            "type": "string"
+          },
+          "source": {
+            "const": "authored_fictional",
+            "default": "authored_fictional",
+            "title": "Source",
+            "type": "string"
+          },
+          "substitutions": {
+            "items": {
+              "$ref": "#/components/schemas/SubstitutionFact"
+            },
+            "title": "Substitutions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "match_id",
+          "coverage",
+          "home",
+          "away",
+          "initial_score_known",
+          "goals",
+          "substitutions",
+          "lineup_samples"
+        ],
+        "title": "MatchPresentation",
         "type": "object"
       },
       "MatchStateResponse": {
@@ -362,6 +492,88 @@
         "title": "ScenarioCatalog",
         "type": "object"
       },
+      "ScoreSample": {
+        "additionalProperties": false,
+        "properties": {
+          "away": {
+            "minimum": 0.0,
+            "title": "Away",
+            "type": "integer"
+          },
+          "clock_ms": {
+            "minimum": 0.0,
+            "title": "Clock Ms",
+            "type": "integer"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "home": {
+            "minimum": 0.0,
+            "title": "Home",
+            "type": "integer"
+          },
+          "period": {
+            "maximum": 2.0,
+            "minimum": 1.0,
+            "title": "Period",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "event_id",
+          "period",
+          "clock_ms",
+          "home",
+          "away"
+        ],
+        "title": "ScoreSample",
+        "type": "object"
+      },
+      "SubstitutionFact": {
+        "additionalProperties": false,
+        "properties": {
+          "clock_ms": {
+            "minimum": 0.0,
+            "title": "Clock Ms",
+            "type": "integer"
+          },
+          "event_id": {
+            "minLength": 1,
+            "title": "Event Id",
+            "type": "string"
+          },
+          "incoming_player_id": {
+            "title": "Incoming Player Id",
+            "type": "string"
+          },
+          "outgoing_player_id": {
+            "title": "Outgoing Player Id",
+            "type": "string"
+          },
+          "period": {
+            "maximum": 2.0,
+            "minimum": 1.0,
+            "title": "Period",
+            "type": "integer"
+          },
+          "team_id": {
+            "title": "Team Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "team_id",
+          "period",
+          "clock_ms",
+          "outgoing_player_id",
+          "incoming_player_id"
+        ],
+        "title": "SubstitutionFact",
+        "type": "object"
+      },
       "TacticalInsightPayload": {
         "properties": {
           "clock_ms": {
@@ -411,6 +623,76 @@
           "metrics"
         ],
         "title": "TacticalInsightPayload",
+        "type": "object"
+      },
+      "TeamPresentation": {
+        "additionalProperties": false,
+        "properties": {
+          "abbreviation": {
+            "title": "Abbreviation",
+            "type": "string"
+          },
+          "coach": {
+            "title": "Coach",
+            "type": "string"
+          },
+          "emblem_text": {
+            "maxLength": 3,
+            "minLength": 1,
+            "title": "Emblem Text",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "players": {
+            "items": {
+              "$ref": "#/components/schemas/FictionalPlayer"
+            },
+            "title": "Players",
+            "type": "array"
+          },
+          "primary_color": {
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "title": "Primary Color",
+            "type": "string"
+          },
+          "secondary_color": {
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "title": "Secondary Color",
+            "type": "string"
+          },
+          "starters": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starters"
+          },
+          "team_id": {
+            "title": "Team Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "team_id",
+          "name",
+          "abbreviation",
+          "primary_color",
+          "secondary_color",
+          "emblem_text",
+          "coach",
+          "players"
+        ],
+        "title": "TeamPresentation",
         "type": "object"
       },
       "ValidationError": {
@@ -507,6 +789,46 @@
           }
         },
         "summary": "Evidence"
+      }
+    },
+    "/api/matches/{name}/presentation": {
+      "get": {
+        "description": "Read-only authored synthetic fixture facts + source-event score ledger.",
+        "operationId": "match_presentation_api_matches__name__presentation_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchPresentation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Match Presentation"
       }
     },
     "/api/matches/{name}/state": {
