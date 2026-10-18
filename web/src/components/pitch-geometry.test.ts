@@ -5,8 +5,8 @@ import {
   broadcastCameraPosition,
   eventPath,
   isSourcePitchPoint,
-  sourceArrow,
   sourceActorHeading,
+  sourceArrow,
   toWorld,
 } from "./pitch-geometry";
 
