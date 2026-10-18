@@ -36,9 +36,8 @@ export function ballActionAtCursor(
     // A passer/shooter initiated this action; this does NOT identify a current ball holder.
     initiatedBy: validActionOrigin ? event.player_id : null,
     // Only a recorded carry supports ball control by the actor at its starting timestamp.
-    carrierId: validActionOrigin && event.event_type === "carry" && teamControls
-      ? event.player_id
-      : null,
+    carrierId:
+      validActionOrigin && event.event_type === "carry" && teamControls ? event.player_id : null,
     actionKind: event.event_type,
     // Source "under_pressure" is pressure evidence, NOT proof of a 50/50 duel.
     pressured: event.evidence?.under_pressure === true || event.event_type === "pressure",
