@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   fetchEvidence,
@@ -61,6 +61,12 @@ export function App() {
   const [replayNonce, setReplayNonce] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [cursorMs, setCursorMs] = useState(0);
+  const evidenceRequestEpoch = useRef(0);
+  const currentCursorMs = useRef(0);
+
+  useEffect(() => {
+    currentCursorMs.current = cursorMs;
+  }, [cursorMs]);
 
   useEffect(() => {
     let active = true;
@@ -84,6 +90,7 @@ export function App() {
   useEffect(() => {
     if (!scenario) return;
     let active = true;
+    evidenceRequestEpoch.current += 1;
     setMessages([]);
     setPresentation(null);
     setSelectedId(null);
@@ -175,16 +182,28 @@ export function App() {
 
   const inspect = useCallback(
     async (message: ReplayMessage) => {
+      const requestEpoch = ++evidenceRequestEpoch.current;
+      currentCursorMs.current = message.payload.clock_ms;
       setCursorMs(message.payload.clock_ms);
+      setEvidence(null);
       setSelectedId(message.id);
       if (!isTacticalInsight(message) || !scenario) {
         setEvidence(null);
         return;
       }
       try {
-        setEvidence(await fetchEvidence(scenario, message.payload.insight_id));
+        const result = await fetchEvidence(scenario, message.payload.insight_id);
+        if (
+          requestEpoch === evidenceRequestEpoch.current &&
+          currentCursorMs.current >= message.payload.clock_ms &&
+          result.insight_id === message.payload.insight_id
+        ) {
+          setEvidence(result);
+        }
       } catch (reason: unknown) {
-        setError(reason instanceof Error ? reason.message : "Unable to load evidence.");
+        if (requestEpoch === evidenceRequestEpoch.current) {
+          setError(reason instanceof Error ? reason.message : "Unable to load evidence.");
+        }
       }
     },
     [scenario],
@@ -541,7 +560,7 @@ export function App() {
             className="key-moment-button"
             type="button"
             onClick={() => {
-              const message = visibleMessages.find((item) => isTacticalInsight(item));
+              const message = recentInsights[0];
               if (message) void inspect(message);
             }}
             disabled={!visibleMessages.some(isTacticalInsight)}
