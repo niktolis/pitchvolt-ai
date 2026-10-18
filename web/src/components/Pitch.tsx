@@ -9,6 +9,7 @@ interface PitchProps {
   event: MatchEvent | null;
   actorLabel?: string;
   actorColor?: string;
+  actorEmblem?: string;
   children?: ReactNode;
   playing: boolean;
   canReplay: boolean;
@@ -27,6 +28,7 @@ export function Pitch({
   event,
   actorLabel,
   actorColor,
+  actorEmblem,
   children,
   playing,
   canReplay,
@@ -61,6 +63,7 @@ export function Pitch({
             event={locatedEvent}
             actorColor={actorColor}
             actorLabel={actorLabel}
+            actorEmblem={actorEmblem}
           />
         ) : null}
         <svg
