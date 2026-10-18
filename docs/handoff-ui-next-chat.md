@@ -340,3 +340,7 @@ PR #121 merged on main at `b32bea425b55bef038a3a47c124802e7527e40e5`. Candidate 
 ## 13. Evidence-to-pitch navigation (18 Oct 2026)
 
 PR #123 merged at `c0bc2fc3eb25a412da90417f2396ab0d8aaa01d8`. Next focused UI branch `fix/ui-evidence-event-seek`: evidence event buttons route to the existing `inspect(message)` callback instead of only changing `selectedId`. This ensures the canonical cursor seeks to the exact recorded evidence event timestamp and playback pauses, aligning the evidence click with source event selection semantics introduced by #123. The selection uses existing visible canonical MatchEvent records; there is no inferred position, additional timeline model, backend change or Azure resource. Run required CI; no merge without explicit approval. This is not screenshot-level visual acceptance.
+
+## 14. Pitch-stage vertical alignment (18 Oct 2026)
+
+PR #124 merged as `1f92f4073c53116282aae1c38de495b2ef268f6d`. Branch `fix/ui-pitch-panel-top-alignment` changes `.pitch-panel` flex justification from center to flex-start. This avoids top padding introduced by vertical centering when the neighboring broadcast grid cards are taller. The source event timeline and functional replay transport remain immediately beneath the pitch. No changes to player locations, camera projections, score, evidence, Azure resources, or model inference. CI and manually verified exact-SHA screenshot comparison remain necessary; do not declare pixel-level acceptance or merge without explicit approval.
