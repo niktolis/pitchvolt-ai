@@ -148,7 +148,7 @@ export function App() {
     }
   }, [cursorMs, bounds.end, messages.length]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!scenario) return undefined;
     setNarratives({});
     setNarrativeError(null);
