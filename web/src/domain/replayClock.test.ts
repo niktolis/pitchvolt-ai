@@ -90,9 +90,16 @@ describe("canonical replay cursor", () => {
       scenario = "high_press",
       audience: "casual" | "analyst" | "club" = "casual",
       replayNonce = 0,
-    ) => publishedNarrativeAtCursor(
-      timeline, cursorMs, scenario, audience, replayNonce, "insight-3", scoped,
-    );
+    ) =>
+      publishedNarrativeAtCursor(
+        timeline,
+        cursorMs,
+        scenario,
+        audience,
+        replayNonce,
+        "insight-3",
+        scoped,
+      );
     expect(find(4_999)).toBeNull();
     expect(find(5_000)).toEqual(fact);
     expect(find(8_000)).toEqual(fact);
@@ -100,18 +107,34 @@ describe("canonical replay cursor", () => {
     expect(find(5_000, "counterattack")).toBeNull();
     expect(find(5_000, "high_press", "analyst")).toBeNull();
     expect(find(5_000, "high_press", "casual", 1)).toBeNull();
-    expect(publishedNarrativeAtCursor(
-      timeline, 5_000, "high_press", "casual", 0, "missing-insight", scoped,
-    )).toBeNull();
+    expect(
+      publishedNarrativeAtCursor(
+        timeline,
+        5_000,
+        "high_press",
+        "casual",
+        0,
+        "missing-insight",
+        scoped,
+      ),
+    ).toBeNull();
     const mismatched = {
       [narrativeStateKey("high_press", "casual", 0, "insight-3")]: {
         ...fact,
         audience: "club" as const,
       },
     };
-    expect(publishedNarrativeAtCursor(
-      timeline, 5_000, "high_press", "casual", 0, "insight-3", mismatched,
-    )).toBeNull();
+    expect(
+      publishedNarrativeAtCursor(
+        timeline,
+        5_000,
+        "high_press",
+        "casual",
+        0,
+        "insight-3",
+        mismatched,
+      ),
+    ).toBeNull();
   });
 
   it("clamps rewind, fast-forward and empty playback bounds", () => {

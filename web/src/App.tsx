@@ -148,8 +148,7 @@ export function App() {
     }
   }, [cursorMs, bounds.end, messages.length]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: replayNonce intentionally restarts the narrative replay together with the match replay.
-  useEffect(() => {
+    useEffect(() => {
     if (!scenario) return undefined;
     setNarratives({});
     setNarrativeError(null);
