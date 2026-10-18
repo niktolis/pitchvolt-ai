@@ -81,3 +81,45 @@ The replay cursor is the single time boundary shared by pitch, tactical cards,
 evidence, and narrative. Snapshot and SSE payload IDs must agree. Seek/rewind
 must not expose events or insights from a future cursor, and synthetic event
 coordinates must never be identified as real-match player tracking.
+
+## Approved action-focused broadcast viewport (18 October 2026)
+
+The user approved a larger center pitch and a moving broadcast camera framing the
+**recorded action region**, not an always-visible static full-field view.
+Preferred participant rendering: only actually observed attackers and defenders
+in the action ROI; all 22 players only if complete time-aligned position sources
+actually exist. Never fill missing players with illustrative formations.
+A camera may ease between recorded event anchors as *editorial framing*, but
+player or ball locations must not interpolate unless actual position tracking
+supports that timeline. No arbitrary ball offset from the active actor.
+
+**Camera stage 1 (action-camera PR):** derive a closer camera pose from
+the currently validated event actor coordinate, with full-pitch fallback
+on absent/invalid source location. Increase the physical center 3D viewport
+height while retaining the source event rail and real playback controls below.
+Place the recorded actor label to the upper side of the player mesh. The
+central play glyph is fully invisible, non-interactive and unfocusable while
+replay runs; when paused, it is very transparent with a keyboard focus state.
+The separate transport below the pitch remains operable.
+
+**Subsequent data / rendering requirements, not yet implemented:**
+
+1. Ingest timestamped, individually identified and auditable participant
+   spatial observations, e.g., StatsBomb 360 when available. Validate match,
+   event, exact timestamp, team/player identity, coordinate conversion,
+   source visibility, missingness and usage rights. Rosters cannot substitute.
+2. Render only the observed, time-aligned attackers/defenders contributing
+   to the action ROI, even when fewer than 22 are available. Treat sparse
+   freeze frames as observations, not motion. Animate player or ball motion
+   only from actual sampled tracking, not from invented trajectories.
+3. Tags need the verified surname and an authorized team logo, or the
+   source-authored fictional emblem when applicable; use label offset,
+   screen-boundary checks and overlap avoidance to avoid covering actors.
+   Current MatchPresentation has surname and fictional emblem_text, not
+   real club crest artwork or multi-actor tracking.
+4. Validate seek/rewind, cursor consistency, viewport framing, overlapping
+   labels, mobile and reduced-motion modes, and explicit distinction
+   between camera movement and observed player movement.
+
+The sole visual acceptance target remains the approved application preview
+compared to manual screenshots of the exact deployed revision.
