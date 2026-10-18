@@ -40,19 +40,11 @@ export function FootballActorAvatar({ kitColor }: { kitColor?: string }) {
       {[-1, 1].map((side) => (
         <group key={side}>
           {/* Short sleeves, forearms, hands. */}
-          <mesh
-            position={[side * 0.42, 1.40, 0]}
-            rotation={[0, 0, -side * 0.2]}
-            castShadow
-          >
-            <capsuleGeometry args={[0.16, 0.20, 4, 10]} />
+          <mesh position={[side * 0.42, 1.4, 0]} rotation={[0, 0, -side * 0.2]} castShadow>
+            <capsuleGeometry args={[0.16, 0.2, 4, 10]} />
             <meshStandardMaterial color={jersey} roughness={0.74} />
           </mesh>
-          <mesh
-            position={[side * 0.54, 1.12, 0]}
-            rotation={[0, 0, -side * 0.23]}
-            castShadow
-          >
+          <mesh position={[side * 0.54, 1.12, 0]} rotation={[0, 0, -side * 0.23]} castShadow>
             <capsuleGeometry args={[0.105, 0.23, 4, 10]} />
             <meshStandardMaterial color="#d8a77f" roughness={0.88} />
           </mesh>
@@ -71,7 +63,7 @@ export function FootballActorAvatar({ kitColor }: { kitColor?: string }) {
             <meshStandardMaterial color="#d8a77f" roughness={0.9} />
           </mesh>
           <mesh position={[side * 0.17, 0.31, 0]} castShadow>
-            <capsuleGeometry args={[0.125, 0.30, 4, 10]} />
+            <capsuleGeometry args={[0.125, 0.3, 4, 10]} />
             <meshStandardMaterial color="#e5f3e7" roughness={0.96} />
           </mesh>
           <mesh position={[side * 0.17, 0.105, 0.115]} castShadow>
