@@ -51,8 +51,9 @@ jobs:
         run: |
           set -euo pipefail
           [[ -n "$MERGED_SHA" && "$(git rev-parse HEAD)" == "$MERGED_SHA" ]]
-          git fetch --no-tags origin main
-          # The merge commit must be reachable from main, not a transient PR head.
+          # fetch-depth: 0 already fetched origin/main using the checkout token.
+          # Do not perform a second unauthenticated fetch: this repository is private.
+          git show-ref --verify --quiet refs/remotes/origin/main
           git merge-base --is-ancestor "$MERGED_SHA" origin/main
           for name in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
             if [[ -z "${!name}" ]]; then
