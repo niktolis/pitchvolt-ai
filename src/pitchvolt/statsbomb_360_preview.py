@@ -7,9 +7,9 @@ assets, remote inference, synthetic overlays or persistent tracking assumptions.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable
 from html import escape
 from pathlib import Path
-from typing import Iterable
 
 from pitchvolt.providers.statsbomb_360 import Historical360Bundle, load_historical_360
 from pitchvolt.providers.statsbomb_360_replay import (
