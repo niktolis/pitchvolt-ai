@@ -1,181 +1,186 @@
-# PitchVolt AI — durable handover for the next ChatGPT project conversation
+# PitchVolt AI — authoritative project and next-chat handover
 
-**Last updated:** 18 October 2026. **Hackathon deadline:** 27 October 2026.
-**Canonical repository:** https://github.com/niktolis/pitchvolt-ai
-**GitHub Project:** https://github.com/users/niktolis/projects/6
+**Updated:** 18 October 2026, after PR #118 production deployment.
+**Deadline:** 27 October 2026.
+**Repository:** https://github.com/niktolis/pitchvolt-ai
+**Project board:** https://github.com/users/niktolis/projects/6
 **Production:** https://pitchvolt.app
+**Separate visual/UI handover:** [handoff-ui-next-chat.md](handoff-ui-next-chat.md)
 
-> **Start any next chat by reading this file and inspecting live GitHub main,
-> open issues, open PRs and CI. Do not rely on historical conversation memory
-> instead of the repository. This document is committed as part of each
-> substantial implementation bundle and must be updated before handover.**
+**Continuation rule:** Before doing work, read **both** handovers, then query
+live GitHub `main`, open PRs/issues and deployment runs. The commit and PR
+status below are a dated verification snapshot. **Refresh this document after
+every significant PR**, including the exact merge SHA, CI evidence, remaining
+risk and next task. Do not repeat completed work because an older chat says
+otherwise.
 
-## Operating contract / safety
+## Confirmed engineering baseline
 
-- One bundled PR at a time, branch from current `main`; run Python tests,
-  frontend build, schema/OpenAPI regeneration checks, and D2 architecture CI.
-  Ask for technical-manager review before merge; **do not automatically merge
-  a PR** merely because CI passed. After approved merge, provide a concise
-  report: architecture, business behavior, tests, risks, next implementation.
-- Keep Python/domain/React/Docs DRY; maintain exact generated OpenAPI↔TS
-  contracts and D2 source and checked SVGs. No duplicated football logic in UI.
-- **Strictly source-backed player positions.** No illustrative team formation,
-  invented 22-player tracking, arbitrary ball position, guessed identity,
-  off-field coordinate clamping or extrapolation. StatsBomb 360 is sparse,
-  anonymous freeze-frame observations, not full-match tracking.
-- Historical StatsBomb Open Data is **real historical data**, never synthetic,
-  and original JSON remains offline until license/redistribution/attribution
-  rights are reviewed. Match ID/commit/digest must agree.
-- No new billable Azure services, Foundry deployments/inference, subscription
-  quota changes or spending without **separate explicit approval**. Trial
-  budget notifications are not a hard stop. The Foundry runtime is hard
-  disabled on the public server; local explicit live smoke is billable.
-- Never enable Codex in GitHub orgs without explicit approval, especially
-  `cariad-t2`. Respect PitchVolt's existing GitHub connector scope.
-- **Visual target:** the approved PitchVolt Application Preview screenshot,
-  not a generic alternative. Keep play/pause, speed, seek and replay controls
-  below the pitch. Manual browser visual review **only after** deployment and
-  exact revision verification; automated `visual-evidence` job was removed.
+| Delivery | Evidence | Meaning |
+| --- | --- | --- |
+| Renamed PitchVolt repo and Azure OIDC | PR #112, Entra `pitchvolt-main` | Repo name is `pitchvolt-ai`; legacy Azure resource names intentionally remain |
+| CI modernization | PR #115, merge `6f7536530effe1646cc8ee2beba9229d17991bdc` | Node 26.10.0, Node 24-compatible Actions, Ubuntu 24.04; no automatic screenshot job |
+| Source-neutral replay boundary | PR #116, merge `a5dc8e09cdad6c24c4fcd2c89904a1db3de5d3ef` | Immutable replay dataset, canonical synthetic vs historical provenance separation, source-exact cursor |
+| Source-backed multi-insight UI | PR #117, merge `bc18c9a7e7939181bd3cb08067556fc532f793d4` | Up to three *actual* published tactical insights; exact event-actor position and recorded-clock WebGL label |
+| UI-specific handover | PR #119, merge `681041c419c258215e14f1512ef5e76c9200e279` | Separate visual design target and UI technical continuity; preserves agreed layout |
+| **Fictional team/score/roster presentation** | **PR #118, merge `7baaa658ea9a1c8dfa0bafdd2e8e2161f615d1e7`** | Explicit fictional roster identity, match presentation API, goals-only score ledger, authored substitutions, seekable lineup |
 
-## Verified deployed baseline — check fresh main
+**Production:** Post-#118 deployment
+[GitHub run #39157651098](https://github.com/niktolis/pitchvolt-ai/actions/runs/39157651098)
+**completed successfully**, both `verify` and `build-deploy`; exact revision
+and public health gates remain part of the workflow. This is **not** human
+approval of screenshot/visual parity. The main branch after #118 was
+`7baaa658ea9a1c8dfa0bafdd2e8e2161f615d1e7`.
 
-- Repository rebrand and GitHub rename completed. Existing legacy-named Azure
-  resource group `rg-matchpulse-dev`, Container App `matchpulse-web`,
-  ACR `matchpulsea433a4e04d` deliberately retained. GitHub→Entra
-  immutable OIDC credential `pitchvolt-main` verified.
-- At creation of this handover update, `main` was
-  `6f7536530effe1646cc8ee2beba9229d17991bdc`
-  (merged PR #115; followed by PR #116 and #117). The branch was rebased
-  on main `bc18c9a7e7939181bd3cb08067556fc532f793d4` during #118.
-  Production GitHub run #39152080404 succeeded:
-  `verify` + `build-deploy`, exact public revision and HTTP GET health.
-- Toolchains: Node **26.10.0** in `.node-version`, immutable Docker
-  Node image, Node 24-native GitHub Actions, Ubuntu 24.04;
-  `visual-evidence` deployment job removed.
-- React 19, TypeScript, Vite, Three.js/R3F/Drei; broadcast UI has working
-  pitch, replay clock/seek, evidence and narrative view. Current source
-  positions have **one source-recorded actor per synthetic event**, not a
-  22-player continuous lineup. Scoreboard deliberately shows unavailable.
-- FastAPI/Pydantic, synthetic scenario registry with short high press,
-  counterattack, sustained possession, StatsBomb-shaped *fictional*
-  high-press and `extended_match`: 220 original-fiction actions, two halves,
-  reaches 90:00; deliberately scripted 2 high-press, 1 sustained possession,
-  1 counterattack tactical insight. Data distributions are **not** a
-  physically realistic calibrated full-match simulator.
-- MatchProcessor deterministic insight/evidence; /timeline finite snapshot,
-  /stream replay SSE, /state, /evidence, independent local narrative SSE.
-  The React replay consumes immutable /timeline for seek and client clock.
-  Microsoft Foundry agents/tools and offline tests exist, but public
-  inference remains disabled, authored free prose is shadow-only.
-- StatsBomb historical source files for 9880 and 3764440 were verified in
-  independent ephemeral GitHub audits, NOT committed; verified match 3764440
-  has 4160 events and 3914 360 frames; **only 8 frames (0.20%)** observe
-  eleven on each side and non-actor detections are anonymous. The local
-  `--full-xi-gallery` inspects them OFFLINE. Continuous 22-person rendering
-  is not supported by this source.
+Backend Python/FastAPI/Pydantic, React 19 / TypeScript / Vite /
+Three.js / React Three Fiber / Drei, Dockerized existing Azure Container App.
+Synthetic `extended_match` has **220 fictional source actions** over two
+halves, four deterministic tactical insights (two high-press, one sustained
+possession, one counterattack), one authored canonical `GOAL`, and two
+explicit author-declared fixture substitutions. It is not a statistically
+realistic 90-minute real-football tracking feed.
 
-## Verified #116 merge and active presentation PR #118
+## PR #118 details — DONE, do not recreate
 
-- PR #117 **merged** as `bc18c9a7e7939181bd3cb08067556fc532f793d4`.
-  This adds the cursor-gated three-insight feed, WebGL source-actor labels and
-  updated presentation helpers. **Preserve these changes** when integrating
-  #118; do not discard or overwrite approved UI work.
-- PR #116 **merged** as `a5dc8e09cdad6c24c4fcd2c89904a1db3de5d3ef`;
-  unified replay dataset and source-based cursor are now in `main`.
-- **PR #118 draft:** https://github.com/niktolis/pitchvolt-ai/pull/118,
-  `feat/59-60-authored-teams-score-ledger`, issues #59/#60.
-  New backend-owned synthetic `presentation.py`: authored fictional
-  team identities, 14-player rosters, known starting XI only for complete
-  `extended_match`, score ledger from explicit canonical goals only, and
-  time-ordered authored substitution events/active IDs, with 0–0 at authored
-  kickoff versus unknown score for second-half excerpts. No full-pitch
-  22-player positions are fabricated. New `/presentation` route.
-- **Before merge:** verify `scripts/check.sh`, OpenAPI snapshot and
-  generated `web/src/api/generated.ts`, frontend tests/build, D2 CI and
-  manager review. Check future seek cursor restoration for score/active
-  lineup, and no stale scenario response. Source action count remains 220.
-- The next planned bundle after #118: #63/#58 authoritative cursor and
-  continuous action ticker; then explicit approved Foundry smoke #4.
+**Backend:** `src/pitchvolt/presentation.py`, `extended_fixtures.py`,
+`api.py`, `tests/test_presentation.py`. GET
+`/api/matches/{name}/presentation` returns typed fictional team identities,
+names, colors, text-only emblem abbreviations, coaches, 14-player rosters,
+and (only when explicitly authored) starting XI. Goal ledger is built solely
+from canonical `GOAL` events. 0–0 is an authored starting fact for
+`extended_match`; shorter second-half **excerpts have UNKNOWN score and
+UNKNOWN starters**. Two explicitly authored 61'/65' substitutions alter
+active-player IDs for the extended fixture; **do not** infer substitute
+players from actor changes.
 
-## Earlier PR #116 design and rationale (already merged)
+**Web:** Generated `web/openapi.json` ↔
+`web/src/api/generated.ts`, `web/src/api/client.ts`,
+`web/src/domain/fixturePresentation.ts`, `web/src/App.tsx`,
+`Pitch.tsx`, `BroadcastPitchScene.tsx`, and seek/rewind regression tests.
+Scoreboard uses backend-authored snapshots at the single replay clock.
+Text-only team shields use separately authored colors; the collapsible
+roster shows active starters/substitution transitions. The source-actor WebGL
+label uses the authored fictional surname, **not jersey-ID parsing**.
+PR #117's verified multi-insight feed was preserved during conflict
+resolution; no 22-player locations were added.
 
-- **PR #116**: https://github.com/niktolis/pitchvolt-ai/pull/116
-  `feat/66-unified-replay-source-contract`, issue #66 (P0).
-  Status now: **merged**; this paragraph is historical context.
-- Bounded scope: `src/pitchvolt/replay_dataset.py` introduces read-only
-  `ReplayDataset`, `ReplayAction`, `ReplayCursorSnapshot`,
-  `SyntheticReplaySource` and `HistoricalReplaySource`. Synthetic
-  fixtures preserve exact canonical MatchEvent + independent SHA fingerprint;
-  historical projection preserves original source manifest and omitted event
-  families but never creates synthetic MatchEvent or invokes MatchProcessor.
-  `api._load` must use SyntheticReplaySource **without changing public
-  endpoint/SSE wire contracts**. Python fixture/source/cursor tests and docs.
-- First check PR head + CI, fix any failures, verify source/provenance,
-  zero future insight leakage, and explicitly seek user review **before merge**.
-  No historical endpoint/asset redistribution or paid inference.
-- `docs/architecture/replay-data.md` defines exact behavior and limitations.
-  All files in the PR must be checked; this handover text may have been
-  written before CI completed.
-- #66 cannot be closed until presentation, score, roster, substitution and
-  client contract integration are delivered. Do not call this first slice
-  full historical interoperability.
+**Pre-merge CI:** Exact PR #118 head `4fa4d53e211658e98d7e4a9ada2e6b57031f6989`
+passed Python, frontend (including TypeScript/OpenAPI/Biome), and D2
+architecture checks. Previous 273 Python tests passed, 1 skipped. CI
+ran again on merged main and succeeded. Temporary CI formatter and contract
+extraction steps were removed before merging.
 
-## Prioritized implementation after the current #118
+**Unfinished within #59/#60:** Original designer-approved crest artwork is
+not present; only **text emblems**. Substitutions are separate authored
+presentation facts, **not** an event family integrated into
+`MatchEvent`/SSE. Historical source-independent lineup and score coverage
+still needs rights/contract review. Mark these as partial delivery rather
+than implying full professional match-tracking support.
 
-1. **#59 + #60 (PR #118 in progress)**: Provider-neutral validated match/team/roster metadata and
-   replay-time event-sourced score/substitutions, **without inventing
-   kickoff score for excerpts**. The synthetic canonical model has no
-   substitution event yet; source-derived state must be explicit. Original
-   fictional crests need design approval. Generated OpenAPI↔TS contract and
-   scoreboard, team colors and actor surnames only after validated facts.
-2. **#63 + #58**: Canonical source/insight/narrative cursor semantics, no
-   future leakage after seek/rewind; no stale async evidence or narrative
-   updates on scenario/mode change. Continuous action ticker backed by
-   MatchEvent, tactical insights remain separate.
-3. **#4**: real Microsoft Agent Framework / Foundry Analyst (GPT-5 mini),
-   Storyteller (GPT-4o mini) verified inference and handoff, only after
-   individual approval and cost/usage review. Live smoke history exists in
-   `docs/architecture/controlled-narratives.md` and
-   `docs/architecture/foundry-smoke-test.md`: successful 6/6 read-only
-   Analyst evidence retrieval and structured specialist outputs in one test,
-   but incomplete `fact_order` forced correct fallback. Prior GPT-5 mini
-   token exhaustion and SDK issues are documented. Do not claim successful
-   publication of arbitrary AI prose or rerun billable tests without consent.
-4. **#18 + #61**: fidelity to approved visual layout with source-only pitch
-   markers, validated team colors/fictional crest IDs, broadcaster UI,
-   responsive replay controls. Manual compare deployed exact SHA to target.
-5. **#8 / #31 / #6**: pre-submission validation, measured latencies,
-   performance/telemetry, Foundry cost evidence, 60–90s video, README,
-   judging traceability, legal/source audit. Submission freeze Oct 25–27.
-   P2 multilingual recap #7, public Pages #26 and complete Open Data
-   ingestion #64/#15 can be deferred if demo/core proof is threatened.
+## Concurrent work — coordinate rather than overwrite
 
-## Concrete repo entry points and checks
+- At this handoff update, **PR #120**:
+  https://github.com/niktolis/pitchvolt-ai/pull/120
+  was separately active/draft in the UI conversation, adding accessible
+  source-event timeline navigation under the pitch. It edits the UI handover
+  and the timeline component, not this main handover. **Check its live state
+  before opening or merging overlapping UI changes. Do not modify its
+  branch from another chat.**
+- General architecture and visual/UI implementation may advance in other
+  project conversations. Never force-rewrite `main` or replay a stale
+  branch over their changes. Compare file diffs, rebase with expected HEAD
+  lease, preserve their features, and rerun complete checks.
+- A documentation-only recovery PR for this general handover may be open.
+  Merge such documentation only after its checks and explicit review.
 
-- Source: `src/pitchvolt/replay_dataset.py`, `events.py`,
-  `intelligence.py`, `scenarios.py`, `extended_fixtures.py`,
-  `providers/statsbomb_historical.py`,
-  `providers/statsbomb_projection.py`,
-  `providers/statsbomb_360.py`, `api.py`, `narrative_stream.py`.
+## Non-negotiable technical, provenance and financial rules
+
+1. **Source-backed player positions only.** One real source-recorded
+   event actor at its original event coordinate is permitted. Do not invent
+   illustrated formations, 22-player XI coordinates, ball location,
+   smoothed/in-between player movement, or off-field clamping. Active
+   player **identity lists** are not player *positions*. Show recorded event
+   timestamp separately from current replay cursor.
+2. Historical StatsBomb Open Data is distinct from synthetic fixtures;
+   never recast historical records as fictional canonical `MatchEvent`.
+   Original offline event/lineup/360 files were SHA-verified at the pinned
+   revision but are not licensed for our hosted redistribution by default.
+   Match 3764440 had 4,160 events, 3,914 360 frames and **only 8** frames
+   with 11+11 observed players. No continuous all-player tracking can be
+   claimed. Historical original files remain offline pending legal review.
+3. **No new Azure charges or Foundry model calls** without explicit approval.
+   Public app runs deterministic/local controlled narratives; paid
+   Microsoft Foundry inference is disabled. Budget alerts are not a
+   hard spending cap; ask before any live model smoke.
+4. One coherent PR at a time within a workstream; check current main and
+   open PRs, preserve independent merged work, require green Python,
+   frontend + generated TypeScript/OpenAPI, and D2 checks. **Ask the
+   technical manager to approve a merge**; don't infer general approval
+   from previous PRs. Provide a concise technical management report.
+5. The approved **PitchVolt Application Preview** image is authoritative
+   for UI proportions and styling. Preserve replay controls **immediately
+   under the pitch**; the removed post-deployment visual-evidence CI
+   job must stay removed. Verify exact deployed public commit before
+   requesting the user to compare approved target and latest screenshot.
+6. DRY is mandatory; one canonical provider-neutral business model,
+   test-backed mappings, architecture D2 source and rendered SVGs.
+   No GitHub Codex integration in corporate org `cariad-t2` without
+   explicit permission. Existing Azure resource names remain unchanged.
+
+## Next prioritized implementation after #118
+
+1. **Temporal integrity #63 / editorial action ticker #58 (P0).** Tighten
+   all async evidence/narrative request cancellation or identity checking
+   on scenario changes, modes and seeks; never display future evidence,
+   score, substitutions or prose. Add bounded source-event activity rail
+   separate from tactical insights, replay/rewind tests and explicit
+   publication-time constraints. Do **not** duplicate the existing
+   `recentInsightsAtCursor` three-insight feed. Coordinate with PR #120.
+2. **Original fixture crest/artwork and UI target fidelity #59/#18/#61.**
+   Extend only after approved visuals, real production screenshot and
+   existing source identity contract. Avoid celebrity/real club
+   copyrighted assets and invented photos, formations or players.
+3. **Foundry genuine two-agent verification #4 (P0).** Offline tests and
+   published role/evidence tools already exist; read
+   `docs/architecture/controlled-narratives.md`,
+   `docs/architecture/foundry-smoke-test.md`,
+   `docs/architecture/foundry-runtime-guardrails.md`. Previous smoke
+   successfully exercised multiple Analyst evidence tool calls, but final
+   publication fell back on `fact_order` validation. Require separate
+   approval, token/latency limit and measured costs for new billable smoke.
+4. **Hackathon submission freeze by Oct 25–27:** issues #8/#31/#6:
+   measured E2E replay latency, deterministic demo, Azure operating cost
+   controls, accurate architecture/judging traceability, accessible
+   responsive browser review and 60–90s video. Defer P2 multilingual,
+   broad historical StatsBomb import and public Pages unless blocking.
+
+## Repository navigation and checks
+
+- API/domain: `src/pitchvolt/api.py`, `events.py`, `intelligence.py`,
+  `replay_dataset.py`, `presentation.py`, `extended_fixtures.py`,
+  `providers/statsbomb_historical.py`, `providers/statsbomb_360.py`.
 - Browser: `web/src/App.tsx`, `web/src/domain/replayClock.ts`,
-  `web/src/components/Pitch.tsx`, `BroadcastPitchScene.tsx`.
-- Architecture: `docs/architecture/README.md`,
+  `web/src/domain/fixturePresentation.ts`, `web/src/components/Pitch.tsx`,
+  `BroadcastPitchScene.tsx`, `EventTimeline.tsx`.
+- Docs: `docs/architecture/README.md`,
   `docs/architecture/replay-data.md`,
-  `docs/architecture/pitch-rendering.md`;
-  `docs/judging-traceability.md`, `docs/statsbomb-baseline.md`.
-- Local fish/bash:
-  `uv sync --frozen --extra dev`,
+  `docs/architecture/fixture-presentation.md`,
+  `docs/architecture/frontend.md`,
+  `docs/judging-traceability.md`, **this document** and the
+  [separate UI handover](handoff-ui-next-chat.md).
+- Checks: `uv sync --frozen --extra dev`,
   `uv run --frozen bash scripts/check.sh`,
   `npm ci --prefix web`,
   `uv run --frozen bash scripts/check-web.sh`,
   `bash scripts/render-architecture.sh --check`.
-- GitHub Project: update issue statuses/labels and exact PR links after
-  successful implementation; keep README and handoff in sync.
 
-**Next-chat prompt:** "Continue PitchVolt AI from
-`docs/handoff-next-chat.md` on `niktolis/pitchvolt-ai`. First inspect
-main, PR #116 and issues #66/#59/#60/#63/#4; finish the in-progress
-one-PR bundle with green CI and my explicit merge approval, then advance
-the prioritized roadmap. Strict source-backed player positions only;
-no paid Foundry inference without explicit approval; update this handover
-before switching chats."
+**Copy into a fresh project conversation:**
+"Continue PitchVolt AI from `docs/handoff-next-chat.md` and
+`docs/handoff-ui-next-chat.md` in `niktolis/pitchvolt-ai`.
+First check actual main/CI, closed #118 (merge 7baaa658), and
+open #120 before touching UI. Finish any in-progress PR without
+overwriting independent work; next priority #63 and #58.
+Use only source-backed positions. No paid Foundry inference or new
+Azure charges without my separate approval. Update the general
+handover with every merged delivery, run complete tests, and wait
+for my merge approval."
