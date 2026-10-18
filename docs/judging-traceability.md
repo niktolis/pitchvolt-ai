@@ -1,6 +1,6 @@
 # Judging Traceability Matrix
 
-Status: implementation evidence as of 16 October 2026. The five judging criteria are treated as equal priorities; final submission wording must still be checked against the official rules immediately before hand-in.
+Status: implementation evidence reviewed 18 October 2026. Updated after replay, team/roster, temporal and offline Foundry preparation changes. The five judging criteria are treated as equal priorities; final submission wording must still be checked against the official rules immediately before hand-in.
 
 | Criterion | Current evidence | Remaining proof before submission | Tracking |
 |---|---|---|---|
@@ -23,9 +23,9 @@ Status: implementation evidence as of 16 October 2026. The five judging criteria
 
 - **G0 planning — complete:** reviewed architecture, rubric mapping, backlog and financial guardrails.
 - **G1 deterministic data/core — substantially complete:** canonical schema, synthetic scenarios, invariants, replay and detector tests.
-- **G2 intelligence/agentic — partial:** deterministic intelligence complete for the implemented scenarios; Foundry orchestration and narrative verifier remain.
+- **G2 intelligence/agentic — partial:** deterministic intelligence complete for the implemented scenarios; Foundry offline adapter/tool orchestration and bounded verifier exist, but complete successful real two-role acceptance and a production model path remain unproven.
 - **G3 UX — first vertical slice implemented:** live broadcast, replay, evidence and deterministic audience modes; AI narrative integration remains.
-- **G4 submission — not started:** approved Azure deployment, measured latency/cost, demo recording, final README/rules/license/secrets checks.
+- **G4 submission — not started:** Azure site deployed; measured latency/cost, demo recording, final README/rules/license/secrets checks remain.
 
 ## Submission constraints
 
@@ -39,3 +39,15 @@ Status: implementation evidence as of 16 October 2026. The five judging criteria
 ## Provider-compatibility evidence (issue #15)
 
 The originally synthetic `statsbomb_high_press` scenario exercises StatsBomb-shaped JSON with its provider coordinate system, nested event families and validated explicit recovery semantics. It reaches the unchanged processor, SSE and UI. Native/adapted deterministic kind and metrics are checked in tests. This **does not** claim integration with historical StatsBomb Open Data or authorized redistribution of real match records.
+
+## Milestone A / B Foundry evidence boundary (PR #130)
+
+An offline full-roles integration test uses mock SDK agents to retrieve
+the same six canonical evidence events, execute Analyst → Storyteller →
+verifier, prove strict composition rejection and deterministic fallback,
+and prevent creative AI prose publication. A no-cloud local preflight
+checks pinned optional SDK dependencies, endpoint shape and one-time smoke
+settings, including zero automatic HTTP retries. This is **not** live
+Foundry inference, a completed agentic demonstration or a measured Azure
+cost; judge-facing claims must wait for the user's single separately
+authorized local run and sanitized evidence.

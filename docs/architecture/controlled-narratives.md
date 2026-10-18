@@ -98,7 +98,7 @@ Future expansion: separate free-form creativity/evidence-linked atomic claim ext
 
 The fourth authorized smoke attempt retrieved six events but GPT-5 mini finished with `finish_reason=length` and `AgentResponse.value=None` under the 512-token Analyst output cap; the Storyteller was never called and the deterministic fallback remained correct. In reasoning models, hidden reasoning tokens count toward the output budget. This is evidence of output truncation, not evidence of faulty input facts. The exact token count remains unknown until SDK usage extraction is fixed.
 
-The isolated live smoke now budgets **4096 Analyst output tokens** and leaves Storyteller at its configured 256-token default. The configurable `RoleSettings` validation ceiling is **8192 tokens**, but general application defaults stay unchanged. No additional inference was made during development. The smoke restores the OpenAI Python SDK default of **two retries** for eligible transport/HTTP errors (network, 408, 409, 429, 5xx), with backoff; there are **zero role-level retries** after a `length` finish or invalid schema. See https://github.com/openai/openai-python#retries and https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/reasoning for the SDK retry policy and reasoning-token behavior.
+The isolated live smoke now budgets **4096 Analyst output tokens** and leaves Storyteller at its configured 256-token default. The configurable `RoleSettings` validation ceiling is **8192 tokens**, but general application defaults stay unchanged. No additional inference was made during development. Historical note: the smoke temporarily used the OpenAI SDK default of **two HTTP retries**. **Milestone A supersedes this**: the reviewed isolated smoke now uses `max_retries=0` to avoid unexpected extra billable retries. There are still **zero role-level retries** after `length`, validation or quota errors. See https://github.com/openai/openai-python#retries and https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/reasoning for the SDK retry policy and reasoning-token behavior.
 
 Retries are not free: one logical agent run can perform multiple tool/model requests; each retry can increase billing, and the maximum role count is not a hard cap on HTTP requests or euros spent. Available trial credits are not a spending authorization. An operator must separately approve the next one-time billable execution after reviewing this change. Timeout remains 15 seconds per role; `length` is explicitly not auto-retried.
 
@@ -131,3 +131,31 @@ An independent offline lexical auditor flags a deliberately limited set of footb
 ## Broadcast voice, shadow only
 
 The Casual editorial policy prioritizes passionate, spontaneous live-play-by-play phrasing inspired by the energy of Premier League commentary, without imitating named broadcasters. Analyst is an energetic but precise co-commentator; Club is engaged but evidence-first. This is a **prompt policy change only**: model-authored text remains shadow-only, and the controlled renderer still determines the public narrative. Synthetic match events must not become fabricated goals, scorelines, crowd responses or match outcomes. No Azure inference is enabled by this change.
+
+## Foundry milestone A: offline orchestration readiness (PR #130)
+
+With no model calls or cloud credentials, `tests/test_foundry_preflight.py`
+exercises real `FoundryRoles` and `Orchestrator` using an injected,
+**in-memory fake Agent Framework client**, the existing six-event canonical
+high-press evidence fixture, and exact source event retrieval calls.
+Tests cover complete ordered `fact_order` acceptance, partial composition
+fallback, missing evidence retrieval fallback, fake timeout, sanitized usage
+accounting and shadow-only AI text. These are **offline simulations** and
+must not be described as real Foundry agent execution.
+
+`usage_counts` now accepts an authoritative aggregate SDK envelope or
+fully metered per-message rounds; a mixture of metered/unmetered messages
+returns unknown counts rather than a deceptively incomplete total.
+Analyst model-initiated tool IDs are retained when an SDK failure occurs
+after some requests. The isolated test uses **zero automatic HTTP retries**;
+an Agent Framework internal tool loop can still make multiple requests.
+
+The new `python -m pitchvolt.foundry_preflight` command validates local
+optional SDK metadata, exact Foundry project URL format, deterministic
+fixture and costs-related settings, with **no Azure authentication or
+HTTP requests**. This removes common local setup ambiguity but cannot
+prove Foundry availability, permission, quota, real tool-calling or
+narrative publishability. Milestone B stops before the separately approved
+local billable run. Continue with
+[one-time workstation commands](foundry-smoke-test.md) only after reviewing
+this branch and verifying the subscription budget.

@@ -1,6 +1,6 @@
 # PitchVolt AI — authoritative project and next-chat handover
 
-**Updated:** 18 October 2026, during issue #58 event-activity implementation (PR #125, based on post-#123 main).
+**Updated:** 18 October 2026, after PR #125 and #128 merges and during #4 Foundry milestone A/B preparation.
 **Deadline:** 27 October 2026.
 **Repository:** https://github.com/niktolis/pitchvolt-ai
 **Project board:** https://github.com/users/niktolis/projects/6
@@ -153,6 +153,40 @@ than implying full professional match-tracking support.
    test-backed mappings, architecture D2 source and rendered SVGs.
    No GitHub Codex integration in corporate org `cariad-t2` without
    explicit permission. Existing Azure resource names remain unchanged.
+
+## Active Foundry milestone — PR #130, not yet merged
+
+- Current reviewed main at branch creation:
+  `ae744fbc0c37c9003401228aee964e84b635905c` (merged #128).
+  **PR #125 is merged** (`e340e06bbe999495f3cd1a45d7a9cf66211280b4`),
+  delivering three source-event editorial activity samples and scoping
+  narrative publication to replay state. **PR #128** carries a separate
+  source-event-following pitch camera; preserve it.
+- **PR #130** https://github.com/niktolis/pitchvolt-ai/pull/130
+  branch `feat/4-foundry-offline-readiness-and-local-smoke` is the
+  Foundry milestone A/B preparation. It hardens isolated smoke retry
+  defaults to zero, avoids understating partial usage, records actual
+  source tool calls after failures, and adds an offline
+  `pitchvolt.foundry_preflight` plus fake-SDK complete two-role tests.
+  Public model inference stays hard-disabled. CI, exact PR head, reviewed
+  code, and documentation must be checked before merging.
+- **Critical stop condition:** Before the first next billable Foundry
+  inference, **STOP and request operator to run the test locally**.
+  Exact fish-shell commands and no-cloud preflight are in
+  `docs/architecture/foundry-smoke-test.md`. Do not run inference
+  through connectors/CI/this assistant. The user must inspect the
+  subscription budget, confirm actual Foundry project endpoint, run
+  one isolated command, and return sanitized logs. No retries or extra
+  cloud allocations without separate authorization.
+- One prior real smoke had 6/6 evidence lookups and both role decisions,
+  but failed strict `fact_order` (only two of four slots). **Do not**
+  describe that as completed verified publication. The source-backed
+  verifier's deterministic fallback is correct. Model-authored prose
+  remains shadow-only until an independently reviewed semantic policy.
+- Following the user test, interpret `source`, `trace`, tool IDs,
+  typed decisions, `token_usage_status` and Azure billing. No production
+  switch during this milestone. The real test can still bill multiple
+  model-tool rounds even when max role count is two.
 
 ## Next prioritized implementation after #118
 

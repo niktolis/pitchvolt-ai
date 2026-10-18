@@ -189,7 +189,10 @@ def test_full_two_agent_sdk_contract_offline(monkeypatch, composition):
         assert result.trace[-1].action == "reject"
         assert result.rejection_reason
         if composition in ("partial", "missing_tool"):
-            assert calls == ["PitchVoltAnalyst", "PitchVoltStoryteller"] if composition == "partial" else ["PitchVoltAnalyst"]
+            assert calls == (
+                ["PitchVoltAnalyst", "PitchVoltStoryteller"]
+                if composition == "partial" else ["PitchVoltAnalyst"]
+            )
         else:
             assert calls == ["PitchVoltAnalyst"]
         if composition == "timeout":

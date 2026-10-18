@@ -41,8 +41,8 @@ timeout or fallback can still incur token charges, even when the report shows no
 - Only **one** fixture insight and a fresh `FoundryRoles` instance per invocation.
 - Local ceiling: one Analyst `Agent.run` and one Storyteller `Agent.run`. If the
   Analyst fails validation, the Storyteller is not invoked. No Editorial role.
-- No automatic retries by this harness. However the SDK may internally retry or
-  perform additional model calls during a tool loop. **This is not an API-request or
+- No automatic HTTP retries by this smoke harness (effective `max_retries=0`). The SDK may still perform
+  additional model calls during its tool loop. **This is not an API-request or
   monetary hard cap.** Azure rate limits and credit balance should be checked separately.
 - Returns nonzero unless both roles, model-initiated evidence retrieval, and final
   verified publication succeeded. Reports observable SDK token counts (if available),
@@ -144,3 +144,59 @@ Async resources are closed on exit. This is only an integration milestone:
 normal SSE and replay are unchanged, no general production inference
 switch has been granted, and any more general service deployment needs
 an independently reviewed abuse-resistance and cost-control design.
+
+## Milestone A/B readiness gate — no cloud, no credentials
+
+**First, after checking out the reviewed PR branch**, install the frozen
+optional dependency set:
+
+```fish
+git fetch origin
+git switch feat/4-foundry-offline-readiness-and-local-smoke
+git pull --ff-only origin feat/4-foundry-offline-readiness-and-local-smoke
+uv sync --frozen --extra dev --extra foundry
+uv run --frozen --extra foundry bash scripts/check.sh
+uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke
+```
+
+Next, set `PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT` **locally** to the actual
+Foundry **project** endpoint (no key and no additional query parameters):
+
+```fish
+set -gx PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT 'https://YOUR-ACCOUNT.services.ai.azure.com/api/projects/YOUR-PROJECT'
+uv run --frozen --extra foundry python -m pitchvolt.foundry_preflight
+```
+
+The preflight **never initializes Azure credentials, opens a connection or
+invokes any model**. It only checks installed distributions, the locally
+validated endpoint format, fictional fixture/evidence counts, and the shared
+typed deployment/cost settings. The command does not print the endpoint
+value, secrets, or the project name. It must say
+`READY_FOR_OPERATOR_APPROVAL` and `cloud_requests_made: 0` before a
+billable test is considered. It does **not** validate tenant RBAC, availability,
+TPM quotas or Azure subscription credit balance.
+
+Operator separately checks the Azure account and cost through
+`az account show` and the Azure portal. Avoid dumping access tokens.
+Only **after** merging, explicit live-test authorization, and an independently
+checked budget, run the already supported one-time invocation:
+
+```fish
+uv run --frozen --extra foundry python -m pitchvolt.foundry_smoke \
+    --execute --acknowledge-billable-inference
+```
+
+**Stop after one result, whether PASS or FAIL.** The smoke has exactly
+one explicit `Agent.run` attempt per role, a six-observation evidence
+cap, an Analyst output cap of 4096 tokens, and **zero HTTP retries**
+for its SDK client; Agent Framework may still use several *billable*
+model/tool rounds inside one role, and client timeouts do not guarantee
+charges stop immediately. These controls **are not a hard monetary limit**.
+A failure must not be auto-retried. The smoke emits only allowlisted
+diagnostics, source IDs and validated decisions; do not share raw tokens,
+unverified generated prose or complete access credentials. If cloud usage
+accounting is unavailable, mark it *unknown* and check Azure billing.
+
+This preparation is not a production model-enable approval. Normal
+`/narratives/stream` stays deterministic and the localhost preview stays
+disabled without its separate operator gate.

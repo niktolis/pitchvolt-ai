@@ -5,3 +5,10 @@ Offline safeguards added ahead of deployment: at most one Analyst and one Storyt
 **Limits are per adapter instance, not per web user or service lifetime.** Agent Framework may execute multiple internal model requests or retries within one `Agent.run`; these guards do **not** enforce a hard aggregate API-request, monetary or input-token ceiling. The tool callable refuses excess operations, but SDK-side tool-loop behavior is not verified. A caller cancellation/timeout does not guarantee Azure stops charging for an already dispatched request. These constraints are prerequisites, not production-grade spending enforcement.
 
 No live inference is enabled. Deployment readiness candidate pair: Analyst GPT-5 mini Global Standard; Storyteller GPT-4o mini Regional Standard in Sweden Central. Before live testing review exact project endpoint, role-based Azure authorization, version-specific SDK tool registration, structured outputs, response options, token accounting and retry semantics. Deployments and inference require explicit owner approvals. Use offline fixtures, no arbitrary user input.
+
+The isolated local smoke has been hardened to `http_max_retries=0`
+(with no role-level retries). This reduces accidental duplicate billing
+but cannot bound tool-call/model-request rounds or guarantee a monetary
+ceiling. Optional installed packages and the Foundry project URL can now
+be validated without authentication via `pitchvolt.foundry_preflight`.
+Public provider remains local/deterministic.
