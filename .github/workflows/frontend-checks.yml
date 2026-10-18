@@ -36,10 +36,20 @@ jobs:
             curl -fSL --retry 1 --max-time 12 -H "accept: application/dns-json" "$endpoint" || true
             echo
           done
-          echo "=== Public HTTPS health and page ==="
-          curl -4 -fsSIL --connect-timeout 8 --max-time 20 https://pitchvolt.app/health
+          echo "=== Public GET / and GET /health, HTTP headers and browser-like body ==="
+          for url in "https://pitchvolt.app/" "https://pitchvolt.app/health"; do
+            echo "--- $url"
+            curl -4 -sSL --connect-timeout 8 --max-time 20 \
+              -D /tmp/pitchvolt-response-headers \
+              -o /tmp/pitchvolt-response-body \
+              -w 'http_code=%{http_code} remote_ip=%{remote_ip} ssl_verify=%{ssl_verify_result} size=%{size_download}\\n' \
+              "$url" || true
+            cat /tmp/pitchvolt-response-headers || true
+            head -c 500 /tmp/pitchvolt-response-body || true
+            echo
+          done
+          echo "=== Validate GET homepage and health (must both be 2xx) ==="
           curl -4 -fsSL --connect-timeout 8 --max-time 20 https://pitchvolt.app/health
-          echo
           curl -4 -fsSL --connect-timeout 8 --max-time 20 https://pitchvolt.app/ | grep -F "PitchVolt AI"
       - name: Build frontend development container
         run: docker build --target web-development -f docker/backend.Dockerfile -t pitchvolt-web:test .
