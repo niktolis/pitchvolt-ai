@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { MatchEvent } from "../api/types";
 import { ballActionAtCursor } from "./ballAction";
 
-function action(
-  kind: MatchEvent["event_type"],
-  overrides: Partial<MatchEvent> = {},
-): MatchEvent {
+function action(kind: MatchEvent["event_type"], overrides: Partial<MatchEvent> = {}): MatchEvent {
   return {
     match_id: "fictional",
     event_id: "e-23",
@@ -51,20 +48,26 @@ describe("honest event-sourced ball and possession presentation", () => {
   );
 
   it("marks an explicitly pressured pass without inventing a duel or a defender location", () => {
-    const context = ballActionAtCursor(action("pass", {
-      evidence: { under_pressure: true },
-    }), 23_000);
+    const context = ballActionAtCursor(
+      action("pass", {
+        evidence: { under_pressure: true },
+      }),
+      23_000,
+    );
     expect(context?.pressured).toBe(true);
     expect(context?.pressingPlayerId).toBeNull();
     expect(context?.location).toEqual({ x: 60, y: 20 });
   });
 
   it("never draws a ball at a pressing opponent or a turnover", () => {
-    const pressure = ballActionAtCursor(action("pressure", {
-      team_id: "ridge",
-      player_id: "ridge-4",
-      possession_team_id: "harbor",
-    }), 23_000);
+    const pressure = ballActionAtCursor(
+      action("pressure", {
+        team_id: "ridge",
+        player_id: "ridge-4",
+        possession_team_id: "harbor",
+      }),
+      23_000,
+    );
     expect(pressure?.location).toBeNull();
     expect(pressure?.pressingPlayerId).toBe("ridge-4");
     expect(pressure?.carrierId).toBeNull();
@@ -78,8 +81,9 @@ describe("honest event-sourced ball and possession presentation", () => {
     expect(ballActionAtCursor(action("carry"), 22_999)).toBeNull();
     expect(ballActionAtCursor(null, 23_000)).toBeNull();
     expect(ballActionAtCursor(action("carry"), Number.NaN)).toBeNull();
-    expect(ballActionAtCursor(action("carry", { location: { x: 999, y: 0 } }), 23_000)?.location)
-      .toBeNull();
+    expect(
+      ballActionAtCursor(action("carry", { location: { x: 999, y: 0 } }), 23_000)?.location,
+    ).toBeNull();
   });
 
   it("never interprets a pressure event as a current carrier or a ball coordinate", () => {
