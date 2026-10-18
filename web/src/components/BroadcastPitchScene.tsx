@@ -232,7 +232,11 @@ function PlayerModel({
       <Html position={[2.8, 3.5, 0]} distanceFactor={23} style={{ pointerEvents: "none" }}>
         <div className="pitch-source-actor-label">
           {actorEmblem ? (
-            <span className="source-actor-crest" style={{ backgroundColor: color ?? "#234c38" }} aria-hidden="true">
+            <span
+              className="source-actor-crest"
+              style={{ backgroundColor: color ?? "#234c38" }}
+              aria-hidden="true"
+            >
               {actorEmblem}
             </span>
           ) : null}
@@ -364,7 +368,12 @@ export function BroadcastPitchScene({
         {event && isSourcePitchPoint(event.location) && event.player_id.trim() ? (
           <>
             <Trajectory event={event} />
-            <PlayerModel event={event} color={actorColor} actorLabel={actorLabel} actorEmblem={actorEmblem} />
+            <PlayerModel
+              event={event}
+              color={actorColor}
+              actorLabel={actorLabel}
+              actorEmblem={actorEmblem}
+            />
           </>
         ) : null}
       </Canvas>
