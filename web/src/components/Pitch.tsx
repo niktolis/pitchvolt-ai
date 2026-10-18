@@ -119,7 +119,13 @@ export function Pitch({
             {ballContext?.location ? (
               <g transform={`translate(${ballContext.location.x} ${ballContext.location.y})`}>
                 <circle r="1.2" fill="#f9fff6" stroke="#203a2a" strokeWidth=".45" />
-                <circle r="1.55" fill="none" stroke="#ddffab" strokeDasharray=".6 .8" strokeWidth=".18" />
+                <circle
+                  r="1.55"
+                  fill="none"
+                  stroke="#ddffab"
+                  strokeDasharray=".6 .8"
+                  strokeWidth=".18"
+                />
               </g>
             ) : null}
             {locatedEvent ? (
@@ -176,7 +182,7 @@ export function Pitch({
           ) : null}
         </div>
 
-        <div className="pitch-ball-status" aria-label="Recorded ball action and possession">
+        <section className="pitch-ball-status" aria-label="Recorded ball action and possession">
           <strong>
             {ballContext?.location ? "Recorded ball-action origin" : "Ball position unavailable"}
           </strong>
@@ -184,7 +190,9 @@ export function Pitch({
             {ballContext
               ? `Possession team at ${clockLabel(ballContext.clockMs)}: ${displayName(ballContext.teamInPossession)}`
               : "Waiting for recorded action"}
-            {ballContext?.carrierId ? ` · Carry by ${actorLabel ?? displayName(ballContext.carrierId)}` : ""}
+            {ballContext?.carrierId
+              ? ` · Carry by ${actorLabel ?? displayName(ballContext.carrierId)}`
+              : ""}
             {ballContext?.initiatedBy && !ballContext.carrierId
               ? ` · Initiated by ${actorLabel ?? displayName(ballContext.initiatedBy)}`
               : ""}
@@ -197,7 +205,7 @@ export function Pitch({
             Event-time location only. No continuous ball position, contested possession, or flight
             path is inferred.
           </small>
-        </div>
+        </section>
       </section>
       <section className="pitch-replay-deck" aria-label="Replay timeline and controls">
         {children}
