@@ -10,9 +10,11 @@ import argparse
 import json
 import os
 from importlib import metadata
-from urllib.parse import urlsplit
 
-from pitchvolt.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
+from pitchvolt.foundry_config import (
+    NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config,
+    plausible_project_endpoint,
+)
 from pitchvolt.foundry_smoke import fixture
 
 REQUIRED_DISTRIBUTIONS = (
@@ -32,30 +34,10 @@ def evaluate(endpoint: str) -> dict[str, object]:
         except metadata.PackageNotFoundError:
             dependencies[name] = None
 
-    endpoint_ok = False
-    if endpoint:
+    endpoint_ok = plausible_project_endpoint(endpoint)
+    if endpoint_ok:
         try:
-            config = isolated_foundry_config(
-                endpoint, evidence_event_count=len(bundle.events)
-            )
-            url = urlsplit(endpoint)
-            parts = url.path.strip("/").split("/")
-            # Tutorial placeholders are syntactically valid URLs. Reject
-            # them explicitly before reporting local readiness; existence
-            # and authorization remain unverified without a cloud call.
-            example_markers = ("your-", "replace-me", "placeholder", "insert-")
-            host_label = (url.hostname or "").split(".")[0].casefold()
-            project_label = parts[2].casefold() if len(parts) == 3 else ""
-            is_placeholder = any(
-                marker in host_label or marker in project_label
-                for marker in example_markers
-            )
-            endpoint_ok = (
-                len(parts) == 3 and parts[:2] == ["api", "projects"]
-                and bool(parts[2])
-                and not is_placeholder
-                and not config.inference_explicitly_approved
-            )
+            isolated_foundry_config(endpoint, evidence_event_count=len(bundle.events))
         except ValueError:
             endpoint_ok = False
 

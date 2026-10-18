@@ -8,7 +8,10 @@ import os
 from dataclasses import asdict
 
 from pitchvolt.foundry_adapter import FoundryRoles
-from pitchvolt.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
+from pitchvolt.foundry_config import (
+    NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config,
+    plausible_project_endpoint,
+)
 from pitchvolt.intelligence import InsightKind
 from pitchvolt.narrative import Audience, InMemoryEvidenceTool
 from pitchvolt.narrative_stream import _bundles
@@ -87,6 +90,17 @@ def sanitized_failure(exc: Exception) -> dict[str, object]:
     }
 
 
+def safe_assertion_audit(audit: object) -> dict[str, object]:
+    """Only report finding codes; never expose unverified prose excerpts."""
+    findings = getattr(audit, "findings", ())
+    return {
+        "finding_count": len(findings),
+        "finding_statuses": [item.status.value for item in findings],
+        "complete_coverage": audit.complete_coverage,
+        "publishable": audit.publishable,
+    }
+
+
 def fixture(name: str | None = None):
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
     selected = name if name is not None else SMOKE_SETTINGS.scenario
@@ -148,6 +162,10 @@ async def run(argv: list[str] | None = None) -> int:
         return 0
     if not args.acknowledge_billable_inference:
         raise SystemExit("Refusing live inference: add --acknowledge-billable-inference")
+    # Reject copied documentation URLs before creating Azure credentials/clients.
+    if not plausible_project_endpoint(args.project_endpoint):
+        print("BLOCKED: set an actual Foundry project endpoint, not a template URL")
+        return 2
     config = isolated_foundry_config(
         args.project_endpoint, evidence_event_count=len(bundle.events), inference_approved=True
     )
@@ -169,7 +187,10 @@ async def run(argv: list[str] | None = None) -> int:
             print('RESULT: role orchestration returned', flush=True)
             report = {
                 "source": result.source,
-                "rejection_reason": result.rejection_reason,
+                "rejection_reason": (
+                    "deterministic_verifier_rejected" if result.rejection_reason else None
+                ),
+                "rejection_detail_redacted": result.rejection_reason is not None,
                 "model_initiated_evidence_tool_calls": list(roles.last_evidence_tool_calls),
                 "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
                 "invocations": [asdict(item) for item in roles.invocations],
@@ -181,7 +202,7 @@ async def run(argv: list[str] | None = None) -> int:
                     if roles.last_grounding_result is not None else None
                 ),
                 "assertion_audit": (
-                    asdict(roles.last_assertion_audit)
+                    safe_assertion_audit(roles.last_assertion_audit)
                     if roles.last_assertion_audit is not None else None
                 ),
                 "evidence_link_assessment": (
