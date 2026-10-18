@@ -326,3 +326,9 @@ Branch: `fix/ui-timeline-source-navigation-120` (created from main `681041c419c2
 Only `web/src/components/EventTimeline.tsx` and this UI handoff are modified; no scoreboard, backend, shared stylesheet, pitch rendering, or Azure changes. The event rail announces its purpose to assistive technology, exposes the selected event/insight through `aria-pressed`, and names each source-clock navigation action rather than making the constantly growing rail a live region. It does not add events, alter selection/cursor logic, or invent tracking.
 
 Review status: implementation proposed for manager review, not merged. Check its CI after PR creation and confirm visual parity with the approved image only after a verified production deployment; no production screenshot is claimed. PR #118 remains a separate draft changing App/Pitch/CSS and must not be merged by this UI workstream.
+
+## 11. Post-merge replay evidence integrity — proposed PR #121 (18 Oct 2026)
+
+At the current baseline, PR #118 (fixture metadata) and PR #120 (accessible source timeline) are both merged; main `78983af32d11176134d4a9b2bc1851d662b2882c`. Branch `fix/ui-evidence-cursor-integrity-121` changes only App replay navigation and this handoff. It guards late evidence fetch responses by request epoch, cursor and source insight ID. Navigating to another source event clears evidence immediately; scenario changes invalidate prior requests. The Key Moment "View Analysis" selects the most recent published insight visible to the canonical cursor, not the earliest message.
+
+No invented football facts or new API. Full test/CI evidence must be checked before review; the PR is not visual acceptance. The approved preview remains the sole reference and a manually captured production screenshot at confirmed deployed SHA remains outstanding. Never merge without explicit approval.
