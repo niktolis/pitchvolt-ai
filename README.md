@@ -78,6 +78,7 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 - [Accepted architecture decisions](docs/decisions/)
 - [Development workflow](docs/development.md)
 - [Durable next-chat handover and active implementation plan](docs/handoff-next-chat.md)
+- [Dedicated UI handoff — approved application preview and next UI chat](docs/handoff-ui-next-chat.md)
 - [Repository rename and Azure OIDC cutover](docs/repository-rename.md)
 - [Judging traceability](docs/judging-traceability.md)
 
