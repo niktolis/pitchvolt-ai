@@ -20,7 +20,7 @@ from pitchvolt.events import MatchEvent, MatchMetadata
 from pitchvolt.foundry_preview import router as foundry_preview_router
 from pitchvolt.intelligence import MatchProcessor, TacticalInsight, analyze_stream
 from pitchvolt.narrative_stream import router as narrative_router
-from pitchvolt.scenarios import SCENARIO_NAMES, scenario
+from pitchvolt.replay_dataset import SyntheticReplaySource\nfrom pitchvolt.scenarios import SCENARIO_NAMES
 
 app = FastAPI(title="PitchVolt AI", version="0.3.0")
 app.include_router(narrative_router)
@@ -75,7 +75,10 @@ def _insight_payload(insight: TacticalInsight) -> TacticalInsightPayload:
 def _load(name: str) -> tuple[MatchMetadata, list[MatchEvent]]:
     if name not in SCENARIO_NAMES:
         raise HTTPException(status_code=404, detail="Unknown scenario")
-    return scenario(name)
+    dataset = SyntheticReplaySource(name).load()
+    if dataset.canonical_match is None:
+        raise HTTPException(status_code=500, detail="Unsupported replay source")
+    return dataset.canonical_match, list(dataset.canonical_events)
 
 
 def timeline(name: str) -> list[ReplayMessage]:

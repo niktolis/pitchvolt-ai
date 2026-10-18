@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from pitchvolt.events import MatchEvent, MatchMetadata, Point, validate_stream
+from pitchvolt.extended_fixtures import EXTENDED_SCENARIO
 from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
 from pitchvolt.providers.statsbomb_historical import HistoricalFixture
 from pitchvolt.providers.statsbomb_projection import project_historical_actions
@@ -85,7 +86,7 @@ class ReplayDataset:
             if not action.event_id or action.event_id in ids or action.source_index < 1:
                 raise ValueError("Duplicate, empty or invalid replay source event identity")
             key = (action.period, action.clock_ms, action.source_index)
-            if action.period < 1 or action.clock_ms < 0 or (prior is not None and key <= prior):
+            if (\n                action.period < 1 or action.clock_ms < 0\n                or (prior is not None and key <= prior)\n                or (prior is not None and action.clock_ms < prior[1])\n            ):
                 raise ValueError("Replay events must be ordered by period, clock and source index")
             if synthetic and (not action.team_id or not action.player_id):
                 raise ValueError("Synthetic replay is missing canonical actor identity")
@@ -147,7 +148,7 @@ class SyntheticReplaySource:
         # Only the deliberately full-clock extended synthetic fixture claims
         # regulation-time coverage; legacy six-event scenarios are excerpts.
         full_clock = (
-            self.name == "extended_match" and events[0].clock_ms == 0
+            self.name == EXTENDED_SCENARIO and events[0].clock_ms == 0
             and events[-1].clock_ms == 5_400_000
         )
         manifest = FixtureManifest(
