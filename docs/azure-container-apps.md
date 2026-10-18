@@ -4,7 +4,7 @@
 
 This page documents a **non-billable deployment preparation step**, not an Azure rollout. No Container Apps environment, Container App, registry, identity, Log Analytics workspace, DNS name, or deployment has been created by this PR. Existing Foundry resources are not changed. **Do not run an `az containerapp create` or `az containerapp up` command until the resource costs and public access are reviewed and approved.**
 
-The existing production OCI image is `docker/backend.Dockerfile` target `runtime`. It combines the built React application with the non-root FastAPI process on port 8000. FastAPI serves static assets and same-origin REST/SSE. The app exposes `GET /health`. The initial cloud demo must keep `MATCHPULSE_NARRATIVE_PROVIDER=local`: no model calls are required to inspect match playback or controlled narratives.
+The existing production OCI image is `docker/backend.Dockerfile` target `runtime`. It combines the built React application with the non-root FastAPI process on port 8000. FastAPI serves static assets and same-origin REST/SSE. The app exposes `GET /health`. The initial cloud demo must keep `PITCHVOLT_NARRATIVE_PROVIDER=local`: no model calls are required to inspect match playback or controlled narratives.
 
 ## Cost and access requirements
 
@@ -23,10 +23,10 @@ First build and smoke-check the runtime image locally as described in [developme
 
 ```sh
 export AZURE_RESOURCE_GROUP="your-approved-existing-resource-group"
-export AZURE_CONTAINER_APP="matchpulse-web"
+export AZURE_CONTAINER_APP="pitchvolt-web"
 export AZURE_CONTAINER_ENV="your-approved-environment"
 export AZURE_REGION="your-approved-region"
-export AZURE_IMAGE="your-registry.azurecr.io/matchpulse@sha256:<verified-64-hex-digest>"
+export AZURE_IMAGE="your-registry.azurecr.io/pitchvolt@sha256:<verified-64-hex-digest>"
 export AZURE_REGISTRY_SERVER="your-registry.azurecr.io"
 bash scripts/aca-preflight.sh
 ```

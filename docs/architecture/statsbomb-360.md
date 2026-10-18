@@ -45,7 +45,7 @@ The existing reproducible two-file acquisition keeps its default behavior.
 For an explicitly selected 360-capable source match, use the new opt-in flag:
 
 ```sh
-uv run --frozen python -m matchpulse.statsbomb_bundle_acquire \
+uv run --frozen python -m pitchvolt.statsbomb_bundle_acquire \
   --commit 4b73468fc5b0f1950f9f66fada70ad3a4f9327cb \
   --match-id 3764440 \
   --output-dir .local-statsbomb/3764440 --include-360
@@ -76,7 +76,7 @@ objects.
 
 ## Verified source census and exact replay semantics (18 October 2026)
 
-The [immutable upstream audit](https://github.com/niktolis/matchpulse-ai/actions/runs/39077031102) verified all three original files for StatsBomb match **3764440** at commit `4b73468fc5b0f1950f9f66fada70ad3a4f9327cb`.
+The [immutable upstream audit](https://github.com/niktolis/pitchvolt-ai/actions/runs/39077031102) verified all three original files for StatsBomb match **3764440** at commit `4b73468fc5b0f1950f9f66fada70ad3a4f9327cb`.
 
 | Original file | SHA-256 |
 | --- | --- |
