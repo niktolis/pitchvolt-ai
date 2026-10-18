@@ -25,7 +25,7 @@ def test_preflight_is_offline_and_redacts_project_identity(monkeypatch, capsys):
     endpoint = "https://private-account.services.ai.azure.com/api/projects/private-project"
     assert foundry_preflight.main(["--project-endpoint", endpoint]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["status"] == "READY_FOR_OPERATOR_APPROVAL"
+    assert report["status"] == "READY_FOR_INFERENCE_GATE"
     assert report["endpoint_is_valid_project_url"]
     assert report["endpoint_existence_verified"] is False
     assert report["model_deployments_verified"] is False

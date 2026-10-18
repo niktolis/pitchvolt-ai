@@ -54,7 +54,7 @@ def test_real_installed_sdk_offline_preflight_has_no_model_access() -> None:
     from pitchvolt.foundry_preflight import evaluate
 
     report = evaluate("https://offline-fixture.services.ai.azure.com/api/projects/contract-check")
-    assert report["status"] == "READY_FOR_OPERATOR_APPROVAL"
+    assert report["status"] == "READY_FOR_INFERENCE_GATE"
     assert report["cloud_requests_made"] == 0
     assert not report["billable_inference_permitted"]
     assert report["http_max_retries"] == 0

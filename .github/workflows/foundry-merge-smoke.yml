@@ -42,6 +42,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Validate merge event and existing identity configuration
         shell: bash
@@ -50,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ -n "$MERGED_SHA" && "$(git rev-parse HEAD)" == "$MERGED_SHA" ]]
-          git fetch --no-tags --depth=1 origin main
+          git fetch --no-tags origin main
           # The merge commit must be reachable from main, not a transient PR head.
           git merge-base --is-ancestor "$MERGED_SHA" origin/main
           for name in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do

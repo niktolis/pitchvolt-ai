@@ -46,7 +46,7 @@ def evaluate(endpoint: str) -> dict[str, object]:
     ready = endpoint_ok and all(value is not None for value in dependencies.values())
     return {
         "mode": "OFFLINE_PREFLIGHT",
-        "status": "READY_FOR_OPERATOR_APPROVAL" if ready else "BLOCKED",
+        "status": "READY_FOR_INFERENCE_GATE" if ready else "BLOCKED",
         "endpoint_is_valid_project_url": endpoint_ok,
         "endpoint_value_redacted": True,
         "endpoint_existence_verified": False,
@@ -83,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     report = evaluate(args.project_endpoint)
     print(json.dumps(report, indent=2, sort_keys=True))
-    return 0 if report["status"] == "READY_FOR_OPERATOR_APPROVAL" else 2
+    return 0 if report["status"] == "READY_FOR_INFERENCE_GATE" else 2
 
 
 if __name__ == "__main__":
