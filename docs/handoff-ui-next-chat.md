@@ -409,3 +409,27 @@ revision after manager-approved merge, and same-viewport source image
 comparison. Treat PR as unaccepted until actual browser rendering is
 reviewed; don't declare screenshot fidelity from static CSS review.
 One focused PR at a time and explicit technical-manager merge approval.
+
+## 18. PR #131 deployed visual audit and follow-up viewport fix (18 Oct 2026)
+
+Current merged main: `3e787da7de4efa1eaca7041c2a0bea9e80c8b984`,
+PR #131. Deployment GitHub Actions successful. Manager supplied
+actual `image(20261018-211708).png` (2048x1153) alongside prior
+approved `Neon Football Analytics Dashboard(2).png` (1672x941).
+The stadium atmosphere and separate replay deck have improved, but
+shell width is only ~68% of the screenshot versus ~94% of the target.
+Pitch image clips into dark blank space near sideline actor positions.
+
+Branch `fix/ui-broadcast-pitch-viewport-132` addresses precisely these
+large fidelity gaps. The responsive desktop broadcast shell uses
+~93.8% viewport width (matching the reference ratio), with no old
+1568px fixed cap. `actionCameraPose` pans camera aim toward the
+interior near pitch edges so source actors remain onscreen without
+moving their source coordinates. The three-dimensional scene gains
+an extended grass apron that is physically stadium ground beyond
+the field, not invented pitch lines, players or tracked ball.
+Added boundary/viewport regression tests. All old under-pitch replay
+controls and sourced data remain intact. No media/AI/Foundry resource
+changes. Run CI, seek explicit manager approval for any merge, then
+compare with an exact-SHA deployed image at matched browser zoom and
+same aspect ratio. The current screenshot is *not* visual acceptance.

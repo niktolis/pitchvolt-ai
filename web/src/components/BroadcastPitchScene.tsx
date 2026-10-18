@@ -103,6 +103,11 @@ function Turf() {
 
   return (
     <>
+      {/* The extended grass apron is stadium infrastructure, not an inferred playable field. */}
+      <mesh position={[0, -0.13, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[FIELD_WIDTH + 180, FIELD_HEIGHT + 160]} />
+        <meshStandardMaterial map={texture} color="#a1c89a" roughness={1} />
+      </mesh>
       <mesh position={[0, -0.46, 0]} receiveShadow>
         <boxGeometry args={[FIELD_WIDTH + 2.6, 0.9, FIELD_HEIGHT + 2.6]} />
         <meshStandardMaterial color="#0b2410" roughness={1} />
