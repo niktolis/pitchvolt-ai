@@ -96,11 +96,22 @@ than implying full professional match-tracking support.
 - **PR #126 merged** as `1bcd42e57b921434ba2b23eb7e258aa3f4ddf7f9`
   after #125 began: broadcast tactical pitch top-alignment UI fix. #125
   does not change layout alignment; re-verify on fresh main before merge.
-- **PR #125 draft** https://github.com/niktolis/pitchvolt-ai/pull/125
-  is the independent #58 recorded-action activity feed. It uses exact
-  `MatchEvent` records and existing timeline selection; no additional
-  tactical insights, AI prose or player coordinates. Confirm CI and
-  technical-manager approval before merging.
+- **PR #127 merged** as `de4625e01bae9f7e830d1db7be08b19eee687553`:
+  source-validated actor heading in the 3D pitch. PR #125 does not edit
+  geometry, actor heading, or the R3F scene; preserve this work.
+- **PR #125 ready for technical-manager review**
+  https://github.com/niktolis/pitchvolt-ai/pull/125
+  is the independent #58 source-action activity feed. It uses only
+  `MatchEvent` records at/before the replay cursor, the existing event
+  selection route, source status and neutral/failure outcomes. It also
+  guards local narrative publication by scenario, audience, replay
+  restart, and published insight time; no invented actions, positions,
+  tactical insights or model text. The implementation head
+  `16d373fdbef1afa784b4af62a5ca52b25eb6e2d4`
+  passed 273 Python tests (1 skipped), 5 frontend test files,
+  TypeScript/Biome/container build and architecture diagrams. This
+  handover-only edit triggers a new CI run: verify the **latest** head
+  before merge. Explicit manager approval is mandatory.
 - General architecture and visual/UI implementation may advance in other
   project conversations. Never force-rewrite `main` or replay a stale
   branch over their changes. Compare file diffs, rebase with expected HEAD
@@ -145,7 +156,7 @@ than implying full professional match-tracking support.
 
 ## Next prioritized implementation after #118
 
-1. **Editorial action ticker #58 (PR #125 draft)** and remaining temporal
+1. **Editorial action ticker #58 (PR #125 under review)** and remaining temporal
    edge cases #63 (P0). A compact `recorded-action-feed` below the pitch
    selects the three latest **actual match_event** records at or before the
    authoritative replay cursor. It never fills gaps with fictional play,
