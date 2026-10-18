@@ -79,19 +79,24 @@ than implying full professional match-tracking support.
 
 ## Concurrent work — coordinate rather than overwrite
 
-- At this handoff update, **PR #120**:
+- **PR #120 merged** as
+  `78983af32d11176134d4a9b2bc1851d662b2882c`
+  (source-event timeline accessibility under the pitch).
   https://github.com/niktolis/pitchvolt-ai/pull/120
-  was separately active/draft in the UI conversation, adding accessible
-  source-event timeline navigation under the pitch. It edits the UI handover
-  and the timeline component, not this main handover. **Check its live state
-  before opening or merging overlapping UI changes. Do not modify its
-  branch from another chat.**
+- At this handoff update, **PR #121 remained open** in the separate UI
+  workstream: https://github.com/niktolis/pitchvolt-ai/pull/121 .
+  It addresses stale async evidence response guards and latest visible
+  insight navigation (part of issue #63). **Do not recreate that work or
+  modify its branch from another chat.** Check actual status before
+  proceeding.
 - General architecture and visual/UI implementation may advance in other
   project conversations. Never force-rewrite `main` or replay a stale
   branch over their changes. Compare file diffs, rebase with expected HEAD
   lease, preserve their features, and rerun complete checks.
-- A documentation-only recovery PR for this general handover may be open.
-  Merge such documentation only after its checks and explicit review.
+- Documentation recovery PR #122 updates this file after #118:
+  https://github.com/niktolis/pitchvolt-ai/pull/122 .
+  It is **documentation-only**. Merge only after its current-head CI and
+  explicit manager review. Check current main and mergeability again.
 
 ## Non-negotiable technical, provenance and financial rules
 
@@ -129,13 +134,14 @@ than implying full professional match-tracking support.
 
 ## Next prioritized implementation after #118
 
-1. **Temporal integrity #63 / editorial action ticker #58 (P0).** Tighten
-   all async evidence/narrative request cancellation or identity checking
-   on scenario changes, modes and seeks; never display future evidence,
-   score, substitutions or prose. Add bounded source-event activity rail
-   separate from tactical insights, replay/rewind tests and explicit
-   publication-time constraints. Do **not** duplicate the existing
-   `recentInsightsAtCursor` three-insight feed. Coordinate with PR #120.
+1. **Temporal integrity #63 / editorial action ticker #58 (P0).** First
+   check whether UI PR #121 has merged; it addresses evidence response
+   races and latest-visible-insight navigation. Continue residual cursor
+   and narrative race tests only *after* that integration. Ensure no future
+   evidence, score, substitutions or prose after seek/rewind. The bounded
+   activity ticker must reflect **actual canonical source events** and
+   remain distinct from tactical insights. Do not duplicate the existing
+   `recentInsightsAtCursor` three-insight feed.
 2. **Original fixture crest/artwork and UI target fidelity #59/#18/#61.**
    Extend only after approved visuals, real production screenshot and
    existing source identity contract. Avoid celebrity/real club
@@ -177,8 +183,8 @@ than implying full professional match-tracking support.
 **Copy into a fresh project conversation:**
 "Continue PitchVolt AI from `docs/handoff-next-chat.md` and
 `docs/handoff-ui-next-chat.md` in `niktolis/pitchvolt-ai`.
-First check actual main/CI, closed #118 (merge 7baaa658), and
-open #120 before touching UI. Finish any in-progress PR without
+First check actual main/CI, merged #118 and #120, and
+pending #121/#122 before touching UI or general handoff. Finish any in-progress PR without
 overwriting independent work; next priority #63 and #58.
 Use only source-backed positions. No paid Foundry inference or new
 Azure charges without my separate approval. Update the general
