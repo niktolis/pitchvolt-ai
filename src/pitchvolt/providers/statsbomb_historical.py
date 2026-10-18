@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from matchpulse.fixture_manifest import FixtureManifest, FixtureOrigin
+from pitchvolt.fixture_manifest import FixtureManifest, FixtureOrigin
 
 SUPPORTED_EVENT_TYPES = frozenset({"Pass", "Pressure", "Carry", "Shot", "Ball Recovery"})
 PRESENTATION_EVENT_TYPES = frozenset({

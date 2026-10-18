@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from random import Random
 
-from matchpulse.events import (
+from pitchvolt.events import (
     EventType,
     MatchEvent,
     MatchMetadata,
@@ -14,9 +14,9 @@ from matchpulse.events import (
     Provenance,
     validate_stream,
 )
-from matchpulse.extended_fixtures import EXTENDED_SCENARIO, extended_match
-from matchpulse.providers.statsbomb import StatsBombSyntheticSource, synthetic_to_statsbomb
-from matchpulse.simulation import MATCH, high_press_replay
+from pitchvolt.extended_fixtures import EXTENDED_SCENARIO, extended_match
+from pitchvolt.providers.statsbomb import StatsBombSyntheticSource, synthetic_to_statsbomb
+from pitchvolt.simulation import MATCH, high_press_replay
 
 SCENARIO_NAMES = ("high_press", "counterattack", "sustained_possession", "statsbomb_high_press", EXTENDED_SCENARIO)
 
@@ -46,7 +46,7 @@ def _scenario(
     )
     start = datetime(2026, 1, 1, tzinfo=UTC)
     provenance = Provenance(
-        generator="matchpulse-scenarios",
+        generator="pitchvolt-scenarios",
         generator_version="0.1.0",
         seed=seed,
         scenario=name,
@@ -99,7 +99,7 @@ def scenario(name: str, seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]
         }) for i, e in enumerate(native_events, 1)]
         raw = synthetic_to_statsbomb(match, retagged)
         provenance = Provenance(
-            generator="matchpulse-statsbomb-shaped", generator_version="0.1.0",
+            generator="pitchvolt-statsbomb-shaped", generator_version="0.1.0",
             seed=seed, scenario=name,
         )
         return match, StatsBombSyntheticSource(match, raw, provenance).events()

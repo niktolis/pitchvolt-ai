@@ -7,14 +7,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from matchpulse.fixture_manifest import FixtureOrigin
-from matchpulse.providers.statsbomb_360 import (
+from pitchvolt.fixture_manifest import FixtureOrigin
+from pitchvolt.providers.statsbomb_360 import (
     Historical360Bundle,
     Historical360Frame,
     Observed360Player,
 )
-from matchpulse.providers.statsbomb_historical import HistoricalFixture
-from matchpulse.providers.statsbomb_projection import historical_clock_ms
+from pitchvolt.providers.statsbomb_historical import HistoricalFixture
+from pitchvolt.providers.statsbomb_projection import historical_clock_ms
 
 
 @dataclass(frozen=True)

@@ -6,7 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from matchpulse.narrative import (
+from pitchvolt.narrative import (
     EvidenceBundle,
     NarrativeCandidate,
     NarrativeRejection,

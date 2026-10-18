@@ -10,12 +10,12 @@ import argparse
 from html import escape
 from pathlib import Path
 
-from matchpulse.providers.statsbomb_360 import load_historical_360
-from matchpulse.providers.statsbomb_360_replay import (
+from pitchvolt.providers.statsbomb_360 import load_historical_360
+from pitchvolt.providers.statsbomb_360_replay import (
     HistoricalReplayMoment,
     historical_moment_at_event,
 )
-from matchpulse.statsbomb_bundle_report import load_verified_historical_bundle
+from pitchvolt.statsbomb_bundle_report import load_verified_historical_bundle
 
 _PITCH = """<rect x="0" y="0" width="105" height="68" fill="#214a2a"/>
 <rect x="0.7" y="0.7" width="103.6" height="66.6" fill="none" stroke="white" stroke-width=".2"/>

@@ -9,8 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from matchpulse.providers.statsbomb import statsbomb_to_point
-from matchpulse.providers.statsbomb_historical import HistoricalFixture
+from pitchvolt.providers.statsbomb import statsbomb_to_point
+from pitchvolt.providers.statsbomb_historical import HistoricalFixture
 
 _PROJECTIONS = frozenset({"Pass", "Pressure", "Carry", "Shot"})
 _DESTINATIONS = {"Pass": "pass", "Carry": "carry", "Shot": "shot"}

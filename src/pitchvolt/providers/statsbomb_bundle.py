@@ -8,8 +8,8 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 
-from matchpulse.providers.statsbomb_historical import HistoricalFixture
-from matchpulse.providers.statsbomb_lineups import HistoricalLineups
+from pitchvolt.providers.statsbomb_historical import HistoricalFixture
+from pitchvolt.providers.statsbomb_lineups import HistoricalLineups
 
 
 @dataclass(frozen=True)

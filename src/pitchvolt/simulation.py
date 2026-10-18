@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from random import Random
 
-from matchpulse.events import (
+from pitchvolt.events import (
     EventType,
     MatchEvent,
     MatchMetadata,
@@ -28,7 +28,7 @@ def high_press_replay(seed: int = 42) -> list[MatchEvent]:
     rng = Random(seed)
     jitter = [rng.randint(0, 2) for _ in range(6)]
     provenance = Provenance(
-        generator="matchpulse-high-press",
+        generator="pitchvolt-high-press",
         generator_version=VERSION,
         seed=seed,
         scenario="high-press-to-shot",
