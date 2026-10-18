@@ -589,6 +589,29 @@ body::after {
   white-space: nowrap;
 }
 
+/* Expand the source-authored badge inward from its world-space anchor.
+   Unlike a centered overlay, it cannot cover the athlete's head/body. */
+.pitch-source-actor-label.anchor-left {
+  transform: translateX(-100%);
+}
+
+.pitch-source-actor-label.anchor-right {
+  transform: translateX(0);
+}
+
+.pitch-source-actor-label {
+  min-height: 39px;
+  padding: 6px 9px;
+  border-color: rgba(183, 249, 128, .76);
+  background: rgba(1, 12, 7, .95);
+  backdrop-filter: blur(5px);
+}
+
+.pitch-source-actor-label .source-actor-text strong {
+  font-size: 13px;
+  letter-spacing: .01em;
+}
+
 .source-actor-crest {
   display: grid;
   flex: 0 0 28px;
