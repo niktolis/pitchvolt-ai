@@ -61,11 +61,27 @@ export function actionCameraPose(
   focus: PitchPoint | null | undefined,
 ): { position: THREE.Vector3; target: THREE.Vector3 } {
   const located = isSourcePitchPoint(focus);
-  const target = located ? toWorld(focus) : new THREE.Vector3();
   const fullFieldDistance = broadcastCameraPosition(aspect).length();
   const distance = fullFieldDistance * (located ? 0.58 : 1);
-  const position = target.clone().addScaledVector(BROADCAST_DIRECTION, distance);
-  return { position, target };
+  if (!located) {
+    return { position: BROADCAST_DIRECTION.clone().multiplyScalar(distance), target: new THREE.Vector3() };
+  }
+
+  // Pan the *camera*, never observed player positions. Near a touchline,
+  // avoid aiming directly beyond the field and exposing half an empty scene.
+  // These margins reserve enough perspective space to keep a boundary actor visible.
+  const tangent = Math.tan(THREE.MathUtils.degToRad(40 / 2));
+  const horizontalInset = Math.min(FIELD_WIDTH / 2, distance * tangent * aspect * 0.7);
+  const verticalInset = Math.min(
+    FIELD_HEIGHT / 2,
+    (distance * tangent * 0.7) / BROADCAST_DIRECTION.y,
+  );
+  const cameraFocus = {
+    x: THREE.MathUtils.clamp(focus.x, horizontalInset, FIELD_WIDTH - horizontalInset),
+    y: THREE.MathUtils.clamp(focus.y, verticalInset, FIELD_HEIGHT - verticalInset),
+  };
+  const target = toWorld(cameraFocus);
+  return { position: target.clone().addScaledVector(BROADCAST_DIRECTION, distance), target };
 }
 
 /** The source owns the destination. A missing shot endpoint is not invented. */
