@@ -38,6 +38,7 @@ import {
   latestAtCursor,
   matchBounds,
   recentInsightsAtCursor,
+  selectedAtCursor,
 } from "./domain/replayClock";
 
 const SPEEDS = [1, 5, 25] as const;
@@ -169,7 +170,7 @@ export function App() {
 
   const replay = useMemo(() => latestAtCursor(messages, cursorMs), [messages, cursorMs]);
   const visibleMessages = replay.visible;
-  const selected = visibleMessages.find((item) => item.id === selectedId) ?? replay.selected;
+  const selected = selectedAtCursor(visibleMessages, selectedId, cursorMs, playing);
   const latestInsight = replay.insight;
   const recentInsights = useMemo(
     () => recentInsightsAtCursor(messages, cursorMs),
@@ -187,6 +188,7 @@ export function App() {
       setCursorMs(message.payload.clock_ms);
       setEvidence(null);
       setSelectedId(message.id);
+      setPlaying(false);
       if (!isTacticalInsight(message) || !scenario) {
         setEvidence(null);
         return;
@@ -219,6 +221,7 @@ export function App() {
       setSelectedId(null);
       setEvidence(null);
     }
+    setSelectedId(null);
     setPlaying(true);
     setStreamState("live");
   }, [playing, cursorMs, bounds.start, bounds.end]);
@@ -488,6 +491,7 @@ export function App() {
                 onClick={() => {
                   setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
                   setPlaying(false);
+                  setSelectedId(null);
                 }}
                 disabled={!messages.length}
                 aria-label="Back 2 seconds"
@@ -505,6 +509,7 @@ export function App() {
                   onChange={(event) => {
                     setCursorMs(Number(event.target.value));
                     setPlaying(false);
+                    setSelectedId(null);
                   }}
                   disabled={!messages.length}
                   aria-label="Seek match time"
@@ -516,6 +521,7 @@ export function App() {
                 onClick={() => {
                   setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
                   setPlaying(false);
+                  setSelectedId(null);
                 }}
                 disabled={!messages.length}
                 aria-label="Forward 2 seconds"
