@@ -172,20 +172,29 @@ function PlayerModel({
   event,
   color,
   actorLabel,
+  actorEmblem,
 }: {
   event: MatchEvent;
   color?: string;
   actorLabel?: string;
+  actorEmblem?: string;
 }) {
   const position = toWorld(event.location);
   const heading = sourceActorHeading(event.location, event.destination);
 
   return (
     <group position={position}>
-      <Html position={[2.5, 3.5, 0]} distanceFactor={24} style={{ pointerEvents: "none" }}>
+      <Html position={[2.8, 3.5, 0]} distanceFactor={23} style={{ pointerEvents: "none" }}>
         <div className="pitch-source-actor-label">
-          <strong>{actorLabel ?? displayName(event.player_id)}</strong>
-          <span>Recorded {clockLabel(event.clock_ms)}</span>
+          {actorEmblem ? (
+            <span className="source-actor-crest" style={{ backgroundColor: color ?? "#234c38" }} aria-hidden="true">
+              {actorEmblem}
+            </span>
+          ) : null}
+          <span className="source-actor-text">
+            <strong>{actorLabel ?? displayName(event.player_id)}</strong>
+            <small>Recorded {clockLabel(event.clock_ms)}</small>
+          </span>
         </div>
       </Html>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.082, 0]}>
@@ -266,10 +275,12 @@ export function BroadcastPitchScene({
   event,
   actorColor,
   actorLabel,
+  actorEmblem,
 }: {
   event: MatchEvent | null;
   actorColor?: string;
   actorLabel?: string;
+  actorEmblem?: string;
 }) {
   return (
     <div
@@ -306,7 +317,7 @@ export function BroadcastPitchScene({
         {event && isSourcePitchPoint(event.location) && event.player_id.trim() ? (
           <>
             <Trajectory event={event} />
-            <PlayerModel event={event} color={actorColor} actorLabel={actorLabel} />
+            <PlayerModel event={event} color={actorColor} actorLabel={actorLabel} actorEmblem={actorEmblem} />
           </>
         ) : null}
       </Canvas>
