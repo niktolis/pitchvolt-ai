@@ -319,3 +319,10 @@ work and avoid edits to it while #118 is open.
 > manager approval**, even when all CI is green. Do not provision or
 > charge Azure/Foundry resources. Give me a concise technical-management
 > report per PR, including risks and remaining target-vs-actual gaps.
+
+## 10. Next isolated UI PR — source-event timeline accessibility (18 October 2026)
+
+Branch: `fix/ui-timeline-source-navigation-120` (created from main `681041c419c258215e14f1512ef5e76c9200e279`).
+Only `web/src/components/EventTimeline.tsx` and this UI handoff are modified; no scoreboard, backend, shared stylesheet, pitch rendering, or Azure changes. The event rail announces its purpose to assistive technology, exposes the selected event/insight through `aria-pressed`, and names each source-clock navigation action rather than making the constantly growing rail a live region. It does not add events, alter selection/cursor logic, or invent tracking.
+
+Review status: implementation proposed for manager review, not merged. Check its CI after PR creation and confirm visual parity with the approved image only after a verified production deployment; no production screenshot is claimed. PR #118 remains a separate draft changing App/Pitch/CSS and must not be merged by this UI workstream.
