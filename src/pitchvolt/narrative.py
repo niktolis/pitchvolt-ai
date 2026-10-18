@@ -12,8 +12,8 @@ from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from matchpulse.events import MatchEvent
-from matchpulse.intelligence import InsightKind, TacticalInsight
+from pitchvolt.events import MatchEvent
+from pitchvolt.intelligence import InsightKind, TacticalInsight
 
 
 class Audience(StrEnum):

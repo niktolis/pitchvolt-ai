@@ -10,17 +10,17 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from matchpulse.events import MatchEvent, MatchMetadata
-from matchpulse.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles
-from matchpulse.intelligence import TacticalInsight, analyze_stream
-from matchpulse.narrative import (
+from pitchvolt.events import MatchEvent, MatchMetadata
+from pitchvolt.foundry_adapter import FoundryConfig, FoundryDisabled, FoundryRoles
+from pitchvolt.intelligence import TacticalInsight, analyze_stream
+from pitchvolt.narrative import (
     Audience,
     EvidenceBundle,
     InMemoryEvidenceTool,
     bounded_deterministic_fallback,
 )
-from matchpulse.scenarios import SCENARIO_NAMES, scenario
-from matchpulse.workflow import (
+from pitchvolt.scenarios import SCENARIO_NAMES, scenario
+from pitchvolt.workflow import (
     AnalystPlan,
     Angle,
     Orchestrator,
@@ -91,13 +91,13 @@ def _bundles(match: MatchMetadata, events: list[MatchEvent]) -> dict[str, Eviden
 
 def _provider_roles() -> tuple[object, object, str]:
     """Resolve roles without granting permission for paid inference."""
-    provider = os.environ.get("MATCHPULSE_NARRATIVE_PROVIDER", "local").strip().lower()
+    provider = os.environ.get("PITCHVOLT_NARRATIVE_PROVIDER", "local").strip().lower()
     if provider == "local":
         return LocalAnalyst(), LocalStoryteller(), "local_controlled"
     if provider == "foundry":
         config = FoundryConfig(
-            project_endpoint=os.environ.get("MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT", ""),
-            model_deployment=os.environ.get("MATCHPULSE_FOUNDRY_MODEL", ""),
+            project_endpoint=os.environ.get("PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT", ""),
+            model_deployment=os.environ.get("PITCHVOLT_FOUNDRY_MODEL", ""),
             inference_explicitly_approved=False,
         )
         roles = FoundryRoles(config)

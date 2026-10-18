@@ -12,7 +12,7 @@ from uuid import NAMESPACE_URL, UUID, uuid5
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from matchpulse.events import (
+from pitchvolt.events import (
     PITCH_LENGTH_M,
     PITCH_WIDTH_M,
     EventType,
@@ -273,7 +273,7 @@ class StatsBombSyntheticSource:
         validate_stream(converted, self.match)
         # Enforce stateful possession rules, not merely schema validity. No implicit
         # turnover is inferred from StatsBomb possession sequence increments.
-        from matchpulse.intelligence import MatchProcessor
+        from pitchvolt.intelligence import MatchProcessor
 
         processor = MatchProcessor(self.match)
         for converted_event in converted:
@@ -282,7 +282,7 @@ class StatsBombSyntheticSource:
 
 
 def synthetic_to_statsbomb(match: MatchMetadata, events: list[MatchEvent]) -> list[dict[str, object]]:
-    """Export original MatchPulse fiction in a StatsBomb-shaped event JSON subset.
+    """Export original PitchVolt fiction in a StatsBomb-shaped event JSON subset.
 
     These records are NOT data downloaded from Hudl/StatsBomb.
     """
@@ -302,7 +302,7 @@ def synthetic_to_statsbomb(match: MatchMetadata, events: list[MatchEvent]) -> li
         minutes, rest = divmod(rest, 60_000)
         seconds, milliseconds = divmod(rest, 1000)
         raw: dict[str, object] = {
-            "id": str(uuid5(NAMESPACE_URL, f"matchpulse-synthetic:{e.event_id}")),
+            "id": str(uuid5(NAMESPACE_URL, f"pitchvolt-synthetic:{e.event_id}")),
             "index": e.sequence,
             "period": e.period,
             "timestamp": f"{hours:02d}:{minutes:02d}:{seconds:02d}.{milliseconds:03d}",

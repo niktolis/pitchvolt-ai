@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-from matchpulse.narrative import (
+from pitchvolt.narrative import (
     EvidenceBundle,
     NarrativeCandidate,
     NarrativeRejection,

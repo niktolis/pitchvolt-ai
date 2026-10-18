@@ -9,16 +9,16 @@ import json
 from collections import Counter
 from dataclasses import dataclass
 
-from matchpulse.intelligence import analyze_stream
-from matchpulse.narrative import (
+from pitchvolt.intelligence import analyze_stream
+from pitchvolt.narrative import (
     Audience,
     Claim,
     ClaimKind,
     EvidenceBundle,
     NarrativeCandidate,
 )
-from matchpulse.scenarios import scenario
-from matchpulse.shadow_validation import ShadowStatus, assess_candidate
+from pitchvolt.scenarios import scenario
+from pitchvolt.shadow_validation import ShadowStatus, assess_candidate
 
 
 @dataclass(frozen=True)

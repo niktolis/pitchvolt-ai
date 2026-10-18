@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 
-from matchpulse.events import EventType, MatchEvent, MatchMetadata, Outcome
+from pitchvolt.events import EventType, MatchEvent, MatchMetadata, Outcome
 
 
 class InsightKind(StrEnum):

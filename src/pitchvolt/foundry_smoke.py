@@ -7,13 +7,13 @@ import json
 import os
 from dataclasses import asdict
 
-from matchpulse.foundry_adapter import FoundryRoles
-from matchpulse.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
-from matchpulse.intelligence import InsightKind
-from matchpulse.narrative import Audience, InMemoryEvidenceTool
-from matchpulse.narrative_stream import _bundles
-from matchpulse.scenarios import SCENARIO_NAMES, scenario
-from matchpulse.workflow import Orchestrator
+from pitchvolt.foundry_adapter import FoundryRoles
+from pitchvolt.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
+from pitchvolt.intelligence import InsightKind
+from pitchvolt.narrative import Audience, InMemoryEvidenceTool
+from pitchvolt.narrative_stream import _bundles
+from pitchvolt.scenarios import SCENARIO_NAMES, scenario
+from pitchvolt.workflow import Orchestrator
 
 
 def create_smoke_project_client(endpoint: str, credential: object):
@@ -118,7 +118,7 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--project-endpoint",
-        default=os.getenv("MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT", ""),
+        default=os.getenv("PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT", ""),
         help="Exact Foundry project endpoint (do not enter any API key)",
     )
     return parser.parse_args(argv)

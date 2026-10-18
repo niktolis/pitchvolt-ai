@@ -14,15 +14,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from matchpulse.events import Point
-from matchpulse.fixture_manifest import FixtureOrigin
-from matchpulse.providers.statsbomb import (
+from pitchvolt.events import Point
+from pitchvolt.fixture_manifest import FixtureOrigin
+from pitchvolt.providers.statsbomb import (
     STATSBOMB_LENGTH,
     STATSBOMB_WIDTH,
     statsbomb_to_point,
 )
-from matchpulse.providers.statsbomb_historical import HistoricalFixture
-from matchpulse.providers.statsbomb_projection import historical_clock_ms
+from pitchvolt.providers.statsbomb_historical import HistoricalFixture
+from pitchvolt.providers.statsbomb_projection import historical_clock_ms
 
 
 @dataclass(frozen=True)

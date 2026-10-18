@@ -14,13 +14,13 @@ from collections.abc import AsyncIterator
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from matchpulse.foundry_adapter import FoundryRoles
-from matchpulse.foundry_config import SMOKE_SETTINGS, isolated_foundry_config
-from matchpulse.foundry_smoke import create_smoke_project_client
-from matchpulse.narrative import Audience, InMemoryEvidenceTool, bounded_deterministic_fallback
-from matchpulse.narrative_stream import NarrativeUpdate, _bundles
-from matchpulse.scenarios import SCENARIO_NAMES, scenario
-from matchpulse.workflow import Orchestrator
+from pitchvolt.foundry_adapter import FoundryRoles
+from pitchvolt.foundry_config import SMOKE_SETTINGS, isolated_foundry_config
+from pitchvolt.foundry_smoke import create_smoke_project_client
+from pitchvolt.narrative import Audience, InMemoryEvidenceTool, bounded_deterministic_fallback
+from pitchvolt.narrative_stream import NarrativeUpdate, _bundles
+from pitchvolt.scenarios import SCENARIO_NAMES, scenario
+from pitchvolt.workflow import Orchestrator
 
 router = APIRouter()
 _attempt_lock = asyncio.Lock()
@@ -40,7 +40,7 @@ async def _one_insight(name: str, audience: Audience) -> AsyncIterator[Narrative
     project_client = None
     try:
         config = isolated_foundry_config(
-            os.environ["MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT"],
+            os.environ["PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT"],
             evidence_event_count=len(bundle.events),
             inference_approved=True,
         )
@@ -75,14 +75,14 @@ async def foundry_preview_stream(
     name: str,
     request: Request,
     audience: Audience = Audience.ANALYST,
-    inference_token: str | None = Header(default=None, alias="X-MatchPulse-Inference-Token"),
+    inference_token: str | None = Header(default=None, alias="X-PitchVolt-Inference-Token"),
 ) -> StreamingResponse:
     """One locally initiated, operator-authorized attempt per process lifetime."""
     if name not in SCENARIO_NAMES:
         raise HTTPException(status_code=404, detail="Unknown scenario")
-    configured_token = os.environ.get("MATCHPULSE_FOUNDRY_PREVIEW_TOKEN", "")
+    configured_token = os.environ.get("PITCHVOLT_FOUNDRY_PREVIEW_TOKEN", "")
     if (
-        os.environ.get("MATCHPULSE_FOUNDRY_PREVIEW_ENABLED") != "true"
+        os.environ.get("PITCHVOLT_FOUNDRY_PREVIEW_ENABLED") != "true"
         or request.client is None
         or request.client.host not in ("127.0.0.1", "::1", "testclient")
         or len(configured_token) < 32
@@ -90,7 +90,7 @@ async def foundry_preview_stream(
         or not secrets.compare_digest(inference_token, configured_token)
     ):
         raise HTTPException(status_code=403, detail="Foundry preview is not authorized")
-    if not os.environ.get("MATCHPULSE_FOUNDRY_PROJECT_ENDPOINT"):
+    if not os.environ.get("PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT"):
         raise HTTPException(status_code=503, detail="Foundry project is not configured")
     global _attempt_used
     async with _attempt_lock:
