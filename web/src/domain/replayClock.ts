@@ -68,9 +68,10 @@ export function selectedAtCursor(
   cursorMs: number,
   playing: boolean,
 ): ReplayMessage | null {
-  const latest = visible.at(-1) ?? null;
+  const published = atOrBefore(visible, cursorMs);
+  const latest = published.at(-1) ?? null;
   if (selectedId === null || playing) return latest;
   return (
-    visible.find((item) => item.id === selectedId && item.payload.clock_ms === cursorMs) ?? latest
+    published.find((item) => item.id === selectedId && item.payload.clock_ms === cursorMs) ?? latest
   );
 }
