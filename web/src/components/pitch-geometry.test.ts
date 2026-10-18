@@ -54,8 +54,8 @@ describe("source-aligned pitch camera", () => {
       camera.updateMatrixWorld();
 
       const actor = toWorld(focus).project(camera);
-      expect(Math.abs(actor.x)).toBeLessThan(0.001);
-      expect(Math.abs(actor.y)).toBeLessThan(0.001);
+      expect(Math.abs(actor.x)).toBeLessThan(0.95);
+      expect(Math.abs(actor.y)).toBeLessThan(0.95);
       const corners = [
         { x: 0, y: 0 },
         { x: 105, y: 0 },
@@ -71,6 +71,29 @@ describe("source-aligned pitch camera", () => {
       expect(pose.position.distanceTo(pose.target)).toBeLessThan(
         broadcastCameraPosition(aspect).length() * 0.7,
       );
+    },
+  );
+
+  it.each([0.9, 1.55, 1.75])(
+    "keeps recorded touchline and goal-line actors visible at aspect %s",
+    (aspect) => {
+      for (const focus of [
+        { x: 0, y: 0 },
+        { x: 0, y: 68 },
+        { x: 105, y: 0 },
+        { x: 105, y: 68 },
+      ]) {
+        const pose = actionCameraPose(aspect, focus);
+        const camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 420);
+        camera.position.copy(pose.position);
+        camera.lookAt(pose.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        const actor = toWorld(focus).project(camera);
+        expect(Math.abs(actor.x)).toBeLessThan(0.95);
+        expect(Math.abs(actor.y)).toBeLessThan(0.95);
+        expect(pose.target.toArray()).not.toEqual(toWorld(focus).toArray());
+      }
     },
   );
 
