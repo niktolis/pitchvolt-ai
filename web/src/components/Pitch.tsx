@@ -3,6 +3,7 @@ import type { MatchEvent } from "../api/types";
 import { displayName, eventLabel } from "../domain/presentation";
 import { BroadcastPitchScene } from "./BroadcastPitchScene";
 import { isSourcePitchPoint } from "./pitch-geometry";
+import "./pitch-viewport.css";
 
 interface PitchProps {
   event: MatchEvent | null;
@@ -133,6 +134,8 @@ export function Pitch({
           onClick={onTogglePlayback}
           disabled={!canReplay}
           aria-label={playing ? "Pause match replay" : "Play match replay"}
+          aria-hidden={playing}
+          tabIndex={playing ? -1 : 0}
         >
           <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
         </button>
