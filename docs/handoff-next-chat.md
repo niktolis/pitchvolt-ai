@@ -39,7 +39,7 @@
 
 ## Verified deployed baseline — check fresh main
 
-- Repository rename from MatchPulse completed. Existing legacy-named Azure
+- Repository rebrand and GitHub rename completed. Existing legacy-named Azure
   resource group `rg-matchpulse-dev`, Container App `matchpulse-web`,
   ACR `matchpulsea433a4e04d` deliberately retained. GitHub→Entra
   immutable OIDC credential `pitchvolt-main` verified.

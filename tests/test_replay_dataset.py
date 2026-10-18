@@ -158,7 +158,7 @@ def test_replay_dataset_refuses_fiction_history_mixing_and_reordered_inputs() ->
     synthetic = SyntheticReplaySource("high_press").load()
     with pytest.raises(ValueError, match="only for synthetic"):
         replace(source, canonical_match=synthetic.canonical_match)
-    with pytest.raises(ValueError, match="historical"):
+    with pytest.raises(ValueError, match="Historical"):
         replace(source, canonical_events=synthetic.canonical_events)
     with pytest.raises(ValueError, match="not verified canonical"):
         replace(source, actions=(replace(source.actions[0], player_id="20"),))
