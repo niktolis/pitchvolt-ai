@@ -147,7 +147,15 @@ function FieldMarkings() {
   return <primitive object={lines} />;
 }
 
-function PlayerModel({ event }: { event: MatchEvent }) {
+function PlayerModel({
+  event,
+  color,
+  actorLabel,
+}: {
+  event: MatchEvent;
+  color?: string;
+  actorLabel?: string;
+}) {
   const position = toWorld(event.location);
   const heading = event.destination
     ? Math.atan2(event.destination.x - event.location.x, event.destination.y - event.location.y)
@@ -157,7 +165,7 @@ function PlayerModel({ event }: { event: MatchEvent }) {
     <group position={position}>
       <Html position={[0, 3.25, 0]} center distanceFactor={24} style={{ pointerEvents: "none" }}>
         <div className="pitch-source-actor-label">
-          <strong>{displayName(event.player_id)}</strong>
+          <strong>{actorLabel ?? displayName(event.player_id)}</strong>
           <span>Recorded {clockLabel(event.clock_ms)}</span>
         </div>
       </Html>
@@ -172,7 +180,7 @@ function PlayerModel({ event }: { event: MatchEvent }) {
       <group rotation={[0, heading, 0]}>
         <mesh position={[0, 1.35, 0]} castShadow>
           <capsuleGeometry args={[0.47, 0.85, 4, 12]} />
-          <meshStandardMaterial color="#43aee7" roughness={0.78} />
+          <meshStandardMaterial color={color ?? "#43aee7"} roughness={0.78} />
         </mesh>
         <mesh position={[0, 1.64, 0.4]} castShadow>
           <boxGeometry args={[0.56, 0.18, 0.035]} />
@@ -190,7 +198,7 @@ function PlayerModel({ event }: { event: MatchEvent }) {
           <group key={side}>
             <mesh position={[side, 1.43, 0]} rotation={[0, 0, side * 0.55]} castShadow>
               <capsuleGeometry args={[0.19, 0.65, 4, 8]} />
-              <meshStandardMaterial color="#47b0e6" />
+              <meshStandardMaterial color={color ?? "#47b0e6"} />
             </mesh>
             <mesh position={[side / 2, 0.49, 0]} castShadow>
               <capsuleGeometry args={[0.19, 0.77, 4, 8]} />
@@ -235,7 +243,15 @@ function Trajectory({ event }: { event: MatchEvent }) {
   );
 }
 
-export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
+export function BroadcastPitchScene({
+  event,
+  actorColor,
+  actorLabel,
+}: {
+  event: MatchEvent | null;
+  actorColor?: string;
+  actorLabel?: string;
+}) {
   return (
     <div
       className="broadcast-webgl"
@@ -269,7 +285,7 @@ export function BroadcastPitchScene({ event }: { event: MatchEvent | null }) {
         {event && isSourcePitchPoint(event.location) && event.player_id.trim() ? (
           <>
             <Trajectory event={event} />
-            <PlayerModel event={event} />
+            <PlayerModel event={event} color={actorColor} actorLabel={actorLabel} />
           </>
         ) : null}
       </Canvas>

@@ -21,6 +21,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/matches/{name}/presentation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Match Presentation
+     * @description Read-only authored synthetic fixture facts + source-event score ledger.
+     */
+    get: operations["match_presentation_api_matches__name__presentation_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/matches/{name}/state": {
     parameters: {
       query?: never;
@@ -129,10 +149,30 @@ export interface components {
         [key: string]: number;
       };
     };
+    /** FictionalPlayer */
+    FictionalPlayer: {
+      /** Jersey Number */
+      jersey_number: number;
+      /** Player Id */
+      player_id: string;
+      /** Surname */
+      surname: string;
+    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** LineupSample */
+    LineupSample: {
+      /** Away Active */
+      away_active: string[];
+      /** Clock Ms */
+      clock_ms: number;
+      /** Event Id */
+      event_id: string;
+      /** Home Active */
+      home_active: string[];
     };
     /**
      * MatchEvent
@@ -194,6 +234,32 @@ export interface components {
        */
       pitch_width_m: number;
     };
+    /** MatchPresentation */
+    MatchPresentation: {
+      away: components["schemas"]["TeamPresentation"];
+      /**
+       * Coverage
+       * @enum {string}
+       */
+      coverage: "full_match" | "excerpt";
+      /** Goals */
+      goals: components["schemas"]["ScoreSample"][];
+      home: components["schemas"]["TeamPresentation"];
+      /** Initial Score Known */
+      initial_score_known: boolean;
+      /** Lineup Samples */
+      lineup_samples: components["schemas"]["LineupSample"][];
+      /** Match Id */
+      match_id: string;
+      /**
+       * Source
+       * @default authored_fictional
+       * @constant
+       */
+      source: "authored_fictional";
+      /** Substitutions */
+      substitutions: components["schemas"]["SubstitutionFact"][];
+    };
     /** MatchStateResponse */
     MatchStateResponse: {
       /** Events Processed */
@@ -253,6 +319,34 @@ export interface components {
       /** Scenarios */
       scenarios: string[];
     };
+    /** ScoreSample */
+    ScoreSample: {
+      /** Away */
+      away: number;
+      /** Clock Ms */
+      clock_ms: number;
+      /** Event Id */
+      event_id: string;
+      /** Home */
+      home: number;
+      /** Period */
+      period: number;
+    };
+    /** SubstitutionFact */
+    SubstitutionFact: {
+      /** Clock Ms */
+      clock_ms: number;
+      /** Event Id */
+      event_id: string;
+      /** Incoming Player Id */
+      incoming_player_id: string;
+      /** Outgoing Player Id */
+      outgoing_player_id: string;
+      /** Period */
+      period: number;
+      /** Team Id */
+      team_id: string;
+    };
     /** TacticalInsightPayload */
     TacticalInsightPayload: {
       /** Clock Ms */
@@ -267,6 +361,27 @@ export interface components {
       metrics: {
         [key: string]: number;
       };
+      /** Team Id */
+      team_id: string;
+    };
+    /** TeamPresentation */
+    TeamPresentation: {
+      /** Abbreviation */
+      abbreviation: string;
+      /** Coach */
+      coach: string;
+      /** Emblem Text */
+      emblem_text: string;
+      /** Name */
+      name: string;
+      /** Players */
+      players: components["schemas"]["FictionalPlayer"][];
+      /** Primary Color */
+      primary_color: string;
+      /** Secondary Color */
+      secondary_color: string;
+      /** Starters */
+      starters?: string[] | null;
       /** Team Id */
       team_id: string;
     };
@@ -311,6 +426,37 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["EvidenceResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  match_presentation_api_matches__name__presentation_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MatchPresentation"];
         };
       };
       /** @description Validation Error */

@@ -26,6 +26,11 @@ HALF_DURATION_MS = 2_700_000
 
 
 def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
+    # Explicit authored fictional roster changes, not inferred from touches.
+    # Function-local import avoids an import cycle: presentation consumes
+    # the finalized canonical source stream after fixture construction.
+    from pitchvolt.presentation import active_actor_id
+
     rng = Random(seed)
     match = MATCH.model_copy(update={"match_id": f"synthetic-extended-match-{seed}"})
     provenance = Provenance(
@@ -131,7 +136,10 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
                 clock_ms=clock,
                 observed_at=start + timedelta(milliseconds=clock),
                 team_id=team,
-                player_id=f"{'harbor' if team == teams[0] else 'ridge'}-{1 + position % 11}",
+                player_id=active_actor_id(
+                    f"{'harbor' if team == teams[0] else 'ridge'}-{1 + position % 11}",
+                    team, clock, name=EXTENDED_SCENARIO, match_id=match.match_id,
+                ),
                 event_type=kind,
                 outcome=outcome,
                 location=Point(x=x, y=y),

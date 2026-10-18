@@ -45,7 +45,9 @@
   immutable OIDC credential `pitchvolt-main` verified.
 - At creation of this handover update, `main` was
   `6f7536530effe1646cc8ee2beba9229d17991bdc`
-  (merged PR #115). Production GitHub run #39152080404 succeeded:
+  (merged PR #115; followed by PR #116 and #117). The branch was rebased
+  on main `bc18c9a7e7939181bd3cb08067556fc532f793d4` during #118.
+  Production GitHub run #39152080404 succeeded:
   `verify` + `build-deploy`, exact public revision and HTTP GET health.
 - Toolchains: Node **26.10.0** in `.node-version`, immutable Docker
   Node image, Node 24-native GitHub Actions, Ubuntu 24.04;
@@ -72,11 +74,34 @@
   `--full-xi-gallery` inspects them OFFLINE. Continuous 22-person rendering
   is not supported by this source.
 
-## Current active PR — validate before proceeding
+## Verified #116 merge and active presentation PR #118
+
+- PR #117 **merged** as `bc18c9a7e7939181bd3cb08067556fc532f793d4`.
+  This adds the cursor-gated three-insight feed, WebGL source-actor labels and
+  updated presentation helpers. **Preserve these changes** when integrating
+  #118; do not discard or overwrite approved UI work.
+- PR #116 **merged** as `a5dc8e09cdad6c24c4fcd2c89904a1db3de5d3ef`;
+  unified replay dataset and source-based cursor are now in `main`.
+- **PR #118 draft:** https://github.com/niktolis/pitchvolt-ai/pull/118,
+  `feat/59-60-authored-teams-score-ledger`, issues #59/#60.
+  New backend-owned synthetic `presentation.py`: authored fictional
+  team identities, 14-player rosters, known starting XI only for complete
+  `extended_match`, score ledger from explicit canonical goals only, and
+  time-ordered authored substitution events/active IDs, with 0–0 at authored
+  kickoff versus unknown score for second-half excerpts. No full-pitch
+  22-player positions are fabricated. New `/presentation` route.
+- **Before merge:** verify `scripts/check.sh`, OpenAPI snapshot and
+  generated `web/src/api/generated.ts`, frontend tests/build, D2 CI and
+  manager review. Check future seek cursor restoration for score/active
+  lineup, and no stale scenario response. Source action count remains 220.
+- The next planned bundle after #118: #63/#58 authoritative cursor and
+  continuous action ticker; then explicit approved Foundry smoke #4.
+
+## Earlier PR #116 design and rationale (already merged)
 
 - **PR #116**: https://github.com/niktolis/pitchvolt-ai/pull/116
   `feat/66-unified-replay-source-contract`, issue #66 (P0).
-  Status when authored: **draft / unmerged**.
+  Status now: **merged**; this paragraph is historical context.
 - Bounded scope: `src/pitchvolt/replay_dataset.py` introduces read-only
   `ReplayDataset`, `ReplayAction`, `ReplayCursorSnapshot`,
   `SyntheticReplaySource` and `HistoricalReplaySource`. Synthetic
@@ -95,9 +120,9 @@
   client contract integration are delivered. Do not call this first slice
   full historical interoperability.
 
-## Next prioritized implementation, after review/merge of #116
+## Prioritized implementation after the current #118
 
-1. **#59 + #60**: Provider-neutral validated match/team/roster metadata and
+1. **#59 + #60 (PR #118 in progress)**: Provider-neutral validated match/team/roster metadata and
    replay-time event-sourced score/substitutions, **without inventing
    kickoff score for excerpts**. The synthetic canonical model has no
    substitution event yet; source-derived state must be explicit. Original

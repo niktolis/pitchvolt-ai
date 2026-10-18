@@ -26,7 +26,7 @@ The event source supplies a canonical event to the `MatchProcessor`. Each accept
 
 Input validation precedes state mutation. A possession change requires an explicit turnover; otherwise the processor rejects the event. On a shot, the engine inspects a bounded causal window and may classify a pressing-assisted recovery or counterattack. [Business rules and worked examples](business-logic.md).
 
-[Unified source replay data and cursor contract](replay-data.md) · [Real-time replay API: behavior, contracts, and operational limitations](realtime-api.md) · [Live broadcast UI: behavior and contracts](frontend.md)
+[Unified source replay data and cursor contract](replay-data.md) · [Authored fictional team, score and substitution presentation](fixture-presentation.md) · [Real-time replay API: behavior, contracts, and operational limitations](realtime-api.md) · [Live broadcast UI: behavior and contracts](frontend.md)
 
 ## 4. Maintenance contract
 
