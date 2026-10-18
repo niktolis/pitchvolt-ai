@@ -38,3 +38,51 @@ The local script requires network access to the public site. Browser capture doe
 ## Exact production-revision gating
 
 Production HTML has a `pitchvolt-build` meta tag populated from the immutable Git commit at container image build time. Following `/health`, the deployment workflow polls the public `pitchvolt.app` homepage with a cache-busting query until the tag matches `GITHUB_SHA`; a stale previous revision is not considered deployed. The optional local screenshot script can check the same exact SHA with `--expected-sha`. If the public hostname fails to converge, the deployment fails visibly; **no automatic screenshot job runs**. This verifies revision identity, **not** visual fidelity or complete correctness.
+
+## 18 October 2026 — authoritative side-by-side reference freeze
+
+The technical manager re-uploaded the **approved exact target image**
+`Neon Football Analytics Dashboard(2).png` (1672 × 941 pixels) and the
+**pre-PR-#128 actual production screenshot**
+`image(20261018-202704).png` (1562 × 1266 pixels).
+These are conversation attachments, not yet copied into this repository;
+request both again if not available in a future session. The target
+remains binding even if a subsequent screenshot or implementation differs.
+
+Target: wide photographic night stadium and floodlights; dark translucent
+broadcast navigation/header; monumental team scoreboard; narrow active
+tabs; three compact similarly tall **AI Insights / Tactical Pitch /
+Key Moment** cards in the first viewport. The pitch is the largest card
+and is required to support the manager's later **source-action ROI camera**
+rather than a permanent full-pitch overhead picture. Source surnames and
+authorized fictional badges appear alongside players, not over them.
+Replay event rail and real playback controls remain visibly below the
+central pitch, but MUST NOT make the three hero cards taller by sharing
+the hero grid row. Roster/evidence tooling may appear further below.
+
+Pre-#128 actual: minimal gradient/floodlight placeholders rather than a
+real stadium, no high-fidelity crowd background; scoreboard/header too
+flat; central 3D pitch appears small within a large dark viewport;
+one source actor only; central card stretched hugely by nested activity
+timeline/transport; side cards stretch with it; sparse live insights.
+Never fabricate analyses, player/ball positions, club trademarks or
+action photographs to fill these gaps.
+
+**Visual foundation implementation** separates the center stage from
+the replay deck into two explicit grid rows, relocates the expandable
+roster below the main hero, uses consistent brand contrast and sizing,
+introduces a CC0 decorative stadium image, and improves source-action
+grass/goals/stadium lighting. The real photograph is decorative only and
+does NOT portray the fictional fixture, its crowd, or current event.
+Author/source: Mario Klassen, 2017, `Well lit soccer stadium (Unsplash)`,
+Volksparkstadion; CC0 1.0 via Wikimedia Commons:
+https://commons.wikimedia.org/wiki/File:Well_lit_soccer_stadium_(Unsplash).jpg
+The CSS references a 1280px Wikimedia thumbnail with a dark CSS fallback.
+For a mature deployment, self-host an optimized licensed derivative with
+provenance metadata instead of relying on the Wikimedia asset CDN.
+
+**Review gate:** validate the exact newly deployed Git SHA, recapture
+same viewport (recommended 1672 × 941) after browser cache refresh, then
+quantify header/sidebar/center/pitch/CTA differences. Frontend CI is not
+screenshot or pixel-match acceptance. No new external runtime AI model
+inference or fictional player tracking is approved.
