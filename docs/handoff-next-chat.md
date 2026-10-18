@@ -159,7 +159,7 @@ than implying full professional match-tracking support.
 - Operator confirmed PR #130 smoke `DRY_RUN` on macOS: no credential
   loading, zero inference; SDK versions found in local preflight.
 - Operator Python test run: **287 passed, 1 failed** because an untracked
-  old `src/matchpulse` directory exists locally. This directory is not
+  obsolete pre-rebrand Python package directory exists locally. This directory is not
   in GitHub's PR branch tree. Inspect its contents and move it to a
   backup location **outside the repo** if no local modifications are
   required. Do **not** weaken the repo branding identity gate to ignore
