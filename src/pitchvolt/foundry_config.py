@@ -31,7 +31,7 @@ class SmokeSettings:
     analyst_deployment: str = "pitchvolt-gpt5-mini"
     storyteller_deployment: str = "pitchvolt-gpt4o"
     analyst_output_tokens: int = 4096
-    http_max_retries: int = 2
+    http_max_retries: int = 0
     role_level_retries: int = 0
     timeout_seconds_per_role: float = MAX_ROLE_TIMEOUT_SECONDS
     audience: str = "analyst"

@@ -17,7 +17,7 @@ from pitchvolt.workflow import Orchestrator
 
 
 def create_smoke_project_client(endpoint: str, credential: object):
-    """Use SDK transient transport retries; no role-level replay."""
+    """Disable transparent HTTP retries in the one-shot billable smoke."""
     from azure.ai.projects.aio import AIProjectClient
 
     class ConfiguredRetryAsyncProjectClient(AIProjectClient):
@@ -140,7 +140,7 @@ async def run(argv: list[str] | None = None) -> int:
         "analyst_max_output_tokens": SMOKE_SETTINGS.analyst_output_tokens,
         "shadow_model_prose_requested": True,
         "unverified_text_display_enabled": args.show_unverified_prose,
-        "note": "SDK may retry transient HTTP failures, with extra billable requests; no hard monetary cap. No role-level replay.",
+        "note": "No SDK HTTP or role-level retries in this smoke; tool rounds may still generate multiple billable requests. This is NOT a monetary hard stop.",
     }
     print(json.dumps(description, indent=2))
     if not args.execute:

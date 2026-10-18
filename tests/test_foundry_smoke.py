@@ -10,7 +10,7 @@ def test_smoke_dry_run_requires_no_sdk_or_endpoint(capsys) -> None:
     assert asyncio.run(foundry_smoke.run([])) == 0
     output = capsys.readouterr().out
     assert '"mode": "DRY_RUN"' in output
-    assert '"http_max_retries": 2' in output
+    assert '"http_max_retries": 0' in output
     assert "No Azure credentials loaded" in output
     assert "\"analyst_max_output_tokens\": 4096" in output
 
@@ -70,7 +70,7 @@ def test_smoke_token_budget_is_isolated_from_production_defaults() -> None:
     from pitchvolt.foundry_config import SMOKE_SETTINGS, FoundryConfig, RoleSettings
 
     assert SMOKE_SETTINGS.analyst_output_tokens == 4096
-    assert SMOKE_SETTINGS.http_max_retries == 2
+    assert SMOKE_SETTINGS.http_max_retries == 0
     assert RoleSettings().max_output_tokens == 256
     assert FoundryConfig(
         project_endpoint="https://example.services.ai.azure.com/api/projects/sample",
