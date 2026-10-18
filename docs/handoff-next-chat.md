@@ -1,6 +1,6 @@
 # PitchVolt AI — authoritative project and next-chat handover
 
-**Updated:** 18 October 2026, during issue #58 event-activity implementation (PR #125).
+**Updated:** 18 October 2026, during issue #58 event-activity implementation (PR #125, based on post-#123 main).
 **Deadline:** 27 October 2026.
 **Repository:** https://github.com/niktolis/pitchvolt-ai
 **Project board:** https://github.com/users/niktolis/projects/6
@@ -90,9 +90,12 @@ than implying full professional match-tracking support.
   and Key Moment navigation targets the latest visible analysis.
 - **PR #123 merged** `c0bc2fc3eb25a412da90417f2396ab0d8aaa01d8`;
   source actor selection follows the canonical replay cursor.
-- **PR #124 was separately open** for evidence-panel source-event seeking
-  when #125 started. It edits `web/src/App.tsx` and the UI handover.
-  Recheck live GitHub status and **preserve #124** when integrating #125.
+- **PR #124 merged** as `1f92f4073c53116282aae1c38de495b2ef268f6d`
+  after #125 began: evidence panel source-event selection now follows the
+  canonical seek/inspect path. #125 preserves this change in main.
+- **PR #126 merged** as `1bcd42e57b921434ba2b23eb7e258aa3f4ddf7f9`
+  after #125 began: broadcast tactical pitch top-alignment UI fix. #125
+  does not change layout alignment; re-verify on fresh main before merge.
 - **PR #125 draft** https://github.com/niktolis/pitchvolt-ai/pull/125
   is the independent #58 recorded-action activity feed. It uses exact
   `MatchEvent` records and existing timeline selection; no additional
