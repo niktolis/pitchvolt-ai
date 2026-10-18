@@ -121,3 +121,17 @@ from Issue #129 remains mandatory; no illustrative teammates or
 ball can be inserted. After merge, compare desktop at the same aspect
 ratio and browser zoom, using a cache-busted deployment SHA and
 screenshot before claiming visual acceptance.
+
+## Event-based ball symbol is not continuous tracking (18 October 2026)
+
+A ball symbol may appear in the 3D viewport only at the source-recorded
+origin of a carry/pass/shot/goal. It is an **event-contact marker**, not a
+separately observed ball position or a promise of animation: the canonical
+record contains no ball tracking. A label gives possession **at event time**
+and identifies the carrier **only for carry**; passes and shots name the actor
+who initiated the contact. Defensive pressure/turnover events have no ball
+marker; a documented pressured pass is not automatically a tackle or duel.
+The status panel stays legible but subordinate to the approved pitch.
+Validate paused/play/rewind, explicit unknown/pressure statuses and SVG
+fallback in exact deployed snapshot after merge; source-clocking tests
+must pass before review.
