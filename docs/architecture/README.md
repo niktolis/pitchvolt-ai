@@ -8,7 +8,7 @@ This is the architectural entry point. **D2 source is authoritative**, while emb
 
 [Editable D2 source](diagrams/deployment.d2) · [Rendering and exports](rendering.md)
 
-The current implementation contains a canonical Python domain, FastAPI/SSE transport and a React/TypeScript live broadcast. Development uses Docker Compose with separate API and Vite processes; the production OCI build compiles React and serves it same-origin from the FastAPI runtime. [Development commands](../development.md). Azure Container Apps and Foundry remain intended deployment components, **not provisioned by this implementation**.
+The current implementation contains a canonical Python domain, FastAPI/SSE transport and a React/TypeScript live broadcast. Development uses Docker Compose with separate API and Vite processes; the production OCI build compiles React and serves it same-origin from the FastAPI runtime. [Development commands](../development.md). Azure Container Apps and the Foundry project already exist; this implementation reuses both without provisioning new Azure resources.
 
 ## 2. Dynamic sequence — From a football action to evidence-backed presentation
 
@@ -16,7 +16,7 @@ The current implementation contains a canonical Python domain, FastAPI/SSE trans
 
 [Editable D2 source](diagrams/streaming-sequence.d2)
 
-The event source supplies a canonical event to the `MatchProcessor`. Each accepted event updates state and can emit a deterministic tactical insight with evidence IDs. FastAPI immediately publishes canonical events and insights over SSE. React renders those facts and can retrieve the immutable evidence set for an insight. Foundry Analyst/Storyteller calls and narrative verification remain the approved **planned** slow path.
+The event source supplies a canonical event to the `MatchProcessor`. Each accepted event updates state and can emit a deterministic tactical insight with evidence IDs. FastAPI immediately publishes canonical events and insights over SSE. React renders those facts and can retrieve the immutable evidence set for an insight. Foundry Analyst/Storyteller calls have passed an isolated live six-evidence smoke with deterministic verification; production SSE still deliberately uses the locally controlled slow path.
 
 ## 3. Tactical process / state flow
 
@@ -44,6 +44,6 @@ The current `Synthetic EventSource` deployment box includes an additional **loca
 
 [Editable D2 source](diagrams/agent-orchestration.d2) · [ADR-0002 model-assignment addendum](../decisions/ADR-0002-agent-orchestration.md)
 
-The core owns every football fact. The planned Foundry Analyst uses **GPT-5 mini (Global Standard)** to examine read-only evidence, and the planned Storyteller uses **GPT-4o mini (Regional Standard)** for audience-specific structured selection. An **optional Editorial specialist has no assigned model**; it is invoked only if evidence-based evaluation supports its additional expense. The orchestrator and verifier are deterministic application components, **not extra AI agents**. The local orchestration and constrained evidence function exist, but the two-model Foundry execution, model-initiated cloud tool calls, cost measurement and Editorial invocation remain unverified or unimplemented.
+The core owns every football fact. The existing Foundry Analyst uses **GPT-5 mini (Global Standard)** to examine read-only evidence, and the existing Storyteller uses **GPT-4o (Standard)** for audience-specific structured selection. An **optional Editorial specialist has no assigned model**; it is invoked only if evidence-based evaluation supports its additional expense. The orchestrator and verifier are deterministic application components, **not extra AI agents**. The local orchestration and constrained evidence function exist, and the two-model Foundry smoke has been **live-verified on one synthetic fixture** with six evidence tool calls. SDK token counters remain unavailable and Editorial is unimplemented.
 
-The diagram indicates intended model placement, not deployed resources. Azure inference remains disabled until separately approved.
+The diagram predates existing Azure deployment and must not be treated as a current resource inventory. Production Azure inference remains disabled; the isolated Foundry CI smoke is standing-authorized on each approved PR merge only.
