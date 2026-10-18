@@ -154,6 +154,8 @@ async def run(argv: list[str] | None = None) -> int:
         "http_max_retries": SMOKE_SETTINGS.http_max_retries,
         "role_level_retries": SMOKE_SETTINGS.role_level_retries,
         "analyst_max_output_tokens": SMOKE_SETTINGS.analyst_output_tokens,
+        "storyteller_max_output_tokens": SMOKE_SETTINGS.storyteller_output_tokens,
+        "timeout_seconds_per_role": SMOKE_SETTINGS.timeout_seconds_per_role,
         "shadow_model_prose_requested": True,
         "unverified_text_display_enabled": args.show_unverified_prose,
         "note": "No SDK HTTP or role-level retries in this smoke; tool rounds may still generate multiple billable requests. This is NOT a monetary hard stop.",

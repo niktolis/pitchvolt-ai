@@ -12,7 +12,7 @@ def test_smoke_dry_run_requires_no_sdk_or_endpoint(capsys) -> None:
     assert '"mode": "DRY_RUN"' in output
     assert '"http_max_retries": 0' in output
     assert "No Azure credentials loaded" in output
-    assert "\"analyst_max_output_tokens\": 4096" in output
+    assert "\"analyst_max_output_tokens\": 6144" in output
 
 
 def test_smoke_requires_explicit_two_part_live_opt_in() -> None:
@@ -69,7 +69,11 @@ def test_unrecognized_provider_error_code_suppressed() -> None:
 def test_smoke_token_budget_is_isolated_from_production_defaults() -> None:
     from pitchvolt.foundry_config import SMOKE_SETTINGS, FoundryConfig, RoleSettings
 
-    assert SMOKE_SETTINGS.analyst_output_tokens == 4096
+    assert SMOKE_SETTINGS.analyst_output_tokens == 6144
+    assert SMOKE_SETTINGS.storyteller_output_tokens == 1024
+    assert SMOKE_SETTINGS.timeout_seconds_per_role == 30.0
+    assert SMOKE_SETTINGS.analyst_deployment == "matchpulse-gpt5-mini"
+    assert SMOKE_SETTINGS.storyteller_deployment == "matchpulse-gpt4o"
     assert SMOKE_SETTINGS.http_max_retries == 0
     assert RoleSettings().max_output_tokens == 256
     assert FoundryConfig(

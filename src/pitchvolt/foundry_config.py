@@ -50,7 +50,7 @@ DEFAULT_PROMPT_CHARACTERS = 12000
 MIN_PROMPT_CHARACTERS = 256
 MAX_PROMPT_CHARACTERS = 16000
 DEFAULT_ROLE_TIMEOUT_SECONDS = 6.0
-MAX_ROLE_TIMEOUT_SECONDS = 15.0
+MAX_ROLE_TIMEOUT_SECONDS = 30.0
 MIN_ROLE_TIMEOUT_SECONDS = 0.1
 
 
@@ -58,15 +58,16 @@ MIN_ROLE_TIMEOUT_SECONDS = 0.1
 class SmokeSettings:
     """Single reviewed, non-billable-by-default local experiment configuration."""
 
-    analyst_deployment: str = "pitchvolt-gpt5-mini"
-    storyteller_deployment: str = "pitchvolt-gpt4o"
-    analyst_output_tokens: int = 4096
+    analyst_deployment: str = "matchpulse-gpt5-mini"
+    storyteller_deployment: str = "matchpulse-gpt4o"
+    analyst_output_tokens: int = 6144
+    storyteller_output_tokens: int = 1024
     http_max_retries: int = 0
     role_level_retries: int = 0
     timeout_seconds_per_role: float = MAX_ROLE_TIMEOUT_SECONDS
     audience: str = "analyst"
     scenario: str = "high_press"
-    preview_total_timeout_seconds: float = 35.0
+    preview_total_timeout_seconds: float = 70.0
 
 
 SMOKE_SETTINGS = SmokeSettings()
@@ -169,4 +170,5 @@ def isolated_foundry_config(
         max_tool_calls_per_analyst=min(DEFAULT_TOOL_CALL_LIMIT, evidence_event_count),
         timeout_seconds_per_role=SMOKE_SETTINGS.timeout_seconds_per_role,
         analyst_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.analyst_output_tokens),
+        storyteller_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.storyteller_output_tokens),
     )
