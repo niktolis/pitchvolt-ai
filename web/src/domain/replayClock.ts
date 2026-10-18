@@ -54,8 +54,9 @@ export function recentInsightsAtCursor(
   cursorMs: number,
   limit = 3,
 ) {
+  if (!Number.isFinite(limit) || limit <= 0) return [];
   return atOrBefore(messages, cursorMs)
     .filter(isTacticalInsight)
-    .slice(-Math.max(0, limit))
+    .slice(-Math.floor(limit))
     .reverse();
 }
