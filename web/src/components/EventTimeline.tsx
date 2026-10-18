@@ -19,7 +19,7 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
         <span className="count-badge">{messages.length}</span>
       </div>
 
-      <div className="timeline" aria-live="polite">
+      <section className="timeline" aria-label="Recorded replay events">
         {messages.length === 0 ? (
           <p className="empty-state">Waiting for the deterministic SSE replay…</p>
         ) : (
@@ -30,6 +30,8 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
               return (
                 <button
                   className={`timeline-item ${selected ? "selected" : ""}`}
+                  aria-pressed={selected}
+                  aria-label={`${event.event_type.replaceAll("_", " ")} at ${clockLabel(event.clock_ms)}, ${displayName(event.team_id)}`}
                   key={message.id}
                   type="button"
                   onClick={() => onSelect(message)}
@@ -49,6 +51,8 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
               return (
                 <button
                   className={`timeline-item insight-item ${selected ? "selected" : ""}`}
+                  aria-pressed={selected}
+                  aria-label={`${message.payload.kind.replaceAll("_", " ")} insight at ${clockLabel(message.payload.clock_ms)}`}
                   key={message.id}
                   type="button"
                   onClick={() => onSelect(message)}
@@ -64,7 +68,7 @@ export function EventTimeline({ messages, selectedId, onSelect }: EventTimelineP
             return null;
           })
         )}
-      </div>
+      </section>
     </section>
   );
 }
