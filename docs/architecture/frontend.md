@@ -34,15 +34,18 @@ Development keeps clear source boundaries: Uvicorn on port 8000 and Vite on port
 
 The production OCI image compiles React and copies the static bundle into the same runtime that serves FastAPI. FastAPI mounts that bundle only after explicit API routes. This gives the hackathon one deployable container, one origin for EventSource and evidence HTTP requests, and one Container Apps workload to cost-control. React and Python remain separate source modules and build stages; this packaging choice does not couple football logic to the UI.
 
-Azure Container Apps and Microsoft Foundry are still **planned, not provisioned by this change**.
+The existing Azure Container App is deployed at [pitchvolt.app](https://pitchvolt.app)
+via GitHub OIDC; production checks verify the exact public Git commit and GET
+health endpoint. Microsoft Foundry agent integration is still gated and
+**billable inference is disabled** in the production UI.
 
 ## Current limits
 
-- Replays are short finite synthetic scenarios rather than a full match or licensed live feed.
+- Replays include short synthetic excerpts and an extended 220-event fictional 90-minute clock; neither is a licensed live football feed or continuous player tracking.
 - Audience wording is deterministic preview copy; it is not represented as AI-generated.
 - The UI has no authentication or user persistence.
 - EventSource resumes are supported by the API, but this first UI slice starts a fresh scenario when the replay controls change.
-- Sustained possession remains a negative-control fixture and emits no tactical insight.
+- Sustained possession is an implemented, deterministic tactical insight family with source-linked duration and pass metrics.
 
 The fourth scenario, `statsbomb_high_press`, validates that StatsBomb-native synthetic pitch coordinates are normalized before UI delivery: the React pitch **always** receives canonical 105 × 68m event positions and never interprets 120 × 80 provider coordinates.
 
@@ -63,3 +66,29 @@ actor**, at that original source coordinate, and explicitly labels the timestamp
 The actor is not a tracked player at intermediate times. Do not create 22-player positions,
 invent a formation, invent a ball location, or interpolate between source events. Short
 synthetic excerpts remain fictional; historical Open Data transport is outside this UI slice.
+
+## Source-recorded editorial activity (issue #58, PR #125)
+
+`web/src/domain/editorialActivity.ts` implements a small source-only projection
+for the broadcast: `recentRecordedActions(messages, cursorMs, 3)`. It filters
+only canonical `kind="match_event"` messages and checks the **same replay
+cursor** before selecting the last three in original order (newest first).
+It never pads quiet periods with fictional tackles, passes, goals,
+probabilities, possession percentages, or synthesized commentary. The label
+uses exactly the event's `team_id`, `event_type`, `outcome`, and
+`clock_ms`; neutral does not become a claimed successful action.
+
+`EventTimeline` shows these bounded observations in a compact
+**Match activity** strip above the existing recorded-event rail, directly
+under the pitch. Selecting an action reuses `onSelect`/the single
+`inspect` path. This is separate from the source-published tactical insight
+feed (#117) and from independently streamed, guarded local narrative
+updates (#121). Rewind and scenario transitions make future activity
+disappear immediately; when there is no source event yet, the strip says so.
+No API, historical import, source positions, AI model calls or dedicated
+fourth broadcast column is introduced.
+
+The approved visual reference remains the only design authority: automated
+CSS/TypeScript CI establishes correctness, **not** visual parity. Confirm
+the exact deployed commit and compare against the user's target image
+after a separately approved merge and deployment.

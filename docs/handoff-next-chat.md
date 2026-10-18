@@ -1,6 +1,6 @@
 # PitchVolt AI — authoritative project and next-chat handover
 
-**Updated:** 18 October 2026, after PR #118 production deployment.
+**Updated:** 18 October 2026, during issue #58 event-activity implementation (PR #125).
 **Deadline:** 27 October 2026.
 **Repository:** https://github.com/niktolis/pitchvolt-ai
 **Project board:** https://github.com/users/niktolis/projects/6
@@ -24,6 +24,8 @@ otherwise.
 | Source-backed multi-insight UI | PR #117, merge `bc18c9a7e7939181bd3cb08067556fc532f793d4` | Up to three *actual* published tactical insights; exact event-actor position and recorded-clock WebGL label |
 | UI-specific handover | PR #119, merge `681041c419c258215e14f1512ef5e76c9200e279` | Separate visual design target and UI technical continuity; preserves agreed layout |
 | **Fictional team/score/roster presentation** | **PR #118, merge `7baaa658ea9a1c8dfa0bafdd2e8e2161f615d1e7`** | Explicit fictional roster identity, match presentation API, goals-only score ledger, authored substitutions, seekable lineup |
+| Cursor-safe evidence navigation | PR #121, merge `b32bea425b55bef038a3a47c124802e7527e40e5` | Async evidence response guard and latest visible insight navigation |
+| Cursor-synchronized observed actor | PR #123, merge `c0bc2fc3eb25a412da90417f2396ab0d8aaa01d8` | Stop manual inspected actor from persisting after the canonical cursor advances |
 
 **Production:** Post-#118 deployment
 [GitHub run #39157651098](https://github.com/niktolis/pitchvolt-ai/actions/runs/39157651098)
@@ -83,20 +85,26 @@ than implying full professional match-tracking support.
   `78983af32d11176134d4a9b2bc1851d662b2882c`
   (source-event timeline accessibility under the pitch).
   https://github.com/niktolis/pitchvolt-ai/pull/120
-- At this handoff update, **PR #121 remained open** in the separate UI
-  workstream: https://github.com/niktolis/pitchvolt-ai/pull/121 .
-  It addresses stale async evidence response guards and latest visible
-  insight navigation (part of issue #63). **Do not recreate that work or
-  modify its branch from another chat.** Check actual status before
-  proceeding.
+- **PR #121 merged** `b32bea425b55bef038a3a47c124802e7527e40e5`;
+  stale asynchronous evidence is guarded against replay-context changes,
+  and Key Moment navigation targets the latest visible analysis.
+- **PR #123 merged** `c0bc2fc3eb25a412da90417f2396ab0d8aaa01d8`;
+  source actor selection follows the canonical replay cursor.
+- **PR #124 was separately open** for evidence-panel source-event seeking
+  when #125 started. It edits `web/src/App.tsx` and the UI handover.
+  Recheck live GitHub status and **preserve #124** when integrating #125.
+- **PR #125 draft** https://github.com/niktolis/pitchvolt-ai/pull/125
+  is the independent #58 recorded-action activity feed. It uses exact
+  `MatchEvent` records and existing timeline selection; no additional
+  tactical insights, AI prose or player coordinates. Confirm CI and
+  technical-manager approval before merging.
 - General architecture and visual/UI implementation may advance in other
   project conversations. Never force-rewrite `main` or replay a stale
   branch over their changes. Compare file diffs, rebase with expected HEAD
   lease, preserve their features, and rerun complete checks.
-- Documentation recovery PR #122 updates this file after #118:
-  https://github.com/niktolis/pitchvolt-ai/pull/122 .
-  It is **documentation-only**. Merge only after its current-head CI and
-  explicit manager review. Check current main and mergeability again.
+- **PR #122 merged** `7f7e4f1794d04e9dc53f34e2c013e726fd13e295`;
+  the general handover was synchronized after #118 and #120.
+  No code or Azure configuration changed in that PR.
 
 ## Non-negotiable technical, provenance and financial rules
 
@@ -134,14 +142,15 @@ than implying full professional match-tracking support.
 
 ## Next prioritized implementation after #118
 
-1. **Temporal integrity #63 / editorial action ticker #58 (P0).** First
-   check whether UI PR #121 has merged; it addresses evidence response
-   races and latest-visible-insight navigation. Continue residual cursor
-   and narrative race tests only *after* that integration. Ensure no future
-   evidence, score, substitutions or prose after seek/rewind. The bounded
-   activity ticker must reflect **actual canonical source events** and
-   remain distinct from tactical insights. Do not duplicate the existing
-   `recentInsightsAtCursor` three-insight feed.
+1. **Editorial action ticker #58 (PR #125 draft)** and remaining temporal
+   edge cases #63 (P0). A compact `recorded-action-feed` below the pitch
+   selects the three latest **actual match_event** records at or before the
+   authoritative replay cursor. It never fills gaps with fictional play,
+   creates a tactical insight, or derives a ball/player trajectory. The
+   existing `recentInsightsAtCursor` three-insight feed is separate.
+   Confirm PR #124 evidence navigation and UI screenshot before merging
+   overlapping work. After #125, test stream completion, audience switches
+   and long replay seeking end-to-end.
 2. **Original fixture crest/artwork and UI target fidelity #59/#18/#61.**
    Extend only after approved visuals, real production screenshot and
    existing source identity contract. Avoid celebrity/real club
@@ -166,6 +175,7 @@ than implying full professional match-tracking support.
   `replay_dataset.py`, `presentation.py`, `extended_fixtures.py`,
   `providers/statsbomb_historical.py`, `providers/statsbomb_360.py`.
 - Browser: `web/src/App.tsx`, `web/src/domain/replayClock.ts`,
+  `web/src/domain/editorialActivity.ts`,
   `web/src/domain/fixturePresentation.ts`, `web/src/components/Pitch.tsx`,
   `BroadcastPitchScene.tsx`, `EventTimeline.tsx`.
 - Docs: `docs/architecture/README.md`,
@@ -183,9 +193,10 @@ than implying full professional match-tracking support.
 **Copy into a fresh project conversation:**
 "Continue PitchVolt AI from `docs/handoff-next-chat.md` and
 `docs/handoff-ui-next-chat.md` in `niktolis/pitchvolt-ai`.
-First check actual main/CI, merged #118 and #120, and
-pending #121/#122 before touching UI or general handoff. Finish any in-progress PR without
-overwriting independent work; next priority #63 and #58.
+First check actual main/CI, merged #118/#120/#121/#122/#123,
+and open #124/#125 before touching UI or general handoff.
+Finish PR #125 (#58) without overwriting PR #124, then
+remaining #63 temporal tests and Foundry offline readiness.
 Use only source-backed positions. No paid Foundry inference or new
 Azure charges without my separate approval. Update the general
 handover with every merged delivery, run complete tests, and wait
