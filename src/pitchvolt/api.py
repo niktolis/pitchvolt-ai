@@ -20,7 +20,8 @@ from pitchvolt.events import MatchEvent, MatchMetadata
 from pitchvolt.foundry_preview import router as foundry_preview_router
 from pitchvolt.intelligence import MatchProcessor, TacticalInsight, analyze_stream
 from pitchvolt.narrative_stream import router as narrative_router
-from pitchvolt.replay_dataset import SyntheticReplaySource\nfrom pitchvolt.scenarios import SCENARIO_NAMES
+from pitchvolt.replay_dataset import SyntheticReplaySource
+from pitchvolt.scenarios import SCENARIO_NAMES
 
 app = FastAPI(title="PitchVolt AI", version="0.3.0")
 app.include_router(narrative_router)

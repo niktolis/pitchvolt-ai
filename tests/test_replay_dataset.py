@@ -70,10 +70,9 @@ def test_cursor_exactness_rewind_tied_clocks_and_negative_checks() -> None:
     with pytest.raises(ValueError, match="nonnegative"):
         data.at_cursor(1.3)  # type: ignore[arg-type]
 
-    # Same-clock observations use original source index, not invented motion.
-    twin = replace(a1, clock_ms=a0.clock_ms)
-    tied = replace(data, actions=(a0, twin))
-    assert tied.at_cursor(a0.clock_ms).latest_event == twin
+    # Modifying the clock of a canonical synthetic source action is rejected.
+    with pytest.raises(ValueError, match="diverged"):
+        replace(data, actions=(a0, replace(a1, clock_ms=a0.clock_ms), *data.actions[2:]))
 
 
 def test_legacy_excerpt_does_not_invent_kickoff_or_score() -> None:
@@ -149,6 +148,9 @@ def test_historical_dataset_keeps_names_and_omission_counts_without_claiming_ids
     assert data.at_cursor(1_250).observation_at_cursor
     assert data.at_cursor(2_500).latest_event == first
     assert not data.at_cursor(2_500).observation_at_cursor
+    # Same-clock source observations resolve by original source event index.
+    tied = replace(data, actions=(first, replace(second, clock_ms=first.clock_ms)))
+    assert tied.at_cursor(first.clock_ms).latest_event.event_id == "shot-1"
 
 
 def test_replay_dataset_refuses_fiction_history_mixing_and_reordered_inputs() -> None:
@@ -176,7 +178,10 @@ def test_source_coverage_does_not_implicitly_authorize_historical_api_or_ai() ->
     source = historical_source_fixture()
     from pitchvolt.api import _load
 
-    with pytest.raises(Exception):  # noqa: B017 - HTTPException check below
+    from fastapi import HTTPException
+
+    with pytest.raises(HTTPException) as exc:
         _load(source.manifest.match_id)
+    assert exc.value.status_code == 404
     assert TestClient(app).get("/api/matches/123/timeline").status_code == 404
     assert SyntheticReplaySource("high_press").load().manifest.origin != source.manifest.origin

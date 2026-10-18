@@ -78,6 +78,13 @@ class ReplayDataset:
             raise ValueError("Historical replay must not fabricate synthetic canonical events")
         if len(self.actions) > self.manifest.event_count:
             raise ValueError("Replay projection has more actions than original events")
+        if synthetic and self.omitted_by_type:
+            raise ValueError("Canonical synthetic replay cannot omit original events")
+        if not synthetic and (
+            len(self.actions) + sum(n for _, n in self.omitted_by_type)
+            != self.manifest.event_count
+        ):
+            raise ValueError("Historical projection must disclose all omitted events")
         if any(n <= 0 for _, n in self.omitted_by_type):
             raise ValueError("Omission counts must be positive")
         prior: tuple[int, int, int] | None = None
@@ -94,6 +101,20 @@ class ReplayDataset:
                 raise ValueError("Historical display names are not verified canonical IDs")
             ids.add(action.event_id)
             prior = key
+        if synthetic:
+            for action, event in zip(self.actions, self.canonical_events, strict=True):
+                if (
+                    action.event_id != event.event_id
+                    or action.source_index != event.sequence
+                    or action.period != event.period
+                    or action.clock_ms != event.clock_ms
+                    or action.kind != event.event_type.value
+                    or action.location != event.location
+                    or action.destination != event.destination
+                    or action.team_id != event.team_id
+                    or action.player_id != event.player_id
+                ):
+                    raise ValueError("Synthetic replay projection diverged from canonical event")
         object.__setattr__(self, "_clock_index", tuple(a.clock_ms for a in self.actions))
 
     @property
@@ -114,7 +135,7 @@ class ReplayDataset:
         No samples exist before the first source action. A later action at the
         same cursor timestamp is selected by its original source index.
         """
-        if not isinstance(cursor_ms, int) or cursor_ms < 0:
+        if type(cursor_ms) is not int or cursor_ms < 0:
             raise ValueError("Replay cursor must be a nonnegative integer millisecond clock")
         count = bisect_right(self._clock_index, cursor_ms)
         latest = self.actions[count - 1] if count else None
