@@ -362,3 +362,50 @@ Owner feedback after merged PR #127 (main de4625e01bae9f7e830d1db7be08b19eee6875
 Priority: fulfill these before further minor UI polish. This feedback is an additional binding acceptance requirement alongside the single approved Application Preview screenshot. Do not confuse visual goals with currently available tracking data.
 
 First bounded delivery: branch feat/ui-action-following-pitch-camera implements zoomed valid-source camera, smooth editorial pan, taller pitch viewport, offset actor label and unobtrusive central play overlay, with camera provenance tests. It does **not** manufacture multiple actors or ball tracking; emblem-tag wiring and selective ROI actor rendering require subsequent integrated source-data work. Editorial PR #125 remains separately open and edits App/Timeline/global CSS: avoid overlapping changes. Exact-SHA deployed screenshot still required for visual sign-off. All CI must pass; no merge without explicit approval, no Azure/Foundry paid resources.
+
+## 17. Authoritative image comparison / broadcast realism milestone (18 Oct 2026)
+
+The manager uploaded two explicit screenshots to the current project UI chat:
+**approved target** `Neon Football Analytics Dashboard(2).png` (1672 x 941);
+**pre-#128 actual** `image(20261018-202704).png` (1562 x 1266).
+The images are NOT verified as tracked repository assets; future chats must
+request reattachment for pixel assessment. The target is the binding
+screenshot, with the already approved action-following larger ROI pitch,
+source-backed actors and surname+emblem labels as explicit adaptations.
+
+Architectural diagnosis: actual UI had its timeline and transport inside
+the same central `pitch-panel`, forcing the three-column row to stretch,
+while the approved hero has three similarly sized cards. Significant
+differences also include missing stadium photography/lighting, compact
+hero spacing and header/icon hierarchy, flat scoreboard, oversized empty
+AI Insights section, and poor pitch realism.
+
+PR branch `feat/ui-preview-fidelity-stage` (based on #128 merged SHA
+`ae744fbc0c37c9003401228aee964e84b635905c`) is a coherent stage:
+- `Pitch.tsx` emits a main hero pitch card and sibling under-pitch
+  `pitch-replay-deck` containing unchanged real timeline and controls.
+- `App.tsx` relocates optional fixture roster below primary stage,
+  presents up to 3 cursor-safe real recorded match actions when tactical
+  insights are sparse, and passes source-authored team emblem to the
+  correctly labelled recorded actor.
+- A single dedicated `web/src/brand-preview.css` is the authoritative
+  layer on top of older accumulated CSS. It provides photo-backed
+  stadium ambience, functional broadcast three-card proportions,
+  responsive stacking, scoreboard/nav, stronger accents and depth.
+- Source visual backdrop: Wikimedia Commons CC0 `Well lit soccer stadium
+  (Unsplash)` by Mario Klassen, 2017. This is decoration and DOES NOT
+  assert the fictional match happened there. The Wikimedia image is
+  currently a remote thumbnail, with background CSS fallback;
+  self-host optimized CC0 derivative before final public-scale deployment.
+- `BroadcastPitchScene.tsx` improves seeded grass texture, physically
+  based lighting, and fixed goalpost/net geometry; this infrastructure
+  has no football-event position inference.
+- Existing #128 ROI camera remains in place. Selective attacking and
+  defending players still require source-aligned freeze-frame ingest as
+  specified in Issue #129; no invented 22-player placements or paths.
+
+Next reviewer must verify new frontend/Python/D2 CI, exact production
+revision after manager-approved merge, and same-viewport source image
+comparison. Treat PR as unaccepted until actual browser rendering is
+reviewed; don't declare screenshot fidelity from static CSS review.
+One focused PR at a time and explicit technical-manager merge approval.
