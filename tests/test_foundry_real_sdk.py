@@ -45,3 +45,14 @@ def test_actual_foundry_sdk_uses_async_bounded_retry_clients_for_both_roles() ->
             await credential.close()
 
     asyncio.run(exercise())
+
+
+def test_real_installed_sdk_offline_preflight_has_no_model_access() -> None:
+    from pitchvolt.foundry_preflight import evaluate
+
+    report = evaluate("https://example.services.ai.azure.com/api/projects/offline")
+    assert report["status"] == "READY_FOR_OPERATOR_APPROVAL"
+    assert report["cloud_requests_made"] == 0
+    assert not report["billable_inference_permitted"]
+    assert report["http_max_retries"] == 0
+    assert report["endpoint_value_redacted"]

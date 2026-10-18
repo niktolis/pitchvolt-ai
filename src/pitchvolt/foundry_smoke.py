@@ -233,6 +233,14 @@ async def run(argv: list[str] | None = None) -> int:
         except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
             # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
             report = sanitized_failure(exc)
+            # The recorded evidence IDs are trusted synthetic fixture IDs,
+            # never raw tool arguments or model-generated response text.
+            report["model_initiated_evidence_tool_calls"] = list(
+                roles.last_evidence_tool_calls
+            )
+            report["expected_evidence_event_ids"] = list(
+                bundle.insight.evidence_event_ids
+            )
             report["last_attempted_role"] = roles.last_attempted_role
             report["attempted_role_count"] = sum(roles._attempts.values())
             report["completed_roles"] = [item.role for item in roles.invocations]
