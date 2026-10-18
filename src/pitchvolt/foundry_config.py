@@ -28,8 +28,8 @@ MIN_ROLE_TIMEOUT_SECONDS = 0.1
 class SmokeSettings:
     """Single reviewed, non-billable-by-default local experiment configuration."""
 
-    analyst_deployment: str = "matchpulse-gpt5-mini"
-    storyteller_deployment: str = "matchpulse-gpt4o"
+    analyst_deployment: str = "pitchvolt-gpt5-mini"
+    storyteller_deployment: str = "pitchvolt-gpt4o"
     analyst_output_tokens: int = 4096
     http_max_retries: int = 2
     role_level_retries: int = 0

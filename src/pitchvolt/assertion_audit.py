@@ -9,7 +9,7 @@ import re
 from dataclasses import dataclass
 from enum import StrEnum
 
-from matchpulse.narrative import EvidenceBundle, NarrativeCandidate
+from pitchvolt.narrative import EvidenceBundle, NarrativeCandidate
 
 
 class AssertionStatus(StrEnum):

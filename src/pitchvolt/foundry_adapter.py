@@ -10,19 +10,19 @@ import asyncio
 from dataclasses import dataclass
 from time import perf_counter
 
-from matchpulse.agent_policies import (
+from pitchvolt.agent_policies import (
     ANALYST_INSTRUCTIONS,
     EDITORIAL_INSTRUCTIONS,
     STORYTELLER_INSTRUCTIONS,
     audience_instruction,
 )
-from matchpulse.assertion_audit import AssertionAudit, audit_assertions
-from matchpulse.evidence_links import LinkAssessment, assess_evidence_links
-from matchpulse.foundry_config import FoundryConfig, RoleSettings
-from matchpulse.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
-from matchpulse.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
-from matchpulse.shadow_validation import ShadowAssessment, assess_candidate
-from matchpulse.workflow import AnalystPlan, FactSlot, StorytellerSelection
+from pitchvolt.assertion_audit import AssertionAudit, audit_assertions
+from pitchvolt.evidence_links import LinkAssessment, assess_evidence_links
+from pitchvolt.foundry_config import FoundryConfig, RoleSettings
+from pitchvolt.grounded_prose import GroundingResult, approved_phrasings, assess_grounded_prose
+from pitchvolt.narrative import Audience, Claim, ClaimKind, EvidenceBundle, NarrativeCandidate
+from pitchvolt.shadow_validation import ShadowAssessment, assess_candidate
+from pitchvolt.workflow import AnalystPlan, FactSlot, StorytellerSelection
 
 __all__ = ["FoundryConfig", "FoundryDisabled", "FoundryRoles", "RoleInvocation", "RoleSettings"]
 
@@ -152,7 +152,7 @@ class FoundryRoles:
         self._agents = {
             role: Agent(
                 client=clients[role],
-                name=f"MatchPulse{role.title()}",
+                name=f"PitchVolt{role.title()}",
                 instructions=instructions[role],
             )
             for role in clients

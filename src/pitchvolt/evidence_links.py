@@ -11,7 +11,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from matchpulse.narrative import (
+from pitchvolt.narrative import (
     Claim,
     EvidenceBundle,
     NarrativeCandidate,

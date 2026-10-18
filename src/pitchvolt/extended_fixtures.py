@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from random import Random
 
-from matchpulse.events import (
+from pitchvolt.events import (
     EventType,
     MatchEvent,
     MatchMetadata,
@@ -17,8 +17,8 @@ from matchpulse.events import (
     Provenance,
     validate_stream,
 )
-from matchpulse.simulation import MATCH
-from matchpulse.statsbomb_reference import calibrated_action_quotas
+from pitchvolt.simulation import MATCH
+from pitchvolt.statsbomb_reference import calibrated_action_quotas
 
 EXTENDED_SCENARIO = "extended_match"
 EVENTS_PER_HALF = 110
@@ -29,7 +29,7 @@ def extended_match(seed: int = 42) -> tuple[MatchMetadata, list[MatchEvent]]:
     rng = Random(seed)
     match = MATCH.model_copy(update={"match_id": f"synthetic-extended-match-{seed}"})
     provenance = Provenance(
-        generator="matchpulse-extended-fixture",
+        generator="pitchvolt-extended-fixture",
         generator_version="0.1.0",
         seed=seed,
         scenario=EXTENDED_SCENARIO,

@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 class FixtureOrigin(StrEnum):
     STATSBOMB_OPEN_DATA = "statsbomb_open_data"
-    MATCHPULSE_SYNTHETIC = "matchpulse_synthetic"
+    PITCHVOLT_SYNTHETIC = "pitchvolt_synthetic"
 
 
 class FixtureManifest(BaseModel):

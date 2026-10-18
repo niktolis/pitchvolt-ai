@@ -16,13 +16,13 @@ from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from matchpulse.events import MatchEvent, MatchMetadata
-from matchpulse.foundry_preview import router as foundry_preview_router
-from matchpulse.intelligence import MatchProcessor, TacticalInsight, analyze_stream
-from matchpulse.narrative_stream import router as narrative_router
-from matchpulse.scenarios import SCENARIO_NAMES, scenario
+from pitchvolt.events import MatchEvent, MatchMetadata
+from pitchvolt.foundry_preview import router as foundry_preview_router
+from pitchvolt.intelligence import MatchProcessor, TacticalInsight, analyze_stream
+from pitchvolt.narrative_stream import router as narrative_router
+from pitchvolt.scenarios import SCENARIO_NAMES, scenario
 
-app = FastAPI(title="MatchPulse AI", version="0.3.0")
+app = FastAPI(title="PitchVolt AI", version="0.3.0")
 app.include_router(narrative_router)
 app.include_router(foundry_preview_router)
 
@@ -195,6 +195,6 @@ async def stream(
     )
 
 
-_web_dist = Path(os.environ.get("MATCHPULSE_WEB_DIST", "web/dist"))
+_web_dist = Path(os.environ.get("PITCHVOLT_WEB_DIST", "web/dist"))
 if _web_dist.is_dir():
-    app.mount("/", StaticFiles(directory=str(_web_dist), html=True), name="matchpulse-web")
+    app.mount("/", StaticFiles(directory=str(_web_dist), html=True), name="pitchvolt-web")
