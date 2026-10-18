@@ -14,6 +14,7 @@ import {
   isSourcePitchPoint,
   type PitchPoint,
   sourceArrow,
+  sourceActorHeading,
   toWorld,
 } from "./pitch-geometry";
 
@@ -157,9 +158,7 @@ function PlayerModel({
   actorLabel?: string;
 }) {
   const position = toWorld(event.location);
-  const heading = event.destination
-    ? Math.atan2(event.destination.x - event.location.x, event.destination.y - event.location.y)
-    : 0;
+  const heading = sourceActorHeading(event.location, event.destination);
 
   return (
     <group position={position}>
