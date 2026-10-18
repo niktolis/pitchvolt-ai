@@ -595,7 +595,7 @@ export function App() {
                         (candidate) =>
                           isMatchEvent(candidate) && candidate.payload.event_id === event.event_id,
                       );
-                      if (message) setSelectedId(message.id);
+                      if (message) void inspect(message);
                     }}
                   >
                     <span>{clockLabel(event.clock_ms)}</span>
