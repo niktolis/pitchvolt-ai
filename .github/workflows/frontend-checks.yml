@@ -5,20 +5,22 @@ on:
     branches: [main]
 jobs:
   web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v10.3.0
         with:
           version: '0.10.0'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '24.22.0'
+          node-version-file: .node-version
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - name: Verify latest stable Node runtime
+        run: test "$(node --version)" = "v$(cat .node-version)"
       - name: Install exact backend dependencies
         run: uv sync --frozen --extra dev
       - name: Install exact frontend dependencies

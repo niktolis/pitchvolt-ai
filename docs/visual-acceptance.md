@@ -4,11 +4,18 @@
 
 The **Application Preview** panel in the approved PitchVolt AI brand guide is the sole visual target. Do not substitute alternative mockups or reinterpret its colors, navigation, scoreboard, panel proportions, pitch, typography, branding, or artwork without explicit approval.
 
-## Automated deployed-browser evidence
+## Manual, opt-in deployed-browser evidence
 
-After the existing Azure deployment and health check complete, the GitHub Actions **Deploy Azure Container App** workflow runs the independent `visual-evidence` job. It opens **https://pitchvolt.app/** in headless Chromium, checks that the broadcast grid and pitch exist, waits briefly for font loading and replay startup, and captures full-page screenshots at **1600 × 900** desktop and **390 × 844** mobile viewports. Download the `pitchvolt-live-visual-<commit>` artifact from the Actions run.
+Browser screenshots are intentionally **not** captured by any GitHub Actions
+deployment job. The prior `visual-evidence` workflow job was removed because
+an automatic screenshot immediately after rollout did not provide useful
+review of the actual visible page. It added expensive browser installation
+and runner time with no reliable human-approved visual comparison.
 
-These are **real live-page screenshots**, not mockups. They are intentionally *not* automated pixel-perfect pass/fail checks: live SSE, fonts, and latency make screenshots non-deterministic. An artifact's existence does not establish approval or compliance with the brand preview.
+Capture desktop and mobile only when an operator chooses to validate a
+verified deployed release using the existing local script below. Keep
+the approved Application Preview image as the sole visual target, and do not
+declare acceptance from an artifact's existence alone.
 
 ## Review checklist
 
@@ -26,8 +33,8 @@ python -m playwright install chromium
 python scripts/capture-live-visual.py --url https://pitchvolt.app/ --output artifacts/visual
 ```
 
-The local script requires network access to the public site. Browser capture doesn't mutate Azure resources or use Foundry inference. The live-domain workflow requires the Azure managed certificate and DNS binding to remain valid.
+The local script requires network access to the public site. Browser capture doesn't mutate Azure resources or use Foundry inference. The deployed site still requires its Azure managed certificate and DNS binding.
 
 ## Exact production-revision gating
 
-Production HTML has a `pitchvolt-build` meta tag populated from the immutable Git commit at container image build time. Following `/health`, the deployment workflow polls the public `pitchvolt.app` homepage with a cache-busting query until the tag matches `GITHUB_SHA`; a stale previous revision is not considered deployed. Browser screenshot capture independently checks the same exact SHA before writing evidence. If the public hostname fails to converge, the deployment fails visibly and no screenshot job runs. This verifies revision identity, **not** visual fidelity or complete correctness.
+Production HTML has a `pitchvolt-build` meta tag populated from the immutable Git commit at container image build time. Following `/health`, the deployment workflow polls the public `pitchvolt.app` homepage with a cache-busting query until the tag matches `GITHUB_SHA`; a stale previous revision is not considered deployed. The optional local screenshot script can check the same exact SHA with `--expected-sha`. If the public hostname fails to converge, the deployment fails visibly; **no automatic screenshot job runs**. This verifies revision identity, **not** visual fidelity or complete correctness.
