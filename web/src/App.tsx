@@ -266,7 +266,7 @@ export function App() {
 
           {recentInsights.length > 0 ? (
             <>
-              <div className="verified-insight-feed" role="group" aria-label="Published tactical insights">
+              <div className="verified-insight-feed">
                 {recentInsights.map((message) => (
                   <button
                     className="verified-insight-row"
@@ -275,8 +275,8 @@ export function App() {
                     onClick={() => void inspect(message)}
                   >
                     <span className="verified-insight-icon" aria-hidden="true">
-                        ◈
-                      </span>
+                      ◈
+                    </span>
                     <span className="verified-insight-copy">
                       <strong>
                         {message.payload.kind.replaceAll("_", " ")} ·{" "}
