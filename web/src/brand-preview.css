@@ -370,6 +370,29 @@ body::after {
   background: radial-gradient(ellipse, #174a24, #04140b);
 }
 
+.pitch-ball-status {
+  display: grid;
+  gap: 4px;
+  margin: 7px 5px 1px;
+  padding: 7px 10px;
+  border: 1px solid rgba(181, 231, 119, .18);
+  border-radius: 7px;
+  background: rgba(4, 23, 11, .86);
+  color: #d4ebcf;
+  font-size: 10px;
+  line-height: 1.38;
+}
+
+.pitch-ball-status strong {
+  color: var(--pv-stage-lime);
+  font-size: 11px;
+}
+
+.pitch-ball-status small {
+  color: #91aa94;
+  font-size: 9px;
+}
+
 .pitch-panel .pitch-note {
   margin: 8px 8px 0;
   padding: 0;
