@@ -6,6 +6,7 @@ import {
   broadcastCameraPosition,
   eventPath,
   isSourcePitchPoint,
+  sourceActorBadgeAnchor,
   sourceActorHeading,
   sourceArrow,
   toWorld,
@@ -144,6 +145,34 @@ describe("source-aligned pitch camera", () => {
     expect(sourceActorHeading(location, { x: Number.NaN, y: 20 })).toBe(0);
     expect(sourceActorHeading(location, null)).toBe(0);
     expect(sourceActorHeading(location, location)).toBe(0);
+  });
+
+  it("keeps source-linked surname/crest badges offset inward from every field edge", () => {
+    expect(sourceActorBadgeAnchor({ x: 0, y: 0 })).toEqual({
+      position: [3, 2.72, 0],
+      side: "right",
+    });
+    expect(sourceActorBadgeAnchor({ x: 105, y: 68 })).toEqual({
+      position: [-3, 2.72, 0],
+      side: "left",
+    });
+    expect(sourceActorBadgeAnchor({ x: 52.5, y: 34 })?.side).toBe("right");
+    expect(sourceActorBadgeAnchor({ x: 52.51, y: 34 })?.side).toBe("left");
+    for (const x of [0, 12, 52.5, 78, 105]) {
+      const badge = sourceActorBadgeAnchor({ x, y: 30 });
+      expect(badge).not.toBeNull();
+      if (!badge) continue;
+      expect(x + badge.position[0]).toBeGreaterThan(0);
+      expect(x + badge.position[0]).toBeLessThan(105);
+      expect(Math.abs(badge.position[0])).toBeGreaterThan(2.5);
+    }
+  });
+
+  it("never displays actor metadata at an invalid or missing source position", () => {
+    expect(sourceActorBadgeAnchor({ x: -1, y: 30 })).toBeNull();
+    expect(sourceActorBadgeAnchor({ x: 53, y: 70 })).toBeNull();
+    expect(sourceActorBadgeAnchor({ x: Number.NaN, y: 30 })).toBeNull();
+    expect(sourceActorBadgeAnchor(null)).toBeNull();
   });
 
   it("does not synthesize a trajectory without a destination", () => {
