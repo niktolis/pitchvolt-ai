@@ -83,7 +83,7 @@ export function App() {
     setStreamState("connecting");
     void Promise.all([fetchTimeline(scenario), fetchPresentation(scenario)])
       .then(([loaded, authored]) => {
-        if (loaded.length && loaded[0].match_id !== authored.match_id) {
+        if (loaded.length && loaded[0]?.match_id !== authored.match_id) {
           throw new Error("Mismatched replay and presentation fixture identity");
         }
         if (!active) return;
@@ -246,7 +246,7 @@ export function App() {
             </div>
           </div>
         </div>
-        <details className="broadcast-roster" aria-label="Fictional team lineups and substitutions">
+        <details className="broadcast-roster" >
           <summary>Team rosters &amp; substitutions <span>Source-authored fiction</span></summary>
           {presentation ? (
             <div className="broadcast-roster-grid">
@@ -361,7 +361,7 @@ export function App() {
         <Pitch
           event={selectedEvent}
           actorLabel={selectedEvent ? playerLabel(presentation, selectedEvent.player_id) : undefined}
-          actorColor={selectedEvent?.team_id === presentation?.away.team_id
+          actorColor={presentation && selectedEvent?.team_id === presentation.away.team_id
             ? presentation.away.primary_color : presentation?.home.primary_color}
           playing={playing}
           canReplay={messages.length > 0}
