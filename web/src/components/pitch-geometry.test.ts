@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { describe, expect, it } from "vitest";
 import {
   BROADCAST_DIRECTION,
+  actionCameraPose,
   broadcastCameraPosition,
   eventPath,
   isSourcePitchPoint,
@@ -39,6 +40,47 @@ describe("source-aligned pitch camera", () => {
       }
     }
     expect(BROADCAST_DIRECTION.y).toBeGreaterThan(BROADCAST_DIRECTION.z);
+  });
+
+  it.each([1.55, 1.75, 0.9])(
+    "focuses the recorded action without showing the whole field at aspect %s",
+    (aspect) => {
+      const focus = { x: 91, y: 15 };
+      const pose = actionCameraPose(aspect, focus);
+      const camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 420);
+      camera.position.copy(pose.position);
+      camera.lookAt(pose.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      const actor = toWorld(focus).project(camera);
+      expect(Math.abs(actor.x)).toBeLessThan(0.001);
+      expect(Math.abs(actor.y)).toBeLessThan(0.001);
+      const corners = [
+        { x: 0, y: 0 },
+        { x: 105, y: 0 },
+        { x: 105, y: 68 },
+        { x: 0, y: 68 },
+      ];
+      expect(
+        corners.some((corner) => {
+          const projected = toWorld(corner).project(camera);
+          return Math.abs(projected.x) > 1 || Math.abs(projected.y) > 1;
+        }),
+      ).toBe(true);
+      expect(pose.position.distanceTo(pose.target)).toBeLessThan(
+        broadcastCameraPosition(aspect).length() * 0.7,
+      );
+    },
+  );
+
+  it("keeps the entire field as a fallback when action coordinates are absent or invalid", () => {
+    const fallback = broadcastCameraPosition(1.55);
+    for (const focus of [null, { x: 999, y: 10 }, { x: Number.NaN, y: 30 }]) {
+      const pose = actionCameraPose(1.55, focus);
+      expect(pose.position.toArray()).toEqual(fallback.toArray());
+      expect(pose.target.toArray()).toEqual([0, 0, 0]);
+    }
   });
 
   it("renders only finite positions inside the canonical source coordinate system", () => {
