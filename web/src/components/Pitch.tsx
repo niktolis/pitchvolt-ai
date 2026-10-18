@@ -1,7 +1,7 @@
 import { type ReactNode, useState } from "react";
 import type { MatchEvent } from "../api/types";
-import { displayName, eventLabel } from "../domain/presentation";
 import { ballActionAtCursor } from "../domain/ballAction";
+import { clockLabel, displayName, eventLabel } from "../domain/presentation";
 import { BroadcastPitchScene } from "./BroadcastPitchScene";
 import { isSourcePitchPoint } from "./pitch-geometry";
 import "./pitch-viewport.css";
@@ -182,13 +182,16 @@ export function Pitch({
           </strong>
           <span>
             {ballContext
-              ? `Team possession: ${displayName(ballContext.teamInPossession)}`
+              ? `Possession team at ${clockLabel(ballContext.clockMs)}: ${displayName(ballContext.teamInPossession)}`
               : "Waiting for recorded action"}
             {ballContext?.carrierId ? ` · Carry by ${actorLabel ?? displayName(ballContext.carrierId)}` : ""}
+            {ballContext?.initiatedBy && !ballContext.carrierId
+              ? ` · Initiated by ${actorLabel ?? displayName(ballContext.initiatedBy)}`
+              : ""}
             {ballContext?.pressingPlayerId
               ? ` · Pressed by ${actorLabel ?? displayName(ballContext.pressingPlayerId)}`
               : ""}
-            {ballContext?.pressured ? " · Under pressure" : ""}
+            {ballContext?.pressured && !ballContext.pressingPlayerId ? " · Under pressure" : ""}
           </span>
           <small>
             Event-time location only. No continuous ball position, contested possession, or flight
