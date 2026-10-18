@@ -28,8 +28,8 @@ These infrastructure identifiers are immutable deployment references,
    Confirm Python, frontend and architecture CI checks green and inspect
    the existing production deployment workflow.
 2. Before renaming the GitHub repository, add a *second federated credential
-   to the existing Entra app* with the new OIDC subject:
-   `repo:niktolis/pitchvolt-ai:ref:refs/heads/main`, issuer
+   to the existing Entra app* with the immutable OIDC subject:
+   `repo:niktolis@1533654/pitchvolt-ai@1419712503:ref:refs/heads/main`, issuer
    `https://token.actions.githubusercontent.com`, audience
    `api://AzureADTokenExchange`. Retain the old subject during the
    transition, so pre-rename deployments still authenticate.
@@ -64,7 +64,7 @@ Use the existing GitHub repository variables; do **not** generate a new
 service principal:
 
 ```fish
-set -gx CI_APP_ID (gh variable get AZURE_CLIENT_ID --repo niktolis/matchpulse-ai)
+set -gx CI_APP_ID (gh variable get AZURE_CLIENT_ID --repo niktolis/pitchvolt-ai)
 set -gx CI_APP_OBJECT_ID (az ad app show --id $CI_APP_ID --query id -o tsv)
 az ad app federated-credential list --id $CI_APP_OBJECT_ID --output table
 ```
@@ -72,7 +72,7 @@ az ad app federated-credential list --id $CI_APP_OBJECT_ID --output table
 Add only this credential if it does not already exist:
 
 ```fish
-set -l identity '{"name":"pitchvolt-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:niktolis/pitchvolt-ai:ref:refs/heads/main","description":"PitchVolt main branch GitHub Actions","audiences":["api://AzureADTokenExchange"]}'
+set -l identity '{"name":"pitchvolt-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:niktolis@1533654/pitchvolt-ai@1419712503:ref:refs/heads/main","description":"PitchVolt main branch GitHub Actions","audiences":["api://AzureADTokenExchange"]}'
 az ad app federated-credential create --id $CI_APP_OBJECT_ID --parameters $identity
 az ad app federated-credential list --id $CI_APP_OBJECT_ID --output table
 ```
@@ -84,8 +84,8 @@ do not paste credentials or access tokens in issues or chat.
 
 ## Cutover risks and rollback
 
-The *critical risk* is the exact-subject GitHub OIDC trust. After repository
-rename, the old `repo:niktolis/matchpulse-ai:ref:refs/heads/main`
+The *critical risk* is the exact immutable-subject GitHub OIDC trust. After repository
+rename, the old `repo:niktolis@1533654/matchpulse-ai@1419712503:ref:refs/heads/main`
 subject no longer matches GitHub's renamed identity. Without the new
 federated credential, deployments fail to authenticate, although the
 existing application remains hosted. Existing GitHub repository redirects
