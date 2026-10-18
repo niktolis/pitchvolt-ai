@@ -35,7 +35,7 @@ The fast path is **implemented as a finite synthetic SSE replay** and is consume
 
 ## Architecture ownership
 
-`src/matchpulse/api.py` is an adapter. Football validation/detection stays in `MatchProcessor`. Stream and evidence endpoints reference the existing canonical schema and deterministic insight calculations. Do not duplicate football statistics or embed LLM calls in the transport.
+`src/pitchvolt/api.py` is an adapter. Football validation/detection stays in `MatchProcessor`. Stream and evidence endpoints reference the existing canonical schema and deterministic insight calculations. Do not duplicate football statistics or embed LLM calls in the transport.
 
 ## Additional synthetic input path
 
