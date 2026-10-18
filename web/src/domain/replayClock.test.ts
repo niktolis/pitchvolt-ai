@@ -8,6 +8,7 @@ import {
   latestAtCursor,
   matchBounds,
   recentInsightsAtCursor,
+  selectedAtCursor,
   visibleNarrativeIds,
 } from "./replayClock";
 
@@ -60,6 +61,14 @@ describe("canonical replay cursor", () => {
     expect(recentInsightsAtCursor(many, 6_000).map((m) => m.id)).toEqual([16, 15, 14]);
     expect(recentInsightsAtCursor(many, 6_000, 0)).toEqual([]);
     expect(recentInsightsAtCursor(many, 1_500).map((m) => m.id)).toEqual([11]);
+  });
+
+  it("releases an inspected older actor when playback or the cursor advances", () => {
+    expect(selectedAtCursor(timeline, 1, 1_000, false)?.id).toBe(1);
+    expect(selectedAtCursor(timeline, 1, 8_000, false)?.id).toBe(4);
+    expect(selectedAtCursor(timeline, 1, 8_000, true)?.id).toBe(4);
+    expect(selectedAtCursor(timeline, 4, 3_000, false)?.id).toBe(1);
+    expect(selectedAtCursor([], 1, 1_000, false)).toBeNull();
   });
 
   it("clamps rewind, fast-forward and empty playback bounds", () => {
