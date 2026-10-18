@@ -336,3 +336,7 @@ No invented football facts or new API. Full test/CI evidence must be checked bef
 ## 12. Next PR: cursor-synchronized event selection (18 Oct 2026)
 
 PR #121 merged on main at `b32bea425b55bef038a3a47c124802e7527e40e5`. Candidate branch `fix/ui-cursor-selection-sync-122`: source event inspection pauses the replay, while resuming or manual seek discards stale manually selected actor IDs. The pure `selectedAtCursor` helper additionally ensures a selected event only overrides the canonical latest event at its exact source clock and while paused. Regression tests cover stale selection after playback and rewind. No synthetic tracking, WebGL changes, new assets or paid models. Require green CI and explicit merge approval; this is not visual acceptance.
+
+## 13. Evidence-to-pitch navigation (18 Oct 2026)
+
+PR #123 merged at `c0bc2fc3eb25a412da90417f2396ab0d8aaa01d8`. Next focused UI branch `fix/ui-evidence-event-seek`: evidence event buttons route to the existing `inspect(message)` callback instead of only changing `selectedId`. This ensures the canonical cursor seeks to the exact recorded evidence event timestamp and playback pauses, aligning the evidence click with source event selection semantics introduced by #123. The selection uses existing visible canonical MatchEvent records; there is no inferred position, additional timeline model, backend change or Azure resource. Run required CI; no merge without explicit approval. This is not screenshot-level visual acceptance.
