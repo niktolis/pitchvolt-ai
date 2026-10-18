@@ -161,11 +161,11 @@ def test_replay_dataset_refuses_fiction_history_mixing_and_reordered_inputs() ->
     with pytest.raises(ValueError, match="Historical"):
         replace(source, canonical_events=synthetic.canonical_events)
     with pytest.raises(ValueError, match="not verified canonical"):
-        replace(source, actions=(replace(source.actions[0], player_id="20"),))
+        replace(source, actions=(replace(source.actions[0], player_id="20"), *source.actions[1:]))
     with pytest.raises(ValueError, match="ordered"):
         replace(source, actions=tuple(reversed(source.actions)))
     with pytest.raises(ValueError, match="Duplicate"):
-        replace(synthetic, actions=(synthetic.actions[0], synthetic.actions[0]))
+        replace(synthetic, actions=(synthetic.actions[0], synthetic.actions[0], *synthetic.actions[2:]))
     with pytest.raises(ValueError, match="canonical"):
         replace(synthetic, canonical_events=())
     with pytest.raises(ValueError, match="origin"):
