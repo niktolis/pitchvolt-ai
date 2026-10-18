@@ -21,8 +21,6 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - name: Verify latest stable Node runtime
         run: test "$(node --version)" = "v$(cat .node-version)"
-      - name: Resolve official Node 26 slim image digest (temporary PR validation)
-        run: docker buildx imagetools inspect node:26.10.0-bookworm-slim
       - name: Install exact backend dependencies
         run: uv sync --frozen --extra dev
       - name: Install exact frontend dependencies
