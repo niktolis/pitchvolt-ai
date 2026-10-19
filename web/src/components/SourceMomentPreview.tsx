@@ -1,11 +1,18 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useState } from "react";
+import * as THREE from "three";
 import type { MatchEvent } from "../api/types";
 import { ballActionAtCursor } from "../domain/ballAction";
 import { displayName } from "../domain/presentation";
-import { FootballActorAvatar } from "./FootballActorAvatar";
 import { FieldMarkings, GoalFrame, RecordedBallContact, Turf } from "./BroadcastPitchScene";
-import { isSourcePitchPoint, keyMomentCameraPose, sourceActorHeading, toWorld, type PitchPoint } from "./pitch-geometry";
+import { FootballActorAvatar } from "./FootballActorAvatar";
+import {
+  isSourcePitchPoint,
+  keyMomentCameraPose,
+  type PitchPoint,
+  sourceActorHeading,
+  toWorld,
+} from "./pitch-geometry";
 
 interface KeyMomentProps {
   event: MatchEvent | null;
@@ -20,14 +27,12 @@ function KeyMomentCamera({ focus }: { focus: PitchPoint }) {
   const { camera, size, invalidate } = useThree();
   useLayoutEffect(() => {
     const pose = keyMomentCameraPose(focus);
-    if (!pose || !size.height) return;
+    if (!pose || !size.height || !(camera instanceof THREE.PerspectiveCamera)) return;
     camera.position.copy(pose.position);
     camera.lookAt(pose.target);
     camera.updateMatrixWorld();
-    if ("aspect" in camera) {
-      camera.aspect = size.width / size.height;
-      camera.updateProjectionMatrix();
-    }
+    camera.aspect = size.width / size.height;
+    camera.updateProjectionMatrix();
     invalidate();
   }, [camera, focus, invalidate, size.height, size.width]);
 
@@ -97,7 +102,10 @@ export function SourceMomentPreview({
           </Canvas>
           <div className="key-moment-actor-tag" aria-hidden="true">
             {actorEmblem ? (
-              <span className="source-actor-crest" style={{ backgroundColor: actorColor ?? "#234c38" }}>
+              <span
+                className="source-actor-crest"
+                style={{ backgroundColor: actorColor ?? "#234c38" }}
+              >
                 {actorEmblem}
               </span>
             ) : null}
