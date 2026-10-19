@@ -841,3 +841,32 @@ After manager deploy, request a current screenshot to compare with
 authoritative approved pitch preview. Verify body/ground orientation,
 team kit material isolation, badge position and GPU performance;
 do not claim visual match merely from compiled GLB.
+
+## 19 October 2026 — corrected duplicate ball and action-specific GLBs
+
+Previous PR #151 is merged and deployed, but the manager's actual
+screenshot revealed **two visible footballs** at the Key Moment actor,
+a static mannequin-like body and inconsistent character styling.
+Implementing branch `feat/ui-cc0-action-pose-prop-safety-153`:
+three same-Micah Innerscene CC0 standing/running/kicking variants,
+all independently original-SHA-pinned, optimized under 4 MiB and
+90k tris, and supplied as first-party fingerprinted GLBs. **All**
+decorative `Soccer ball |` / `Soccer jersey number` model props
+are excluded at GLB scene-graph build time using
+`web/scripts/strip-hero-props.mjs`; production CI also requires no
+reachable props and runtime filter remains. Shared rejection policy
+is `web/src/assets/unobservedHeroProps.json` (DRY).
+Posture selection maps carries/pressure to running, pass/shot/goal
+to kicking; turnover/other to standing. Closer 3D Key Moment
+camera, no altered source location, no invented ball/athlete motion.
+
+See `docs/architecture/hero-assets.md` for all verified original
+and optimized hashes, node-removal semantics, files and models.
+The private, temporary import workflows were removed after source
+verification and commit. Run all three complete CI checks, leave
+a reviewable PR unmerged until technical-manager approval. Screenshot
+at exact deployed SHA remains essential to validate no double ball,
+character appearance and action-readability. Issue #134 tracks
+separately licensed genuine multi-player tracking. Do not touch
+its ongoing work or claim actual skeletal movement from these
+static action-category illustrations.
