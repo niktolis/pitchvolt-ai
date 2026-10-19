@@ -691,3 +691,28 @@ real deployed screenshot remains mandatory to accept fidelity.
 
 Run CI fully, mark Ready for Review, request manager approval;
 never merge this follow-up without explicit approval.
+
+## Immediate blocking operational state — GitHub-hosted Actions failure (19 October 2026)
+
+Independent **Issue #149** records a repository-wide hosted-runner
+failure, https://github.com/niktolis/pitchvolt-ai/issues/149.
+PR #143 was explicitly merged to main at
+`808215a495f9e79af3ca8414c919d90640858334`, but the subsequent
+`main` deployment, merge-only Foundry smoke and ALL usual CI jobs
+failed before assigning any runner or executing checkout. PR #148 and
+other independent feature branches show identical instant failure.
+Job API: `steps=[]`, `runner_name=""`, 404 `BlobNotFound` logs.
+A targeted frontend rerun failed identically. This is a **CI
+infrastructure/account-level blocker**, not test evidence.
+
+Suspect private-repo Actions free-minute exhaustion, spending limit,
+billing hold or runner-entitlement issue, but **billing state not
+verified**. Repository owner must inspect GitHub account Actions billing,
+quota, spending limit and payment failures, or contact GitHub Support.
+Do NOT spend money, increase spending limit, enable a self-hosted
+runner, change repository privacy or relax required checks without
+explicit manager approval. PR #148 MUST REMAIN DRAFT until actual
+frontend/Python/architecture workflows execute and pass. Latest #143
+production appearance is unverified because deployment failed.
+Manual local test commands after entitlement repair are documented
+in `docs/architecture/hero-assets.md`.
