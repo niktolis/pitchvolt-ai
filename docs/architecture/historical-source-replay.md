@@ -105,3 +105,13 @@ obtain explicit release-gate confirmation and, if necessary, publish
 a new immutable source-verified manifest/artifact with a distinct
 publication-enabled schema. Technical CI passing alone is not the
 release authorization.
+
+## Production default preserved after PR #155 integration
+
+Conservative launch behavior is **synthetic AI demo first**;
+`Historical 22-player replay` remains an explicit user-selectable
+mode. This prevents defaulting the public landing page away from
+the hackathon's AI-powered Insights/Tactical Pitch/Key Moment.
+The public historical data mode is still subject to approval of
+the `public_replay_enabled: false` release gate. Asset is not
+changed in place or re-hashed without a new reviewed export.
