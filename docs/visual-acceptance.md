@@ -135,3 +135,28 @@ The status panel stays legible but subordinate to the approved pitch.
 Validate paused/play/rewind, explicit unknown/pressure statuses and SVG
 fallback in exact deployed snapshot after merge; source-clocking tests
 must pass before review.
+
+## Post-#136 Key Moment treatment — proposed PR #138 (19 October 2026)
+
+The approved target image depicts a cinematic Key Moment, while the
+deployed application still uses a diagrammatic overhead 2D pitch.
+A generic football action photograph would misrepresent the fictional
+source event unless an independently verified same-match image existed.
+Instead the new **close-up 3D reconstruction** reuses the *recorded*
+event's player and action-time source location in the existing renderer.
+It displays only one independently positioned avatar; ball-contact
+graphic is event-origin illustration and not sampled trajectory;
+fixed grass and goals are environmental infrastructure. Team colors,
+fictional emblems and player label come from current source presentation
+metadata, never guessed from the reference photograph.
+The Key Moment camera is editorial; replay-time/cursor bounds are
+identical to central pitch. WebGL unavailable or invalid actor retains
+the original SVG fallback. A visible provenance label differentiates
+the reconstruction from video or a live camera.
+
+For visual approval, compare the actual deployed SHA in the browser
+at the approved viewport and verify the actor appears in-frame at
+sideline and goal positions, the label does not obscure the avatar,
+the recorded ball only appears for documented actions, and no
+second continuous render loop degrades playback or mobile performance.
+This PR cannot be marked pixel-faithful from unit tests alone.

@@ -535,3 +535,38 @@ independent, and preserve camera/replay controls/hero layout.
 See `docs/architecture/metrica-tracking-feasibility.md`. All required
 CI and explicit manager merge approval apply. Do not invent a screenshot
 capture or say visual acceptance is complete.
+
+## 22. Post-#136 visual milestone: cinematic source-backed Key Moment (19 October 2026)
+
+PR #136 merged at `37de0d762f7fdb1df37509c4a55ddcbd4dd45a5c`.
+The merge incorporated post-review tracking safeguards: canonical upstream
+Metrica Git-blob identity verification, strict source file bounds, and
+period/frame joining. This is still an **offline audit only**, not an
+authorized published real-match tracking replay. Foundry PR #137 has also
+merged; preserve its independent workflow/CI hardening.
+
+Current UI branch `feat/ui-key-moment-source-3d-138` addresses the
+approved reference's right-side **Key Moment cinematic treatment**. It
+replaces the previous flat 2D-only Key Moment card with a closer
+source-anchored THREE.js render of the **same** selected MatchEvent:
+the existing neutral 3D actor, team-color kit, known player surname,
+fictional emblem, measured field markings, decorative turf, fixed goals
+and, only for applicable source actions, the event-contact ball marker.
+The camera is *editorial framing*, not source video or player tracking.
+Both central pitch and right-side moment use the same replay clock; no
+second event stream, team movement, possession inference or invented
+teammates are introduced. The card explicitly labels itself 3D
+editorial reconstruction and retains original SVG when WebGL is absent.
+
+Implementation reuses the existing mesh components from
+`BroadcastPitchScene.tsx`, and runs the small Key Moment Canvas
+`frameloop="demand"` (not a second continuous 60-fps renderer)
+to limit WebGL resource use. Unit tests cover camera source anchoring,
+invalid/missing observations and field corners. No new npm packages,
+photographs, logos or media rights. Preview screenshot remains the sole
+visual spec; **do not claim exact fidelity before a real deployment SHA
+and measured same-viewport screenshot**. This does not close Issue #134,
+which remains blocked on licensed original tracking data.
+
+Run frontend, Python and architecture CI; make PR reviewable only when
+all green; never merge without explicit approval.

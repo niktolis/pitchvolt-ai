@@ -574,7 +574,15 @@ export function App() {
           <div className="panel-heading">
             <h2>Key Moment</h2>
           </div>
-          <SourceMomentPreview event={selectedEvent} />
+          <SourceMomentPreview
+            event={selectedEvent}
+            cursorMs={cursorMs}
+            actorLabel={
+              selectedEvent ? playerLabel(presentation, selectedEvent.player_id) : undefined
+            }
+            actorColor={selectedTeam?.primary_color}
+            actorEmblem={selectedTeam?.emblem_text}
+          />
           {selectedEvent ? (
             <div className="key-moment-copy">
               <strong>{eventLabel(selectedEvent)}</strong>

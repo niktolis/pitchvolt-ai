@@ -57,7 +57,7 @@ function BroadcastCamera({ focus }: { focus: PitchPoint | null }) {
   return null;
 }
 
-function Turf() {
+export function Turf() {
   const texture = useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = 1024;
@@ -123,7 +123,7 @@ function Turf() {
   );
 }
 
-function FieldMarkings() {
+export function FieldMarkings() {
   const lines = useMemo(() => {
     const points: number[] = [];
     const add = (a: PitchPoint, b: PitchPoint) => {
@@ -177,7 +177,7 @@ function FieldMarkings() {
 }
 
 /** Fixed stadium infrastructure, not inferred football actor positions. */
-function GoalFrame({ side }: { side: -1 | 1 }) {
+export function GoalFrame({ side }: { side: -1 | 1 }) {
   const x = side * (FIELD_WIDTH / 2 + 0.05);
   const depth = side * 1.8;
   const net = useMemo(() => {
@@ -272,7 +272,7 @@ function PlayerModel({
 }
 
 /** A highlighted event-contact indicator: not live ball tracking or a flight path. */
-function RecordedBallContact({ contact }: { contact: BallActionContext }) {
+export function RecordedBallContact({ contact }: { contact: BallActionContext }) {
   if (!contact.location) return null;
   const position = toWorld(contact.location);
   return (
