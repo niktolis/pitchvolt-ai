@@ -18,6 +18,7 @@ import type {
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
+import { SourceActionDetailsPanel } from "./components/SourceActionDetailsPanel";
 import { SourceMomentPreview } from "./components/SourceMomentPreview";
 import { recentRecordedActions, recordedActionCopy } from "./domain/editorialActivity";
 import {
@@ -43,6 +44,7 @@ import {
   recentInsightsAtCursor,
   selectedAtCursor,
 } from "./domain/replayClock";
+import { sourceActionDetails } from "./domain/sourceActionDetails";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
@@ -55,6 +57,7 @@ export function App() {
   const [messages, setMessages] = useState<ReplayMessage[]>([]);
   const [presentation, setPresentation] = useState<MatchPresentation | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [expandedKeyMomentId, setExpandedKeyMomentId] = useState<string | null>(null);
   const [narratives, setNarratives] = useState<Record<string, NarrativeUpdate>>({});
   const [narrativeError, setNarrativeError] = useState<string | null>(null);
   const [evidence, setEvidence] = useState<EvidenceResponse | null>(null);
@@ -98,6 +101,7 @@ export function App() {
     setMessages([]);
     setPresentation(null);
     setSelectedId(null);
+    setExpandedKeyMomentId(null);
     setEvidence(null);
     setError(null);
     setPlaying(true);
@@ -189,6 +193,14 @@ export function App() {
     evidence && isEvidenceVisible(messages, cursorMs, evidence.insight_id) ? evidence : null;
   const selectedEvent: MatchEvent | null =
     selected && isMatchEvent(selected) ? selected.payload : replay.event;
+  const selectedEventDetails = sourceActionDetails(
+    selectedEvent,
+    cursorMs,
+    selectedEvent ? playerLabel(presentation, selectedEvent.player_id) : undefined,
+    selectedEvent ? teamLabel(presentation, selectedEvent.team_id) : undefined,
+  );
+  const keyMomentDetailsVisible =
+    selectedEventDetails !== null && expandedKeyMomentId === selectedEventDetails.eventId;
   const selectedTeam = [presentation?.home, presentation?.away].find(
     (team) => team?.team_id === selectedEvent?.team_id,
   );
@@ -571,6 +583,12 @@ export function App() {
           </section>
         </Pitch>
         <section className="panel key-moment-panel">
+          {keyMomentDetailsVisible && selectedEventDetails ? (
+            <SourceActionDetailsPanel
+              details={selectedEventDetails}
+              onClose={() => setExpandedKeyMomentId(null)}
+            />
+          ) : null}
           <div className="panel-heading">
             <h2>Key Moment</h2>
           </div>
@@ -600,11 +618,25 @@ export function App() {
             type="button"
             onClick={() => {
               const message = recentInsights[0];
-              if (message) void inspect(message);
+              if (message) {
+                setExpandedKeyMomentId(null);
+                void inspect(message);
+              } else if (selectedEventDetails) {
+                setPlaying(false);
+                setExpandedKeyMomentId((id) =>
+                  id === selectedEventDetails.eventId ? null : selectedEventDetails.eventId,
+                );
+              }
             }}
-            disabled={!visibleMessages.some(isTacticalInsight)}
+            aria-expanded={recentInsights.length ? undefined : keyMomentDetailsVisible}
+            aria-label={
+              recentInsights.length
+                ? "View published tactical analysis"
+                : "View source-recorded event details"
+            }
+            disabled={!recentInsights.length && !selectedEventDetails}
           >
-            View Analysis →
+            {keyMomentDetailsVisible ? "Close Details ↑" : "View Analysis →"}
           </button>
         </section>
         <div className="broadcast-detail-panels">

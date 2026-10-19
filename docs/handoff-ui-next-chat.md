@@ -570,3 +570,38 @@ which remains blocked on licensed original tracking data.
 
 Run frontend, Python and architecture CI; make PR reviewable only when
 all green; never merge without explicit approval.
+
+## 23. PR #138 merged; Key Moment analysis CTA remains usable before AI publication (19 October 2026)
+
+Verified `main` `946caf4c9006c3aa0160d099d17cbabac6dc2725`:
+PR #138 cinematic source-backed 3D Key Moment merged. Independently
+PR #139 (provider-neutral tracking contract) was already merged at
+`3fa7d684a60e2e91274a71ee2d68e50d0b257f89`.
+A validated tracking **schema is not source samples or a right to
+redistribute**: multi-player/ball tracked UI remains separate and gated
+by Issue #134 licensing and data availability. On first check the
+#138 deployment workflow had not completed; do not claim production
+visual fidelity until exact deployed SHA and manager screenshot.
+
+Next **non-blocked UI functionality** branch
+`feat/ui-key-moment-action-details-140`: the prominent target-preview
+"View Analysis" button was disabled until a published tactical insight.
+It now preserves the existing published-insight navigation, but when
+only a real recorded MatchEvent is available it opens a source-only
+recorded-event facts overlay inside the Key Moment card. This does NOT
+generate AI or claim tactics. The panel lists observed action time,
+event type, actor/team, source outcome, recorded possession-team-at-event,
+valid actor coordinates and valid action destination, with explicit
+individual-holder/ball/pressure/contest unknownness. For `carry`
+alone, a source-authoritative owner may be named at the event instant;
+for `pressure`, the opponent pressing is **not** the possessor.
+It is invalid to infer ball flight, challenge outcomes or team press
+strategy. The overlay includes a close control and preserves the
+approved three-column card height, stadium photo, 3D pitch and
+under-pitch real replay controls. Seeking backward hides future
+event-specific details rather than leaking source records.
+
+Run full frontend/TypeScript/Vitest/Python/architecture CI, maintain
+green checks, request manager review. Do not merge without approval.
+Source screenshot remains binding; next deployment manual screenshot
+must verify both new 3D panel and functioning CTA.

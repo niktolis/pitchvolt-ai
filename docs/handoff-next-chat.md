@@ -564,3 +564,26 @@ mapping or new players. Continue preserving the approved three-card
 broadcast design and usable replay controls beneath the primary pitch.
 Dedicated screenshot comparison against exact deployment SHA remains
 outstanding. CI and explicit manager merge approval are required.
+
+## 19 October 2026 — merged #138, #139; UI source-action analysis bundle
+
+Latest verified main `946caf4c9006c3aa0160d099d17cbabac6dc2725` is
+PR #138, cinematic 3D Key Moment; PR #139 source-neutral observed
+tracking **schema** merged previously at
+`3fa7d684a60e2e91274a71ee2d68e50d0b257f89`.
+No tracking license/hosted true athlete or ball samples were introduced
+by that contract. The #138 deployment was in progress at the latest
+initial check. Preserve all source identity + license/rights gates
+for Metrica and StatsBomb 360, and the approved Foundry merge-only
+smoke process. No new billable inference is authorized here.
+
+Branch `feat/ui-key-moment-action-details-140` makes the approved
+Key Moment View Analysis CTA functional even before AI tactical
+insights are published. Existing insight-click behavior is retained
+when an insight exists. Otherwise the button opens a snapshot-only,
+cursor-gated, source-recorded facts overlay with honest possession
+and under-pressure/unknown ball statuses and a close control.
+The right card does not grow and the approved cinematic appearance
+remains at rest. Verify regression tests and CI before presenting it
+for review, never merge without manager approval. After exact deployed
+SHA #138/#140 screenshot, compare with the approved design again.

@@ -160,3 +160,22 @@ sideline and goal positions, the label does not obscure the avatar,
 the recorded ball only appears for documented actions, and no
 second continuous render loop degrades playback or mobile performance.
 This PR cannot be marked pixel-faithful from unit tests alone.
+
+## Post-#138 UI action details without invented AI (19 October 2026)
+
+The approved preview has a prominent working right-side
+`View Analysis` CTA. In the existing implementation the CTA was
+disabled when no published tactical insight existed, even though
+the replay already provided source-recorded event facts. This is
+a user-visible mismatch. The next UI branch makes that control
+functional: when published insights exist, navigate to them as
+before; otherwise open an overlay within the same Key Moment
+card with only observed event fields and explicit unknown
+possession holder / ball trajectory / challenge semantics.
+No new LLM call, player coordinates, score, generic football
+photo, or tactical assertions. Test at early event time, after
+insight publication, on seek/rewind, and at different viewport
+widths without stretching the card. The cinematic 3D scene
+and approved card appearance remain unchanged when overlay
+is closed. Exact-SHA production screenshot comparison is
+still required after merge.
