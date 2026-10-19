@@ -1,7 +1,7 @@
 """Deterministic source clip contract checks using original authored *test* samples."""
 import hashlib
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -17,7 +17,7 @@ from pitchvolt.idsse_clip_export import (
 
 HOME = "DFL-CLU-HOME"
 AWAY = "DFL-CLU-AWAY"
-SHOT_TIME = datetime(2023, 5, 27, 13, 31, 53, 360000, tzinfo=timezone.utc)
+SHOT_TIME = datetime(2023, 5, 27, 13, 31, 53, 360000, tzinfo=UTC)
 
 
 def toy_source():
@@ -87,7 +87,7 @@ def test_observed_25_second_clip_roundtrip_at_source_exact_sample_times(tmp_path
     assert data["source"]["license"] == "CC-BY-4.0"
     assert "Deutsche Fußball Liga" in data["source"]["attribution"]
     assert not data["player_carrier_known"]
-    assert not data["coordinates"]["no_interpolation"] is False
+    assert data["coordinates"]["no_interpolation"] is True
 
 
 def test_source_coordinate_translation_does_not_clamp_or_infer_motion():
