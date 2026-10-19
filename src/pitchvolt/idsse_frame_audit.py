@@ -57,6 +57,7 @@ def inspect_frame_window(
     require_original_digest: bool = True,
     anchor_frame: int | None = None,
     anchor_timestamp: str | None = None,
+    _rows_out: dict[int, dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """Scan per-object FrameSets with bounded memory and explicit coverage.
 
@@ -194,6 +195,12 @@ def inspect_frame_window(
         if abs((recorded_time - expected_anchor_time).total_seconds()) > 0.005:
             raise ValueError("Source event and ball sample frame time mismatch")
         aligned_anchor = True
+    # Private in-memory export path; the ordinary audit/report does NOT expose
+    # observed coordinates. Populated only after all source invariants pass.
+    if _rows_out is not None:
+        if _rows_out:
+            raise ValueError("Output observation map must be empty")
+        _rows_out.update({fid: rows[fid] for fid in ids})
     return {
         "provider": "idsse_sportec",
         "source_match_id": DFL_MATCH_ID,
