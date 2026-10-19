@@ -6,6 +6,7 @@ import {
   broadcastCameraPosition,
   eventPath,
   isSourcePitchPoint,
+  keyMomentCameraPose,
   sourceActorBadgeAnchor,
   sourceActorHeading,
   sourceArrow,
@@ -17,6 +18,42 @@ describe("source-aligned pitch camera", () => {
     expect(toWorld({ x: 0, y: 0 }).toArray()).toEqual([-52.5, 0, -34]);
     expect(toWorld({ x: 105, y: 68 }).toArray()).toEqual([52.5, 0, 34]);
     expect(toWorld({ x: 52.5, y: 34 }).toArray()).toEqual([0, 0, 0]);
+  });
+
+  it.each([0.75, 1.55, 2.1])(
+    "frames a close-up of only the recorded actor, including pitch boundaries at aspect %s",
+    (aspect) => {
+      for (const point of [
+        { x: 0, y: 0 },
+        { x: 52.5, y: 34 },
+        { x: 105, y: 68 },
+      ]) {
+        const pose = keyMomentCameraPose(point);
+        expect(pose).not.toBeNull();
+        if (!pose) return;
+        const world = toWorld(point);
+        expect(pose.target.x).toBe(world.x);
+        expect(pose.target.z).toBe(world.z);
+        expect(pose.position.distanceTo(pose.target)).toBeLessThan(8);
+        const camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 160);
+        camera.position.copy(pose.position);
+        camera.lookAt(pose.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        const head = world.clone().add(new THREE.Vector3(0, 1.8, 0)).project(camera);
+        expect(Math.abs(head.x)).toBeLessThan(0.7);
+        expect(Math.abs(head.y)).toBeLessThan(0.7);
+        expect(head.z).toBeGreaterThan(-1);
+        expect(head.z).toBeLessThan(1);
+      }
+    },
+  );
+
+  it("refuses a fabricated Key Moment location when no valid event exists", () => {
+    expect(keyMomentCameraPose(null)).toBeNull();
+    expect(keyMomentCameraPose({ x: Number.NaN, y: 8 })).toBeNull();
+    expect(keyMomentCameraPose({ x: 110, y: 30 })).toBeNull();
+    expect(keyMomentCameraPose({ x: -2, y: 22 })).toBeNull();
   });
 
   it.each([1.55, 1.75, 0.9])("frames every pitch corner for viewport aspect %s", (aspect) => {
