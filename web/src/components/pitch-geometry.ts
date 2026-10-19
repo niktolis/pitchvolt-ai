@@ -96,9 +96,11 @@ export function keyMomentCameraPose(
 ): { position: THREE.Vector3; target: THREE.Vector3 } | null {
   if (!isSourcePitchPoint(focus)) return null;
   const recorded = toWorld(focus);
-  const target = recorded.clone().add(new THREE.Vector3(0, 1.05, 0));
+  // Lower, longer-lens hero framing. Camera-only composition; the actor
+  // stays at the exact source point and no tracking or gesture is inferred.
+  const target = recorded.clone().add(new THREE.Vector3(0, 1.00, 0));
   return {
-    position: target.clone().add(new THREE.Vector3(3.4, 2.65, 4.4)),
+    position: target.clone().add(new THREE.Vector3(2.5, 1.8, 3.2)),
     target,
   };
 }
