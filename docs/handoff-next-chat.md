@@ -482,3 +482,30 @@ against SHA-256 AND Git object identities, without network calls.
 Source event joins now require period+frame. No upstream bytes added to
 Git; no hosting license inferred. All synthetic test fixtures are
 explicitly marked not upstream-bound.
+
+## 19 October 2026 — verified #136 merge / current parallel UI work
+
+Post-review PR #136 is **merged** at
+`37de0d762f7fdb1df37509c4a55ddcbd4dd45a5c`.
+Do not replace its hardened `metrica_offline_audit.py`: it now checks
+original Git blob OIDs against the pinned public upstream tree as well
+as SHA-256 and enforces source frame/period joins. These changes
+strengthen the **offline audit only**; no right to redistribute
+original player/ball tracking or run a public historical replay
+has been established. Issue #134 remains open, and Metrica data should
+not be copied into production. Foundry PR #137 is also merged and
+retains the explicitly approved merge-only smoke workflow.
+
+The next non-blocked UI bundle is branch
+`feat/ui-key-moment-source-3d-138`: replace flat 2D Key Moment location
+diagram with a **real Three.js camera close-up** of the same source
+recorded actor, ball-contact marker only when eligible, fixed field
+infrastructure, kit color and validated fictional team/player badge.
+It does not claim to be a game photo. SourceMomentPreview retains an
+accessible 2D fallback and the second camera renders on demand rather
+than running its own perpetual replay clock. Reuse all existing 3D
+mesh and source validation logic; do not create a second coordinate
+mapping or new players. Continue preserving the approved three-card
+broadcast design and usable replay controls beneath the primary pitch.
+Dedicated screenshot comparison against exact deployment SHA remains
+outstanding. CI and explicit manager merge approval are required.
