@@ -292,3 +292,21 @@ the full approved 3-column reference-sized layout and at least:
 If a source-relative sporting pose is not visually credible,
 adjust static art direction or camera in a subsequent PR after
 review; do not add fabricated continuous tracks.
+
+## Playback ergonomics — scrub directly below central field (PR #155)
+
+An additional explicit user request moves the *single* match-time
+range slider, together with Play/Pause and ±2-second buttons,
+directly below the tactical field rather than below the lengthy
+match-activity rail. The green central 3D pitch, ball-status notes
+and all three dashboard cards otherwise remain unchanged.
+
+Acceptance: at desktop preview viewport and 375px/mobile width,
+the slider is visible as soon as the pitch is visible; accurate
+current time, keyboard-arrow and pointer/touch dragging work;
+seeking pauses playback, updates both tactical pitch and Key Moment
+from the same cursor, clears the prior manually selected event,
+and never exposes future events. Lower event rail, speed, scenario
+and audience controls remain available; only one range slider
+exists in the DOM. Verify visual hierarchy and no overflow after
+exact deployed SHA. Do not claim screenshot acceptance from CI.
