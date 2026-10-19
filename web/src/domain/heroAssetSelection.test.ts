@@ -8,7 +8,9 @@ describe("source-verified CC0 Key Moment asset selection", () => {
       const model = heroAssetForEvent(kind);
       expect(model).not.toBeNull();
       expect(model?.url).toBe("/assets/hero/neutral-5bb8a63f2824d84c.glb");
-      expect(model?.sha256).toBe("5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591");
+      expect(model?.sha256).toBe(
+        "5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591",
+      );
       expect(model?.sourceSha256).toBe(
         "773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb",
       );
