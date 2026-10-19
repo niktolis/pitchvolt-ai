@@ -8,12 +8,12 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run assets:check && tsc --noEmit && vite build",
+    "build": "npm run assets:check && tsc --noEmit && vite build && node scripts/check-historical-source.mjs --dist",
     "typecheck": "tsc --noEmit --pretty false",
     "test": "vitest run",
     "lint": "biome check .",
     "contracts:generate": "openapi-typescript ./openapi.json -o ./src/api/generated.ts && biome format --write ./src/api/generated.ts",
-    "assets:check": "node scripts/check-hero-assets.mjs && node --test scripts/hero-asset-audit.nodecheck.mjs scripts/strip-hero-props.nodecheck.mjs",
+    "assets:check": "node scripts/check-hero-assets.mjs && node --test scripts/hero-asset-audit.nodecheck.mjs scripts/strip-hero-props.nodecheck.mjs && node scripts/check-historical-source.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "format": "biome format --write ."
   },
