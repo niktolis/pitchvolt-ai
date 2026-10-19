@@ -18,10 +18,9 @@ import type {
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
 import { Pitch } from "./components/Pitch";
-import { SourceMomentPreview } from "./components/SourceMomentPreview";
 import { SourceActionDetailsPanel } from "./components/SourceActionDetailsPanel";
+import { SourceMomentPreview } from "./components/SourceMomentPreview";
 import { recentRecordedActions, recordedActionCopy } from "./domain/editorialActivity";
-import { sourceActionDetails } from "./domain/sourceActionDetails";
 import {
   lineupAtCursor,
   playerLabel,
@@ -45,6 +44,7 @@ import {
   recentInsightsAtCursor,
   selectedAtCursor,
 } from "./domain/replayClock";
+import { sourceActionDetails } from "./domain/sourceActionDetails";
 
 const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
