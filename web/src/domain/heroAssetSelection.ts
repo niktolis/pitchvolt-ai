@@ -1,5 +1,6 @@
 import type { MatchEvent } from "../api/types";
 import manifest from "../assets/heroAssetManifest.json";
+import unobservedHeroProps from "../assets/unobservedHeroProps.json";
 import { type EditorialPose, editorialPoseForEvent } from "../components/KeyMomentAthlete";
 
 export interface VerifiedHeroAsset {
@@ -31,5 +32,6 @@ export function heroAssetForEvent(eventType: MatchEvent["event_type"]): Verified
 
 /** Original CC0 mesh includes props that are not independently observed match events. */
 export function isUnobservedHeroProp(name: string): boolean {
-  return name.startsWith("Soccer ball |") || name === "Soccer jersey number";
+  const normalized = name.trim().toLowerCase().replaceAll("_", " ").replaceAll("-", " ");
+  return unobservedHeroProps.some((prefix) => normalized.startsWith(prefix));
 }
