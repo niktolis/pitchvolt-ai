@@ -1,3 +1,31 @@
+# 19 October — verified Foundry CI and source-neutral tracking contract
+
+**Authoritative newest checkpoint (older notes below are historical).**
+PR #136 merged on main `37de0d762f7fdb1df37509c4a55ddcbd4dd45a5c`.
+The merge-only [Foundry smoke 39214473549](https://github.com/niktolis/pitchvolt-ai/actions/runs/39214473549)
+and Python/frontend/diagram checks passed. At the first review,
+production deployment was still running; recheck its final result.
+No new Azure identity setup or macOS inference is needed.
+
+**Current dedicated PR:** Issue #134 source-neutral observed tracking
+contract. Independent, immutable Pydantic v1 schema for continuous
+player/ball samples and sparse event-exact 360 freeze frames, with
+raw-to-105x68 source position checking, explicit unknown/outside-pitch
+values, typed source-reported possession, strict match/temporal
+identity, and both public serving switches permanently false in v1.
+Only original synthetic unit-test observations; no actual Metrica
+bytes or hosted API. Do NOT invent 22-player formations, missing
+ball motion, synthetic/historical cross-match links, or publish
+source data without independently confirmed permission.
+
+See `docs/architecture/tracking-observation-contract.md`.
+This PR must pass all offline CI and **manager review before merge**;
+each approved merge still triggers the bounded Foundry smoke with no
+separate approval. Next project blocker: source data licensing and
+real-file audit, then independently reviewed source adapters.
+
+---
+
 # 19 October: first authenticated merged-PR Foundry smoke and fix
 
 **Current facts supersede older milestone A notes below.** PR #130
