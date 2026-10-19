@@ -714,3 +714,26 @@ acquisition, original hash pinning, optimize to <=4MiB/90k triangles,
 validated shirt material, actual on-site model, screenshot and GPU
 acceptance. Keep unrelated Issue #134 tracking license/temporal
 synchronization completely separate.
+
+## 27. GitHub Actions recovered; verified scope of GLB integration (19 October 2026)
+
+**Supersedes the Issue #149 outage note above**: the user changed
+repository visibility to public and added GNU AGPL-3.0. Issue #149
+has been closed. On `main`
+`65f026083eb92db2543f3253776824a2a0513a52`,
+actual frontend, Python, architecture and Azure deployment
+workflows **succeeded**. No visual claim until a screenshot
+of the exact deployed build is compared with the preview.
+
+PR #148 is the safe GLB import/build infrastructure, **not an
+imported realistic avatar**. Its manifest is `{}` and currently
+selects the procedural Key Moment hero. After runner recovery,
+real tests ran and surfaced Biome and Node-vs-Vitest discovery
+issues; both were corrected. The original test head
+`f095bc9955089aa8cdc09663ec502f715b2752ad`
+has all three full checks **green**. A subsequent docs-only commit
+requires fresh final check confirmation. Issue #142 is still
+the actual CC0 source-byte verification/optimization/model
+integration milestone. Continue strictly source-backed match
+positions; no fictional players/ball trajectories. Await
+manager merge approval on PR #148.
