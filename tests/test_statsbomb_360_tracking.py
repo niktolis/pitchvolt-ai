@@ -1,7 +1,7 @@
 """Offline StatsBomb 360 projection tests: original synthetic JSON, no source bytes."""
-from dataclasses import replace
 import hashlib
 import json
+from dataclasses import replace
 
 import pytest
 from pydantic import ValidationError
@@ -239,3 +239,16 @@ def test_no_implicit_network_or_public_api_in_projection(tmp_path, monkeypatch):
 
     monkeypatch.setattr("urllib.request.urlopen", no_http)
     assert _project(fixture, bundle).public_replay_enabled is False
+
+def test_real_loader_six_decimal_rounding_remains_source_consistent(tmp_path):
+    """StatsBomb historic projection rounds metres to six decimal places."""
+    sample = _frames()
+    sample[0]["freeze_frame"][0]["location"] = [41.333333, 44.123456]
+    fixture, bundle = _load(tmp_path, frames=sample)
+    frame = _project(fixture, bundle).at_event("source-a")
+    assert frame is not None
+    actual = frame.players[0].location
+    assert actual.pitch is not None
+    assert actual.pitch.x == round(41.333333 * 105 / 120, 6)
+    assert actual.pitch.y == round(44.123456 * 68 / 80, 6)
+    assert actual.raw.x == 41.333333

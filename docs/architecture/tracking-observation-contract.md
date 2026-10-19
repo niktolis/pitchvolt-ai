@@ -34,7 +34,8 @@ coordinates with source units `normalized_0_1`,
 `statsbomb_120x80`, or `pitch_meters`, and a provider-neutral
 `Point(x_m, y_m)` represented in the existing canonical
 `105 × 68` pitch domain. The source-to-meters conversion is checked
-by the validator. Out-of-field raw observations remain available for
+by the validator, with a sub-micrometre absolute tolerance matching
+the existing six-decimal StatsBomb source normalizer. Out-of-field raw observations remain available for
 diagnostics, with no renderable `pitch` position. Missing observations
 have neither raw nor pitch coordinates; the ball has its own required
 location (which can be explicitly missing) rather than being offset
