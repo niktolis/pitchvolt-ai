@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { MatchEvent } from "../api/types";
 import { sourceActionDetails } from "./sourceActionDetails";
 
-function action(
-  kind: MatchEvent["event_type"],
-  overrides: Partial<MatchEvent> = {},
-): MatchEvent {
+function action(kind: MatchEvent["event_type"], overrides: Partial<MatchEvent> = {}): MatchEvent {
   return {
     match_id: "fictional",
     event_id: "e-42",
