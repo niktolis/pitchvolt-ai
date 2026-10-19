@@ -6,7 +6,7 @@ import type { MatchEvent } from "../api/types";
 import { ballActionAtCursor } from "../domain/ballAction";
 import { displayName } from "../domain/presentation";
 import { FieldMarkings, GoalFrame, RecordedBallContact, Turf } from "./BroadcastPitchScene";
-import { KeyMomentAthlete } from "./KeyMomentAthlete";
+import { KeyMomentHero } from "./KeyMomentHero";
 import { KeyMomentGrass } from "./KeyMomentGrass";
 import {
   isSourcePitchPoint,
@@ -117,7 +117,7 @@ export function SourceMomentPreview({
             {ball?.location ? <RecordedBallContact contact={ball} /> : null}
             <group position={toWorld(actor.location)}>
               <group rotation={[0, sourceActorHeading(actor.location, actor.destination), 0]}>
-                <KeyMomentAthlete kitColor={actorColor} eventType={actor.event_type} />
+                <KeyMomentHero color={actorColor} eventType={actor.event_type} />
               </group>
             </group>
           </Canvas>
