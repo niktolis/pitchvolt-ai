@@ -3,7 +3,6 @@ import {
   exactFrameAtCursor,
   HISTORICAL_FIRST_FRAME,
   HISTORICAL_FRAME_COUNT,
-  HISTORICAL_LAST_CURSOR_MS,
   HISTORICAL_SHOT_FRAME,
   loadHistoricalClip,
   type HistoricalClip,
@@ -106,7 +105,7 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
           <div className="broadcast-score-content">
             <div className="broadcast-fixture-team broadcast-fixture-home">
               <strong>{home?.name ?? "1. FC Köln"}</strong>
-              <span className="broadcast-team-shield shield-home" aria-label="Neutral home team emblem">K</span>
+              <span className="broadcast-team-shield shield-home" title="Neutral home team identifier">K</span>
             </div>
             <div className="broadcast-score-center">
               <span className="broadcast-score-unavailable" title="Score is not established by this 25-second source clip">
@@ -115,7 +114,7 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
               <span className="broadcast-match-clock">{timeLabel(elapsedMs)}</span>
             </div>
             <div className="broadcast-fixture-team broadcast-fixture-away">
-              <span className="broadcast-team-shield shield-away" aria-label="Neutral away team emblem">B</span>
+              <span className="broadcast-team-shield shield-away" title="Neutral away team identifier">B</span>
               <strong>{away?.name ?? "FC Bayern München"}</strong>
             </div>
           </div>
