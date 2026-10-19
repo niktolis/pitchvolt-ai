@@ -49,10 +49,28 @@ def _sample(tmp_path, *, game=1, mismatch=False, home_missing_ball=False):
     return directory, expected
 
 
+def _synthetic_manifest(path, game):
+    """Expected object identities generated from original synthetic tests, not upstream."""
+    manifest = {}
+    for kind in ("Home", "Away", "Events"):
+        stem = f"Sample_Game_{game}_Raw"
+        name = stem + ("EventsData.csv" if kind == "Events" else
+                       f"TrackingData_{kind}_Team.csv")
+        data = (path / name).read_bytes()
+        git_blob = hashlib.sha1(f"blob {len(data)}\\0".encode() + data).hexdigest()
+        manifest[kind] = (git_blob, len(data))
+    return manifest
+
+
 def _run(path, hashes, **overrides):
+    game = overrides.pop("game", 1)
+    manifest = overrides.pop("test_manifest", None)
+    if manifest is None:
+        manifest = _synthetic_manifest(path, int(path.name.removeprefix("Sample_Game_")))
     return inspect_game(
-        path, game=overrides.pop("game", 1), commit=overrides.pop("commit", COMMIT),
-        expected_sha256=hashes, max_frames=overrides.pop("max_frames", 3), **overrides,
+        path, game=game, commit=overrides.pop("commit", COMMIT),
+        expected_sha256=hashes, max_frames=overrides.pop("max_frames", 3),
+        _test_git_blob_manifest=manifest, **overrides,
     )
 
 
@@ -60,6 +78,7 @@ def test_offline_pinned_sample_reports_only_aggregates_and_explicit_rights_block
     directory, hashes = _sample(tmp_path)
     report = _run(directory, hashes)
     assert report["source_commit"] == COMMIT
+    assert report["canonical_upstream_blob_identity_verified"] is False
     assert report["game"] == 1
     assert report["frame_rate_hz"] == 25
     assert report["tracking_frames_synchronized"] is True
@@ -155,3 +174,43 @@ def test_event_exposure_is_aggregate_and_does_not_include_row_content(tmp_path):
     report = _run(directory, hashes)
     assert "Player11" not in str(report)
     assert "0.2" not in str(report)
+
+
+def test_upstream_provenance_rejects_correct_sha256_for_wrong_bytes(tmp_path):
+    """SHA-256 pin from an operator does NOT establish the upstream git object."""
+    path, hashes = _sample(tmp_path)
+    original_manifest = _synthetic_manifest(path, 1)
+    home_file = path / "Sample_Game_1_RawTrackingData_Home_Team.csv"
+    home_file.write_text(home_file.read_text().replace("0.2", "0.4", 1))
+    hashes["Home"] = hashlib.sha256(home_file.read_bytes()).hexdigest()
+    with pytest.raises(ValueError, match="Git blob mismatch"):
+        _run(path, hashes, test_manifest=original_manifest)
+
+
+def test_original_upstream_manifest_does_not_accept_synthetic_fixture(tmp_path):
+    """The production auditor cannot label our synthetic tests as Metrica data."""
+    directory, hashes = _sample(tmp_path)
+    with pytest.raises(ValueError, match="Upstream pinned file size mismatch"):
+        inspect_game(
+            directory, game=1, commit=COMMIT,
+            expected_sha256=hashes, max_frames=3,
+        )
+
+
+def test_cross_period_frame_is_not_falsely_joined(tmp_path):
+    directory, hashes = _sample(tmp_path)
+    events = directory / "Sample_Game_1_RawEventsData.csv"
+    with events.open(newline="", encoding="utf-8") as src:
+        rows = list(csv.reader(src))
+    rows[2][3] = "2"  # frame 3 belongs to period 2 now, not sampled period 1
+    hashes["Events"] = _csv_file(events, rows)
+    report = _run(directory, hashes)
+    assert report["events"]["events_examined"] == 2
+    assert report["events"]["events_with_examined_tracking_frame"] == 1
+    assert report["events_joined_to_sample"] is True
+
+
+def test_different_upstream_commit_is_not_misrepresented(tmp_path):
+    directory, hashes = _sample(tmp_path)
+    with pytest.raises(ValueError, match="Only the audited immutable upstream commit"):
+        _run(directory, hashes, commit="0" * 40)

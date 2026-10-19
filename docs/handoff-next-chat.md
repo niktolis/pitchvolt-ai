@@ -446,3 +446,14 @@ Never join to the fictional Harbor/Ridge replay and never fabricate
 a ball carrier/duel from inferred proximity. No public source-data
 hosting, billable inference or Azure provisioning in this bundle.
 Keep the existing **approved merge-only Foundry smoke** workflow intact.
+
+### Metrica offline audit provenance hardening (19 October)
+
+Before merge, the #136 review found SHA-256 supplied by the operator
+and commit supplied by the operator were not cryptographically linked.
+The auditor now embeds the six actual Git blob OIDs/byte counts from
+the exact pinned Metrica upstream commit, and verifies local data
+against SHA-256 AND Git object identities, without network calls.
+Source event joins now require period+frame. No upstream bytes added to
+Git; no hosting license inferred. All synthetic test fixtures are
+explicitly marked not upstream-bound.

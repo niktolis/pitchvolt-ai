@@ -17,7 +17,23 @@ from typing import Any
 
 _REPOSITORY = "https://github.com/metrica-sports/sample-data"
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
-_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
+_COMMIT = re.compile(r"[0-9a-f]{40}\\Z")
+# Canonical git objects from the exact public Metrica commit tree, queried
+# by GitHub Git Trees API. Git blob OIDs bind the bytes to THAT revision;
+# an operator-provided SHA-256 checksum alone cannot establish origin.
+_UPSTREAM_COMMIT = "e706dd506b360d69d9d123d5b8026e7294b13996"
+_UPSTREAM_BLOBS = {
+    1: {
+        "Home": ("ce2e91c0e633426cec1146f4e728b72417454e3d", 32782961),
+        "Away": ("ff409a5680fd75acc7cebcf786827214c687478b", 32782073),
+        "Events": ("3c426dd4f442dd433bccf89e3634f91aa310cd8f", 139446),
+    },
+    2: {
+        "Home": ("8b4d3648888cc8b033e7142919ebaea04f6328e0", 31890338),
+        "Away": ("e7334d8d762954a215c49e55f211855000243fdc", 29627711),
+        "Events": ("decccd47c1d53960d290cb6679337eec83a8a97f", 153897),
+    },
+}
 _EVENT_FIELDS = {
     "Team", "Type", "Period", "Start Frame", "Start Time [s]", "From",
 }
@@ -34,17 +50,29 @@ def upstream_path(game: int, kind: str, *, commit: str) -> str:
     return f"{_REPOSITORY}/blob/{commit}/{stem}{suffix}"
 
 
-def _sha256(path: Path, expected: str) -> str:
-    if not _SHA.fullmatch(expected):
+def _verify_source_bytes(
+    path: Path, expected_sha256: str, expected_git_oid: str, expected_size: int,
+) -> str:
+    """Verify local checksum AND the canonical Git blob identity in one pass."""
+    if not _SHA.fullmatch(expected_sha256):
         raise ValueError("Expected SHA-256 must be 64 lower-case hexadecimal characters")
-    digest = hashlib.sha256()
+    if not _COMMIT.fullmatch(expected_git_oid) or expected_size < 0:
+        raise ValueError("Invalid pinned upstream blob metadata")
+    size = path.stat().st_size
+    if size != expected_size:
+        raise ValueError(f"Upstream pinned file size mismatch for {path.name}")
+    sha256 = hashlib.sha256()
+    git_blob = hashlib.sha1()
+    git_blob.update(f"blob {size}\\0".encode("ascii"))
     with path.open("rb") as source:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(chunk)
-    actual = digest.hexdigest()
-    if actual != expected:
+            sha256.update(chunk)
+            git_blob.update(chunk)
+    if sha256.hexdigest() != expected_sha256:
         raise ValueError(f"SHA-256 mismatch for {path.name}")
-    return actual
+    if git_blob.hexdigest() != expected_git_oid:
+        raise ValueError(f"Upstream Git blob mismatch for {path.name}")
+    return sha256.hexdigest()
 
 
 def _coordinate(token: str) -> str:
@@ -141,7 +169,7 @@ def _tracking_sample(path: Path, *, team: str, max_frames: int) -> dict[str, Any
     }
 
 
-def _event_audit(path: Path, frames: set[int]) -> dict[str, Any]:
+def _event_audit(path: Path, frames: set[tuple[int, int]]) -> dict[str, Any]:
     matches = 0
     checked = 0
     types: set[str] = set()
@@ -152,15 +180,17 @@ def _event_audit(path: Path, frames: set[int]) -> dict[str, Any]:
         for event in reader:
             if event["Team"] not in ("Home", "Away"):
                 raise ValueError("Unexpected Metrica event team")
+            period = int(event["Period"])
             frame = int(event["Start Frame"])
             timestamp = float(event["Start Time [s]"])
-            if frame < 0 or not math.isfinite(timestamp) or timestamp < 0:
-                raise ValueError("Invalid Metrica event frame/time")
+            if (period not in (1, 2) or frame < 0
+                    or not math.isfinite(timestamp) or timestamp < 0):
+                raise ValueError("Invalid Metrica event period/frame/time")
             if frame > 0 and abs(frame / 25 - timestamp) > 0.08:
                 raise ValueError("Event frame/time mismatch")
             checked += 1
             types.add(event["Type"])
-            matches += int(frame in frames)
+            matches += int((period, frame) in frames)
     if not checked:
         raise ValueError("Metrica source has no events")
     return {
@@ -177,8 +207,15 @@ def inspect_game(
     commit: str,
     expected_sha256: dict[str, str],
     max_frames: int = 250,
+    _test_git_blob_manifest: dict[str, tuple[str, int]] | None = None,
 ) -> dict[str, Any]:
-    """Offline, read-only audit; returns ONLY aggregate statistics and verified pins."""
+    """Offline audit; bind real source bytes to canonical upstream Git objects.
+
+    The private test override is used only by synthetic unit fixtures; reports
+    from test-overridden manifests are NEVER marked as upstream verified.
+    """
+    if commit != _UPSTREAM_COMMIT:
+        raise ValueError("Only the audited immutable upstream commit is supported")
     filenames = {
         kind: f"Sample_Game_{game}_Raw" + (
             "EventsData.csv" if kind == "Events" else f"TrackingData_{kind}_Team.csv"
@@ -190,8 +227,16 @@ def inspect_game(
         raise ValueError("Exactly Home, Away, Events SHA-256 pins required")
     if directory.name != f"Sample_Game_{game}":
         raise ValueError("Directory name must identify the same Metrica sample game")
+    manifest = (
+        _UPSTREAM_BLOBS[game]
+        if _test_git_blob_manifest is None else _test_git_blob_manifest
+    )
+    if set(manifest) != set(filenames):
+        raise ValueError("Canonical upstream source manifest is incomplete")
     verified = {
-        kind: _sha256(directory / name, expected_sha256[kind])
+        kind: _verify_source_bytes(
+            directory / name, expected_sha256[kind], *manifest[kind],
+        )
         for kind, name in filenames.items()
     }
     home = _tracking_sample(directory / filenames["Home"], team="Home", max_frames=max_frames)
@@ -200,12 +245,21 @@ def inspect_game(
     times_away = away.pop("_times")
     if times_home != times_away:
         raise ValueError("Home/Away frame and timestamp sequences are not synchronized")
-    events = _event_audit(directory / filenames["Events"], {t[1] for t in times_home})
+    events = _event_audit(directory / filenames["Events"], {(t[0], t[1]) for t in times_home})
     return {
         "origin": "metrica_sample_csv_offline",
         "source_commit": commit,
         "game": game,
-        "source_files": {kind: {"url": urls[kind], "sha256": verified[kind]} for kind in filenames},
+        "canonical_upstream_blob_identity_verified": _test_git_blob_manifest is None,
+        "source_files": {
+            kind: {
+                "url": urls[kind],
+                "sha256": verified[kind],
+                "git_blob_oid": manifest[kind][0],
+                "verified_bytes": manifest[kind][1],
+            }
+            for kind in filenames
+        },
         "frame_rate_hz": 25,
         "teams": {"Home": home, "Away": away},
         "events": events,
