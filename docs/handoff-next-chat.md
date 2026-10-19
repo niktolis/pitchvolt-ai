@@ -1,3 +1,28 @@
+# 19 October — Issue #150, authentic observed 25-second clip encoder
+
+**Merged PR #146**: commit cb5d897592c749d322aa3f3ce77f051a717a4ea1,
+merge-only Foundry smoke and Python/frontend/architecture passed.
+New standalone Issue #150 branch feat/150-idsse-source-backed-clip-export
+adds deterministic offline Sportec player XY + ball XYZ encoding from
+full SHA-pinned original source; source event 18226500000041, frame
+12519, period 1, frames 12219..12843 (625 samples, 25 Hz).
+Output stores source identities, frame IDs, timestamps, true source
+status, DFL/CC-BY-4.0 attribution and verified hashes. A strict decoder
+rejects null/fabricated samples, skipped frame IDs and timestamp drift.
+An isolated read-only GitHub workflow exports only the compact
+derived asset and aggregate SHA report as a seven-day artifact.
+No original ~419MB XML committed, no production hosting, no inferred
+player carrier, no Azure/Foundry changes. Synthetic unit tests are
+not substitutes for the authentic workflow acceptance.
+
+Next after **manager approval** of this PR: review/download the real
+asset and implement a separately approved Three.js historical replay
+mode with all 22 source-backed moving players, moving ball and existing
+replay controls. Compare deployed UI to branding preview. Preserve
+independent UI work and the source data CC BY/DFL attributions.
+
+---
+
 # 19 October: IDSSE authentic source-window inspection milestone
 
 PR #144 was explicitly approved and merged into main at
