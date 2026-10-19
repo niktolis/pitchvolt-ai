@@ -185,7 +185,7 @@ export function Pitch({
         </div>
 
         {seekControls ? (
-          <div className="pitch-seek-strip" aria-label="Match time scrubber">
+          <div className="pitch-seek-strip">
             {seekControls}
           </div>
         ) : null}
