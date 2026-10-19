@@ -1,3 +1,4 @@
+import { useThree } from "@react-three/fiber";
 import { useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import { toWorld, type PitchPoint } from "./pitch-geometry";
@@ -10,6 +11,7 @@ const BLADE_COUNT = 1400;
  */
 export function KeyMomentGrass({ focus }: { focus: PitchPoint }) {
   const ref = useRef<THREE.InstancedMesh>(null);
+  const invalidate = useThree((state) => state.invalidate);
 
   useLayoutEffect(() => {
     const mesh = ref.current;
@@ -43,7 +45,8 @@ export function KeyMomentGrass({ focus }: { focus: PitchPoint }) {
 
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [focus.x, focus.y]);
+    invalidate();
+  }, [focus.x, focus.y, invalidate]);
 
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, BLADE_COUNT]} frustumCulled={false}>
@@ -52,7 +55,6 @@ export function KeyMomentGrass({ focus }: { focus: PitchPoint }) {
         color="#e1f2d7"
         roughness={0.94}
         side={THREE.DoubleSide}
-        vertexColors
       />
     </instancedMesh>
   );
