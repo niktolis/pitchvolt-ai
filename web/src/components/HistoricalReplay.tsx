@@ -329,8 +329,6 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
             <small>Player carrier and shot outcome are not established by this clip.</small>
           </div>
         </section>
-
-
       </section>
 
       <footer className="historical-attribution">
