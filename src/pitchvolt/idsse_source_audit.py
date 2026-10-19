@@ -95,6 +95,8 @@ def _match_metadata(root: ElementTree.Element) -> dict[str, object]:
     identities = [team.get("TeamId") for team in teams]
     if len(set(identities)) != 2 or any(not identity for identity in identities):
         raise ValueError("Missing or repeated team identifiers")
+    if set(identities) != {general.get("HomeTeamId"), general.get("GuestTeamId")}:
+        raise ValueError("Registered teams do not match match-header team IDs")
     # Presence/uniqueness only: no 11/11 positional coverage is inferred here.
     players: dict[str, int] = {}
     for team in teams:

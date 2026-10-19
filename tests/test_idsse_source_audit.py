@@ -110,7 +110,7 @@ def test_operator_provided_digest_is_validated_but_not_proof_of_origin(tmp_path)
         _audit(directory, digests, metadata_sha256="0" * 64)
     with pytest.raises(ValueError, match="SHA-256 mismatch"):
         _audit(directory, digests, events_sha256="0" * 64)
-    with pytest.raises(ValueError, match="64"):
+    with pytest.raises(ValueError, match="Valid operator events SHA-256 required"):
         _audit(directory, digests, events_sha256="BAD")
 
 
