@@ -6,8 +6,8 @@ import type { MatchEvent } from "../api/types";
 import { ballActionAtCursor } from "../domain/ballAction";
 import { displayName } from "../domain/presentation";
 import { FieldMarkings, GoalFrame, RecordedBallContact, Turf } from "./BroadcastPitchScene";
-import { KeyMomentHero } from "./KeyMomentHero";
 import { KeyMomentGrass } from "./KeyMomentGrass";
+import { KeyMomentHero } from "./KeyMomentHero";
 import {
   isSourcePitchPoint,
   keyMomentCameraPose,
