@@ -55,6 +55,8 @@ def inspect_frame_window(
     frame_count: int = 625,
     roster: dict[str, str] | None = None,
     require_original_digest: bool = True,
+    anchor_frame: int | None = None,
+    anchor_timestamp: str | None = None,
 ) -> dict[str, object]:
     """Scan per-object FrameSets with bounded memory and explicit coverage.
 
@@ -65,6 +67,18 @@ def inspect_frame_window(
         raise ValueError("Valid source period and non-negative first_frame required")
     if not 2 <= frame_count <= 750:
         raise ValueError("Bounded original tracking window must contain 2..750 frames")
+    if (anchor_frame is None) != (anchor_timestamp is None):
+        raise ValueError("Source shot anchor needs both frame and timestamp")
+    expected_anchor_time: datetime | None = None
+    if anchor_timestamp is not None:
+        try:
+            expected_anchor_time = datetime.fromisoformat(anchor_timestamp)
+        except ValueError as exc:
+            raise ValueError("Invalid source shot anchor timestamp") from exc
+        if expected_anchor_time.utcoffset() is None:
+            raise ValueError("Source shot anchor timestamp requires UTC offset")
+        if anchor_frame is None or not first_frame <= anchor_frame < first_frame + frame_count:
+            raise ValueError("Source shot anchor outside selected window")
     if require_original_digest:
         sha256_file(path, TRACKING_SHA256)
     stop = first_frame + frame_count
@@ -169,6 +183,17 @@ def inspect_frame_window(
             if any(v > 11 for v in sides.values()):
                 raise ValueError("More than eleven tracked players on one team")
     ball_visible = sum(rows[fid]["ball"][0] is not None for fid in ids)
+    aligned_anchor = False
+    if anchor_frame is not None:
+        recorded = rows.get(anchor_frame)
+        if recorded is None or recorded["ball"] is None:
+            raise ValueError("Source shot anchor lacks an observed ball frame")
+        recorded_time = recorded["time"]
+        if recorded_time is None or expected_anchor_time is None:
+            raise ValueError("Source shot anchor timestamp missing")
+        if abs((recorded_time - expected_anchor_time).total_seconds()) > 0.005:
+            raise ValueError("Source event and ball sample frame time mismatch")
+        aligned_anchor = True
     return {
         "provider": "idsse_sportec",
         "source_match_id": DFL_MATCH_ID,
@@ -185,7 +210,8 @@ def inspect_frame_window(
         "ignored_unregistered_objects": len(ignored_objects),
         "source_tracking_sha256_verified": require_original_digest,
         "source_player_carrier_known": False,
-        "event_frame_alignment_verified": False,
+        "event_frame_alignment_verified": aligned_anchor,
+        "aligned_source_shot_frame": anchor_frame if aligned_anchor else None,
         "public_replay_enabled": False,
         "source_playback_ready": False,
     }
@@ -305,6 +331,9 @@ def main() -> None:
         help="Exact source frame; omit to seek the first observed ball frame in the period",
     )
     parser.add_argument("--frame-count", type=int, default=625)
+    parser.add_argument(
+        "--shot-event-id", help="Select a recorded ShotAtGoal with a precise frame and time"
+    )
     args = parser.parse_args()
     prior = inspect_source_directory(
         args.directory, metadata_sha256=args.metadata_sha256,
@@ -314,24 +343,44 @@ def main() -> None:
         args.directory / SOURCE_NAMES["metadata"], args.metadata_sha256,
     )
     roster = registered_roster(metadata)
-    first_frame = (
-        args.first_frame if args.first_frame is not None
-        else find_first_ball_frame(args.directory / SOURCE_NAMES["tracking"], period=args.period)
-    )
+    events = shot_candidates(args.directory / SOURCE_NAMES["events"])
+    selected = None
+    if args.shot_event_id:
+        selected = next(
+            (event for event in events if event["source_event_id"] == args.shot_event_id),
+            None,
+        )
+        if selected is None:
+            raise ValueError("Requested shot event lacks an original source frame anchor")
+        if args.first_frame is not None:
+            raise ValueError("Choose either --first-frame or --shot-event-id")
+        # Sample exactly 12 seconds before and 13 seconds after the source shot.
+        first_frame = max(0, int(selected["calculated_frame"]) - 300)
+    else:
+        first_frame = (
+            args.first_frame if args.first_frame is not None
+            else find_first_ball_frame(
+                args.directory / SOURCE_NAMES["tracking"], period=args.period
+            )
+        )
     tracking = inspect_frame_window(
         args.directory / SOURCE_NAMES["tracking"],
         period=args.period, first_frame=first_frame,
         frame_count=args.frame_count, roster=roster, require_original_digest=True,
+        anchor_frame=int(selected["calculated_frame"]) if selected else None,
+        anchor_timestamp=str(selected["source_timestamp"]) if selected else None,
     )
-    events = shot_candidates(args.directory / SOURCE_NAMES["events"])
     print(json.dumps({
         "selected_match": MATCH_ID,
         "verified_original_tracking_digest": prior["tracking_sha256_verified"],
         "metadata_event_files_have_independent_upstream_digest_pins": False,
         "source_window": tracking,
+        "selected_shot_event_id": selected["source_event_id"] if selected else None,
         "exact_shot_frame_candidates": events[:50],
         "candidate_count": len(events),
-        "candidate_period_alignment_verified": False,
+        "candidate_period_alignment_verified": tracking[
+            "event_frame_alignment_verified"
+        ],
         "selected_historical_clip_ready": False,
         "public_replay_enabled": False,
     }, indent=2, sort_keys=True))

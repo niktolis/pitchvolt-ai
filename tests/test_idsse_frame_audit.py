@@ -164,3 +164,29 @@ def test_auto_window_start_uses_recorded_ball_frame_not_assumed_kickoff(tmp_path
         find_first_ball_frame(source, period=2)
     with pytest.raises(ValueError, match="Invalid source"):
         find_first_ball_frame(source, period=5)
+
+
+def test_source_shot_anchor_must_match_exact_observed_ball_time(tmp_path):
+    file = _source(tmp_path)
+    kwargs = dict(
+        period=1, first_frame=10000, frame_count=3,
+        roster={"DFL-OBJ-1": "home"}, require_original_digest=False,
+    )
+    aligned = inspect_frame_window(
+        file, anchor_frame=10001,
+        anchor_timestamp="2023-05-27T15:30:00.040+02:00", **kwargs,
+    )
+    assert aligned["event_frame_alignment_verified"]
+    assert aligned["aligned_source_shot_frame"] == 10001
+    with pytest.raises(ValueError, match="time mismatch"):
+        inspect_frame_window(
+            file, anchor_frame=10001,
+            anchor_timestamp="2023-05-27T15:30:00.500+02:00", **kwargs,
+        )
+    with pytest.raises(ValueError, match="outside selected window"):
+        inspect_frame_window(
+            file, anchor_frame=10010,
+            anchor_timestamp="2023-05-27T15:30:00.040+02:00", **kwargs,
+        )
+    with pytest.raises(ValueError, match="needs both"):
+        inspect_frame_window(file, anchor_frame=10001, **kwargs)
