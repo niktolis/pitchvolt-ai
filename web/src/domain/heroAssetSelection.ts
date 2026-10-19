@@ -1,6 +1,6 @@
 import type { MatchEvent } from "../api/types";
 import manifest from "../assets/heroAssetManifest.json";
-import { editorialPoseForEvent, type EditorialPose } from "../components/KeyMomentAthlete";
+import { type EditorialPose, editorialPoseForEvent } from "../components/KeyMomentAthlete";
 
 export interface VerifiedHeroAsset {
   url: string;
