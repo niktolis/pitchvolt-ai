@@ -106,6 +106,15 @@ class SourceCoordinate(BaseModel):
     units: Literal["normalized_0_1", "statsbomb_120x80", "pitch_meters"]
 
 
+def _canonical_position(raw: SourceCoordinate) -> tuple[float, float]:
+    """One auditable source->105x68 conversion; no rounding or clamping."""
+    if raw.units == "normalized_0_1":
+        return raw.x * 105, raw.y * 68
+    if raw.units == "statsbomb_120x80":
+        return raw.x * (105 / 120), raw.y * (68 / 80)
+    return raw.x, raw.y
+
+
 class ObservedLocation(BaseModel):
     """Exactly one of observed, off-field, or explicitly unknown."""
 
@@ -122,8 +131,18 @@ class ObservedLocation(BaseModel):
         elif self.status == LocationStatus.OUTSIDE_PITCH:
             if self.raw is None or self.pitch is not None:
                 raise ValueError("Outside-pitch source data cannot be clamped to pitch")
-        elif self.raw is None or self.pitch is None:
-            raise ValueError("Observed on-pitch sample requires source and pitch coordinates")
+            x, y = _canonical_position(self.raw)
+            if 0 <= x <= 105 and 0 <= y <= 68:
+                raise ValueError("Inside-field source point cannot be labelled off-pitch")
+        else:
+            if self.raw is None or self.pitch is None:
+                raise ValueError("Observed on-pitch sample requires source and pitch coordinates")
+            x, y = _canonical_position(self.raw)
+            if not (
+                math.isclose(x, self.pitch.x, abs_tol=1e-7)
+                and math.isclose(y, self.pitch.y, abs_tol=1e-7)
+            ):
+                raise ValueError("Pitch coordinate differs from recorded source position")
         return self
 
 
