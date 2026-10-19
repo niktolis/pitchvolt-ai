@@ -83,7 +83,9 @@ export function KeyMomentAthlete({
   useEffect(
     () => () => {
       clothBump?.dispose();
-      Object.values(materials).forEach((material) => material.dispose());
+      Object.values(materials).forEach((material) => {
+        material.dispose();
+      });
     },
     [clothBump, materials],
   );
@@ -91,7 +93,7 @@ export function KeyMomentAthlete({
   // Pose changes are art direction for an action CATEGORY, not source-tracked
   // joint samples or an animation of the player's recorded movement.
   const leftLeg = pose === "strike" ? 0.28 : pose === "stride" ? -0.25 : 0.04;
-  const rightLeg = pose === "strike" ? -0.70 : pose === "stride" ? 0.35 : -0.04;
+  const rightLeg = pose === "strike" ? -0.7 : pose === "stride" ? 0.35 : -0.04;
   const torsoLean = pose === "stride" ? 0.13 : pose === "defend" ? 0.18 : -0.07;
   const armSwing = pose === "stride" ? 0.3 : pose === "strike" ? 0.16 : 0.05;
 
@@ -106,7 +108,7 @@ export function KeyMomentAthlete({
           <sphereGeometry args={[0.37, 20, 18]} />
         </mesh>
         <mesh material={materials.shorts} castShadow position={[0, -0.06, 0]}>
-          <cylinderGeometry args={[0.275, 0.30, 0.27, 20]} />
+          <cylinderGeometry args={[0.275, 0.3, 0.27, 20]} />
         </mesh>
         {/* Collar, sleeve piping and hand-authored football fabric folds. */}
         <mesh material={materials.trim} position={[0, 0.69, 0]} rotation={[Math.PI / 2, 0, 0]}>
@@ -168,7 +170,7 @@ export function KeyMomentAthlete({
             <mesh material={materials.trim} position={[0, -0.51, 0.009]}>
               <cylinderGeometry args={[0.126, 0.125, 0.034, 18]} />
             </mesh>
-            <mesh material={materials.boot} castShadow position={[0, -0.90, 0.135]}>
+            <mesh material={materials.boot} castShadow position={[0, -0.9, 0.135]}>
               <capsuleGeometry args={[0.15, 0.24, 8, 16]} />
             </mesh>
             <mesh material={materials.outsole} castShadow position={[0, -1.005, 0.148]}>
