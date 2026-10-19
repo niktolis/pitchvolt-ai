@@ -46,7 +46,7 @@ export function inspectGLB(bytes) {
     throw new Error("A self-contained GLB binary buffer is mandatory");
   }
   const secondOffset = 20 + jsonSize;
-  if (secondOffset + 8 > bytes.byteLength || bytes.toString("ascii", secondOffset + 4, secondOffset + 8) !== "BIN\\0") {
+  if (secondOffset + 8 > bytes.byteLength || bytes.readUInt32LE(secondOffset + 4) !== 0x004e4942) {
     throw new Error("GLB must contain embedded binary chunk");
   }
   // Self-hosted models must be self-contained and must not reference external resources.
