@@ -1,7 +1,32 @@
+# 19 October: first authenticated merged-PR Foundry smoke and fix
+
+**Current facts supersede older milestone A notes below.** PR #130
+is merged (`eb6f4299ebd4aa9c2679fc998bd6f74df62e4a80`).
+Azure operator verified both immutable OIDC federations on the existing
+CI app (main branch + `:pull_request`), Reader account RBAC and Foundry
+User project RBAC.
+
+PR #135 post-merge Foundry smoke:
+https://github.com/niktolis/pitchvolt-ai/actions/runs/39211398821
+OIDC + deployment check **PASS**, Analyst **11.57s**, Storyteller
+**3.08s**, six source evidence calls, typed decisions, deterministic
+verifier `publish` and `source=controlled` **PASS**. Overall job
+**FAIL** solely due to missing optional model-authored shadow text and
+assessment. No untrusted text was published; token usage unknown.
+This dedicated follow-up PR corrects the overly strict acceptance
+gate and stale OIDC documentation; it does not change production
+inference, role budgets, resource provisioning or the merge-only trigger.
+
+No operator PC smoke, retries, or per-run consent. Technical manager
+must explicitly approve any PR merge. Keep source-backed historical
+tracking Issue #134 as a separate workstream.
+
+---
+
 # Foundry merge automation checkpoint — 19 October 2026
 
 **CURRENT POLICY OVERRIDES HISTORICAL OPERATOR STOP NOTES BELOW.**
-PR #130 remains open. The technical manager has standing-authorized one
+PR #130 was subsequently merged. The technical manager has standing-authorized one
 billable Analyst → Storyteller → deterministic Verifier smoke test **after
 each PR is reviewed and merged into `main`**. New
 `.github/workflows/foundry-merge-smoke.yml` uses

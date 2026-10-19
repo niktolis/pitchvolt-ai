@@ -51,3 +51,12 @@ def test_summary_excludes_model_generated_content_and_unknown_usage() -> None:
 def test_summary_missing_or_failure_report_is_not_success() -> None:
     assert "No machine report was produced" in summary(None)
     assert "| Result | FAIL |" in summary({"smoke_status": "FAIL"})
+
+
+def test_oidc_docs_match_observed_immutable_token_subject() -> None:
+    runbook = (ROOT / "docs/github-azure-oidc.md").read_text(encoding="utf-8")
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    pr_subject = "repo:niktolis@1533654/pitchvolt-ai@1419712503:pull_request"
+    main_subject = "repo:niktolis@1533654/pitchvolt-ai@1419712503:ref:refs/heads/main"
+    assert pr_subject in runbook and pr_subject in workflow
+    assert main_subject in runbook

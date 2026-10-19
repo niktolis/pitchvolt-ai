@@ -68,3 +68,14 @@ production UI is backed by Foundry, or that trial credits are unlimited.
 Production provider stays local; the free trial spending limit must remain
 enabled. Manual approval still applies to every merge and new cloud
 resources/expanded model workloads, **not** to each bounded post-merge smoke.
+
+## First authenticated merge-only Foundry test — PR #135, 19 October
+
+[Cloud workflow run 39211398821](https://github.com/niktolis/pitchvolt-ai/actions/runs/39211398821)
+authenticated with the correct immutable PR subject and
+completed both real model roles, 6/6 source evidence events, full typed
+decision contracts and controlled verifier publication. Analyst 11.57s,
+Storyteller 3.08s. Overall exit **FAIL** because an optional generated
+shadow candidate was absent; the subsequent acceptance fix retains
+strict evidence/verifier checks without mandating exploratory prose.
+No unverified model prose was published. Token usage remains unknown.

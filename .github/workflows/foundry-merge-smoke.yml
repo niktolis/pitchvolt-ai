@@ -1,6 +1,6 @@
 name: Foundry smoke on merged PR
 
-# OIDC uses the trusted default-branch subject, matching existing Azure CI federation.
+# OIDC uses the verified pull_request subject; production main uses a different credential.
 # pull_request_target is safe here ONLY because all executable code is checked out
 # from the already-merged main commit; never check out an unmerged PR head.
 on:
@@ -79,7 +79,7 @@ jobs:
       - name: No-cost structural Foundry preflight
         run: uv run --frozen --extra foundry python -m pitchvolt.foundry_preflight
 
-      # Existing GitHub OIDC federated subject: repo:niktolis/pitchvolt-ai:ref:refs/heads/main
+      # Verified GitHub OIDC subject: repo:niktolis@1533654/pitchvolt-ai@1419712503:pull_request
       - name: Authenticate using existing short-lived Azure OIDC federation
         uses: azure/login@v3
         with:
