@@ -716,3 +716,34 @@ frontend/Python/architecture workflows execute and pass. Latest #143
 production appearance is unverified because deployment failed.
 Manual local test commands after entitlement repair are documented
 in `docs/architecture/hero-assets.md`.
+
+## CI and deployment recovered — update superseding the earlier blocker (19 Oct 2026)
+
+The earlier runner-provisioning blocker **Issue #149 is closed**:
+the repository owner deliberately made the repository **public** and
+applied GNU AGPL-3.0. All checks plus the Azure deployment now
+succeed on `main` at
+`65f026083eb92db2543f3253776824a2a0513a52`.
+GitHub run IDs: Frontend `39249830666`, Python `39249830606`,
+Architecture `39249830657`, Azure deployment `39249830616`.
+This establishes successful deployment workflow execution but
+**does not** establish visual screenshot acceptance of PR #143.
+
+PR #148 (`feat/142-verified-hero-asset-pipeline`) resumed
+full checks after repo visibility changed. Four genuine Biome
+errors were corrected and a Node-only model verifier was removed
+from Vitest discovery (it runs instead under `npm run assets:check`).
+The frontend, Python, architecture and production build on
+`f095bc9955089aa8cdc09663ec502f715b2752ad` all passed.
+This follow-up documentation commit itself requires its own final
+CI verification before the PR is ready to review. No realistic
+GLB was imported: the default manifest remains empty, and the
+post-#143 procedural avatar is the current shipped visual.
+The first actual source-verified model import/optimization remains
+next once PR #148 is approved and merged; see Issue #142.
+Never merge without explicit technical-manager approval.
+
+Concurrently merged legal work on `main` is PR #145:
+standard AGPL-3.0 license, repo public; preserve the user's
+licensing decisions and do not accidentally reintroduce proprietary
+notice language or remove license files.
