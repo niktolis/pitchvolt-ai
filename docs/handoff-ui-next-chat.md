@@ -605,3 +605,50 @@ Run full frontend/TypeScript/Vitest/Python/architecture CI, maintain
 green checks, request manager review. Do not merge without approval.
 Source screenshot remains binding; next deployment manual screenshot
 must verify both new 3D panel and functioning CTA.
+
+## 24. Key Moment 3D fidelity pass after merged PR #141 (19 October 2026)
+
+Verified main SHA `e28eac6f40963888ee3f9b593bd1c6e4f31c3ee5`,
+PR #141 **merged**. The existing Key Moment View Analysis CTA is now
+usable before and after AI insight publication, with evidence-safe facts
+and no false ball ownership. #141 deploy was pending when initial check
+was performed; do not claim exact production screenshot verification.
+
+The user requested **EA FC-quality** Key Moment visuals while respecting
+our approved application preview and stricter source-backed football
+positions. The after-#138 screenshot showed a still simplified green
+scene, low-poly player, thin lighting and minimal depth.
+
+PR branch `feat/ui-key-moment-render-fidelity-142` is the next
+non-blocked presentation milestone:
+- Add a standalone medium-detail **art-directed 3D hero avatar**,
+  `KeyMomentAthlete.tsx`, using physically shaded/cloth-bumped kit
+  material, rounded anatomy, face/football apparel/boots, and generic
+  body poses keyed to recorded event **type only**. Those poses are
+  *illustrations*, not observed joints or genuine player motion.
+- Key Moment remains at exact source actor `toWorld(location)`
+  and validated heading; no invented players/defenders/ball flight.
+- Improve low-angle, tighter Key Moment camera, ACES tone mapping,
+  directional key/fill/rim floodlight, 1024px single shadow map,
+  one-shot 256px contact shadow, and reproducible **1400-blade single
+  instanced turf draw call** near the source-actor ground point.
+- Preserve demand frame-loop, SVG fallback and the source-only ball
+  event-contact rules from PR #133. No new npm dependencies, backend,
+  Foundry billing or Azure resources.
+- Add camera/pose regression tests and manual deployment screenshot
+  acceptance. The eye-catching illustrations remain explicitly labelled
+  art-directed 3D portraits, NOT real video or sampled human pose.
+
+**Important fidelity ceiling:** procedural meshes cannot truthfully be
+declared AAA game photorealism. A separate Issue #142 covers verified,
+self-hosted optimized CC0 soccer avatar GLBs/LODs, material and licensing
+validation, GPU performance and explicit asset manifests. Innerscene
+offers CC0 ~17.5MB/112k triangle soccer figures (standing/running/kicking)
+but their GLBs and runtime cross-origin behavior were not validated in
+this engineering environment; do not make production hotlink them.
+Issue #134 still tracks real licensed multi-player/ball match tracking,
+independent of the hero-avatar/rig asset choice.
+
+Never label preview visually accepted from CI alone. Seek exact
+deployment SHA and a fresh manager screenshot after merge. No merge
+without manager approval.
