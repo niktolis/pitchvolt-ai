@@ -247,10 +247,14 @@ class TrackingSequence(BaseModel):
             if frame.match_id != self.manifest.match_id:
                 raise ValueError("Tracking snapshot cross-match identity mismatch")
             key = (frame.period, frame.clock_ms)
-            if frame.source_record_id in seen_records or key in seen_cursor:
+            if frame.source_record_id in seen_records or (
+                mode == CaptureMode.CONTINUOUS and key in seen_cursor
+            ):
                 raise ValueError("Duplicate tracking record or exact sample cursor")
-            if previous is not None and key <= previous:
-                raise ValueError("Tracking snapshots must be strictly time-ordered")
+            if previous is not None and (
+                key < previous or (mode == CaptureMode.CONTINUOUS and key == previous)
+            ):
+                raise ValueError("Tracking snapshots must be time-ordered")
             if mode == CaptureMode.CONTINUOUS:
                 if frame.source_frame is None or frame.source_event_id is not None:
                     raise ValueError("Continuous snapshots require frame, not event frame")

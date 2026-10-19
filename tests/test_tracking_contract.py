@@ -265,3 +265,23 @@ def test_numeric_sample_keys_forbid_string_or_float_coercion():
     for key, bad in (("period", "1"), ("clock_ms", "40"), ("source_frame", 1.5)):
         with pytest.raises(ValidationError):
             TrackingSnapshot.model_validate(original | {key: bad})
+
+
+def test_distinct_freeze_frames_can_share_an_exact_timestamp():
+    """Two recorded events at the same clock must not be mistaken for motion."""
+    frame1 = snapshot(frame=None, event="event-a", record="source-a")
+    frame2 = snapshot(frame=None, event="event-b", record="source-b")
+    seq = TrackingSequence(
+        manifest=manifest(
+            mode=CaptureMode.EVENT_EXACT,
+            provider=TrackingSource.STATSBOMB_360,
+        ),
+        snapshots=(frame1, frame2),
+    )
+    assert seq.at_event("event-a") == frame1
+    assert seq.at_event("event-b") == frame2
+    with pytest.raises(ValidationError, match="Duplicate"):
+        TrackingSequence(
+            manifest=seq.manifest,
+            snapshots=(frame1, snapshot(frame=None, event="event-a", record="source-b")),
+        )

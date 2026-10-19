@@ -23,7 +23,7 @@ Pydantic objects to be populated by separately reviewed adapters.
 | Object | Contract | Evidence safeguard |
 |---|---|---|
 | `TrackingManifest` | Schema version 1, historical provider/match, capture mode, source revision, file SHA-256 fingerprints, rights status | Reject duplicate source types; Metrica requires Home+Away+Events at immutable commit, 360 requires Events+FreezeFrames; no public-serving flag can be enabled |
-| `TrackingSnapshot` | One exact frame/event observation, source record identifier, period, source frame or event ID, clock milliseconds | Match ID bound to manifest, strict chronological order and uniqueness, at most 22 **observed** detections (not a 22-player guarantee) |
+| `TrackingSnapshot` | One exact frame/event observation, source record identifier, period, source frame or event ID, clock milliseconds | Match ID bound to manifest, ordered sample chronology, source ID uniqueness (two distinct events may share a timestamp), at most 22 **observed** detections (not a 22-player guarantee) |
 | `PlayerObservation` | One source detection, optional *real* identity/team, keeper flag, observed location | Anonymous detection remains anonymous; no inferred persistent identity across frames, no duplicate detected ID or identified player per frame; up to 11 identified team detections per side |
 | `ObservedLocation` | `observed_on_pitch`, `observed_outside_pitch`, `missing` | Source-native coordinate retained and transformed into 105 × 68 m `Point` **only** if in bounds; no clamping, synthetic defaults or forward fill; source-to-pitch coordinates must match exactly within numeric tolerance |
 | `PossessionObservation` | Unknown, explicitly source-reported controlled or contested | Unknown has no carrier/team, reported state requires explicit source-evidence IDs, contested observations cannot assign a player holder |
@@ -49,7 +49,7 @@ from an observed event actor.
   is forbidden, and only `at_event(source_event_id)` is available.
   Sparse StatsBomb freeze frames do **not** imply continuous motion.
 - All source snapshots must reference the **same match** as the
-  manifest, be strictly ordered, and contain distinct source
+  manifest, be time-ordered (event freeze frames may share an exact clock), and contain distinct source
   detection identities. Do not splice the Metrica sample game into
   Harbor/Ridge fictional replay or an unrelated StatsBomb historical
   match. This contract does not add a combined API or enable either
