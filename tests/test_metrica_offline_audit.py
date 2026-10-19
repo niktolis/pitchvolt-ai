@@ -57,7 +57,7 @@ def _synthetic_manifest(path, game):
         name = stem + ("EventsData.csv" if kind == "Events" else
                        f"TrackingData_{kind}_Team.csv")
         data = (path / name).read_bytes()
-        git_blob = hashlib.sha1(f"blob {len(data)}\\0".encode() + data).hexdigest()
+        git_blob = hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()
         manifest[kind] = (git_blob, len(data))
     return manifest
 

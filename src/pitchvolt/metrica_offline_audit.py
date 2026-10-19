@@ -17,7 +17,7 @@ from typing import Any
 
 _REPOSITORY = "https://github.com/metrica-sports/sample-data"
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
-_COMMIT = re.compile(r"[0-9a-f]{40}\\Z")
+_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 # Canonical git objects from the exact public Metrica commit tree, queried
 # by GitHub Git Trees API. Git blob OIDs bind the bytes to THAT revision;
 # an operator-provided SHA-256 checksum alone cannot establish origin.
@@ -63,7 +63,7 @@ def _verify_source_bytes(
         raise ValueError(f"Upstream pinned file size mismatch for {path.name}")
     sha256 = hashlib.sha256()
     git_blob = hashlib.sha1()
-    git_blob.update(f"blob {size}\\0".encode("ascii"))
+    git_blob.update(f"blob {size}\0".encode("ascii"))
     with path.open("rb") as source:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
             sha256.update(chunk)
