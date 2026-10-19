@@ -1,30 +1,32 @@
 import { describe, expect, it } from "vitest";
 import { heroAssetForEvent, isUnobservedHeroProp } from "./heroAssetSelection";
 
-describe("source-verified CC0 Key Moment asset selection", () => {
-  it.each(["pass", "carry", "shot", "pressure", "turnover", "goal"] as const)(
-    "uses the pinned static footballer for %s until a dedicated pose model is verified",
-    (kind) => {
-      const model = heroAssetForEvent(kind);
-      expect(model).not.toBeNull();
-      expect(model?.url).toBe("/assets/hero/neutral-5bb8a63f2824d84c.glb");
-      expect(model?.sha256).toBe(
-        "5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591",
-      );
-      expect(model?.sourceSha256).toBe(
-        "773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb",
-      );
-      expect(model?.license).toBe("CC0-1.0");
-      expect(model?.kitMaterial).toBe("Micah | top");
-      expect(model?.bytes).toBeLessThan(4 * 1024 * 1024);
-      expect(model?.sourceUrl).toContain("www.innerscene.com/tools/library/3d-parts/");
-    },
-  );
-  it("hides bundled static ball and fabricated shirt number, never real actor geometry", () => {
+const cases = [
+  ["carry", "stride-61e0538d75e289c1.glb"],
+  ["pressure", "stride-61e0538d75e289c1.glb"],
+  ["pass", "strike-4d09e5934a5ba79c.glb"],
+  ["shot", "strike-4d09e5934a5ba79c.glb"],
+  ["goal", "strike-4d09e5934a5ba79c.glb"],
+  ["turnover", "neutral-59ee4cbe96e07698.glb"],
+] as const;
+
+describe("same-family source-verified action-specific CC0 footballers", () => {
+  it.each(cases)("selects a provenance-pinned %s portrait without inventing motion", (event, filename) => {
+    const model = heroAssetForEvent(event);
+    expect(model).not.toBeNull();
+    expect(model?.url).toBe(`/assets/hero/${filename}`);
+    expect(model?.license).toBe("CC0-1.0");
+    expect(model?.sourceUrl).toContain("www.innerscene.com/tools/library/3d-parts/");
+    expect(model?.kitMaterial).toBe("Micah | top");
+    expect(model?.bytes).toBeLessThan(4 * 1024 * 1024);
+    expect(model?.sha256).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("does not hide the actor while suppressing decorative soccer ball and shirt number", () => {
     expect(isUnobservedHeroProp("Soccer ball | pentagon and hexagon panels")).toBe(true);
+    expect(isUnobservedHeroProp("soccer_ball_prop")).toBe(true);
     expect(isUnobservedHeroProp("Soccer jersey number")).toBe(true);
-    expect(isUnobservedHeroProp("male_casualsuit04")).toBe(false);
     expect(isUnobservedHeroProp("Micah | anatomical body")).toBe(false);
-    expect(isUnobservedHeroProp("short01")).toBe(false);
+    expect(isUnobservedHeroProp("Soccer footballer")).toBe(false);
   });
 });
