@@ -158,3 +158,69 @@ by this PR.
 **Do not merge this PR without manager review.** Existing merge-only
 Foundry smoke remains unchanged. No ad-hoc billable inference, new
 Azure resources, model deployments, or production replay activation.
+
+
+## Phase 2: bounded observed-frame audit and shot candidates
+
+Implemented in `src/pitchvolt/idsse_frame_audit.py`.
+
+Kloppy's source parser confirms that tracking XML stores a separate
+`FrameSet` for each physical player/ball object, grouped by
+`GameSection` (period), each containing source-numbered `Frame`
+records with timestamp `T` and source-native coordinates `X`, `Y`,
+and for the ball `Z`. The ball record also contains
+`BallStatus` and a *team-level* `BallPossession` flag.
+There is **no verified per-frame player ball-carrier** in that field.
+
+The audit:
+- refuses a production report until the original 418,524,833-byte
+  tracking source matches its published fixed SHA-256;
+- verifies the locally acquired match metadata and event XML with
+  operator-supplied digests, and extracts registered player/team IDs
+  (referee objects must not become extra field players);
+- streams the complete XML using stdlib ElementTree with bounded
+  memory, collecting only 2–750 selected source frame numbers from
+  one explicitly selected period; no full-match positional replay
+  is returned or cached;
+- preserves missing ball XYZ and player positions, checks unique
+  object/sample IDs, timestamp consistency among objects, 25 Hz
+  timing *for the sampled frames*, and actual player coverage;
+- never pads 22 players or creates a possession-holder, ball motion
+  path, source event alignment, or public playback asset;
+- separately lists only recorded `ShotAtGoal` events that contain
+  both an actual `CalculatedFrame` and `CalculatedTimestamp`.
+  Their game period remains **unknown** until separately verified;
+  no inferred event tracking joins are emitted.
+
+Run after downloading the original three files using the commands
+above. The frame IDs below are **operator input examples**, not a
+claim that these specific frames contain an eligible match scene:
+
+```bash
+uv run --frozen python -m pitchvolt.idsse_frame_audit \
+  --directory local-data/idsse/J03WMX \
+  --metadata-sha256 "$META_SHA" \
+  --events-sha256 "$EVENT_SHA" \
+  --period 1 \
+  --first-frame 10000 \
+  --frame-count 625
+```
+
+The CLI produces a privacy-safe **aggregate JSON report** including
+measured counts, verified-data flags and available source-linked
+shot candidate IDs. It does not output any player positions. A
+valid `CalculatedFrame` is only a *candidate anchor*: validate
+`GameSection`, absolute timestamp, 25 Hz and source match identity
+before claiming a synchronized 20–30-second replay.
+
+A separate, explicitly permitted `require_original_digest=False`
+parameter exists for pure unit-test XML fixtures. Its reports always
+state `source_tracking_sha256_verified=false` and
+`public_replay_enabled=false`; it is **not exposed by the CLI**.
+
+Source reference: PySport Kloppy's maintained Sportec XML tracking
+deserializer at
+https://github.com/PySport/kloppy/blob/master/kloppy/infra/serializers/tracking/sportec/deserializer.py
+
+No new Azure resources, GitHub billable source downloads, deployment
+changes or model invocations are authorized by this phase.
