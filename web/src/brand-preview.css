@@ -460,7 +460,21 @@ body::after {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(0, 8, 4, .02) 28%, rgba(1, 12, 6, .88) 100%);
+  background:
+    radial-gradient(ellipse at 50% 41%, transparent 32%, rgba(0, 8, 5, .42) 100%),
+    linear-gradient(180deg, rgba(2, 13, 8, .03) 22%, rgba(1, 12, 6, .81) 100%);
+}
+
+.key-moment-3d::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 12% 3%, rgba(235, 255, 200, .18), transparent 36%),
+    radial-gradient(ellipse at 93% 6%, rgba(128, 196, 233, .13), transparent 31%);
+  mix-blend-mode: screen;
 }
 
 .key-moment-actor-tag {
