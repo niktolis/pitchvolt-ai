@@ -1,10 +1,32 @@
 {
   "neutral": {
-    "url": "/assets/hero/neutral-5bb8a63f2824d84c.glb",
-    "sha256": "5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591",
-    "bytes": 2583972,
+    "url": "/assets/hero/neutral-59ee4cbe96e07698.glb",
+    "sha256": "59ee4cbe96e07698c139d6ef9aa6e3965bac553cb9f826c7238bef953d958662",
+    "bytes": 2583968,
     "sourceSha256": "773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb",
     "sourceUrl": "https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://www.innerscene.com/tools/library/terms",
+    "kitMaterial": "Micah | top",
+    "heightMetres": 1.84
+  },
+  "stride": {
+    "url": "/assets/hero/stride-61e0538d75e289c1.glb",
+    "sha256": "61e0538d75e289c19576a74666a46418b357acd365855db94790ee3b7d75f450",
+    "bytes": 2599032,
+    "sourceSha256": "450f18f276d7be1a1b4e314ca928d4e6bdb68fdd0bb771c8a91a0cead5e2005a",
+    "sourceUrl": "https://www.innerscene.com/tools/library/3d-parts/soccer-player-running-3d-person-team-sports-7293f9db",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://www.innerscene.com/tools/library/terms",
+    "kitMaterial": "Micah | top",
+    "heightMetres": 1.84
+  },
+  "strike": {
+    "url": "/assets/hero/strike-4d09e5934a5ba79c.glb",
+    "sha256": "4d09e5934a5ba79c46bd12c36dd85055e32ca58b269b8166aaa54c0e0b0b25e8",
+    "bytes": 2592744,
+    "sourceSha256": "37aff382d98f0742124e871115df388286d7506cf0192eb798b93a11ddeee739",
+    "sourceUrl": "https://www.innerscene.com/tools/library/3d-parts/soccer-player-kicking-3d-person-team-sports-bc15ef89",
     "license": "CC0-1.0",
     "licenseUrl": "https://www.innerscene.com/tools/library/terms",
     "kitMaterial": "Micah | top",

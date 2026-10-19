@@ -263,3 +263,50 @@ suppressed as unobserved match props. Inspect a possession-free/pressure
 frame for zero decorative ball, and verify the separately sourced
 ball-contact indicator is the only allowed ball graphic. Do not show
 invented shirt numbers or branded kits.
+
+## Source-safe Key Moment post-#151 correction: duplicate ball and poses
+
+The 19 Oct screenshot shows a **double football** at the source
+actor and mannequin-like standing pose even during carries. The
+approved follow-up replaces imported assets with a source-verified
+**same-character** trio: standing (neutral), running (carry/pressure),
+kicking (pass/shot/goal). The entire original embedded soccer ball
+and unsupported shirt-number **render graph nodes** are detached
+from every shipped GLB, tested both offline and in CI. The source
+event-contact ball remains the only eligible illustrated ball.
+A tighter camera frames the athlete more prominently. No movement
+path, opponent position, player skeleton tracking or true footage
+is implied; action-category pose remains editorial/static.
+
+Do not accept from CI alone. After exact deployment SHA, capture
+the full approved 3-column reference-sized layout and at least:
+1. A carry at the actor source location with one or zero eligible
+   ball-contact symbols, no extra rendered model ball.
+2. A pass/shot portrait in a static kicking stance, same character
+   face, hair and team-color style.
+3. A pressure/turnover event without ball geometry when the source
+   does not document event contact; none attached to the model feet.
+4. Mobile/narrow viewport with no cropped torso/head, intact
+   replay controls, fallback and badge not obscuring player.
+
+If a source-relative sporting pose is not visually credible,
+adjust static art direction or camera in a subsequent PR after
+review; do not add fabricated continuous tracks.
+
+## Playback ergonomics — scrub directly below central field (PR #155)
+
+An additional explicit user request moves the *single* match-time
+range slider, together with Play/Pause and ±2-second buttons,
+directly below the tactical field rather than below the lengthy
+match-activity rail. The green central 3D pitch, ball-status notes
+and all three dashboard cards otherwise remain unchanged.
+
+Acceptance: at desktop preview viewport and 375px/mobile width,
+the slider is visible as soon as the pitch is visible; accurate
+current time, keyboard-arrow and pointer/touch dragging work;
+seeking pauses playback, updates both tactical pitch and Key Moment
+from the same cursor, clears the prior manually selected event,
+and never exposes future events. Lower event rail, speed, scenario
+and audience controls remain available; only one range slider
+exists in the DOM. Verify visual hierarchy and no overflow after
+exact deployed SHA. Do not claim screenshot acceptance from CI.

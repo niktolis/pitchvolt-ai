@@ -1,5 +1,6 @@
 import type { MatchEvent } from "../api/types";
 import manifest from "../assets/heroAssetManifest.json";
+import unobservedHeroProps from "../assets/unobservedHeroProps.json";
 import { type EditorialPose, editorialPoseForEvent } from "../components/KeyMomentAthlete";
 
 export interface VerifiedHeroAsset {
@@ -18,7 +19,12 @@ const modelAssets = manifest as Partial<Record<EditorialPose, VerifiedHeroAsset>
 /** Never load an external GLB, and prefer the original procedural fallback. */
 export function heroAssetForEvent(eventType: MatchEvent["event_type"]): VerifiedHeroAsset | null {
   const pose = editorialPoseForEvent(eventType);
-  const asset = modelAssets[pose] ?? modelAssets.neutral;
+  // Pressure uses a running illustration until a defensive pose is verified.
+  // The athlete stays at the original source-recorded event position.
+  const asset =
+    modelAssets[pose] ??
+    (pose === "defend" ? modelAssets.stride : undefined) ??
+    modelAssets.neutral;
   if (
     !asset ||
     !/^\/assets\/hero\/[a-z-]+-[a-f0-9]{16}\.glb$/.test(asset.url) ||
@@ -31,5 +37,6 @@ export function heroAssetForEvent(eventType: MatchEvent["event_type"]): Verified
 
 /** Original CC0 mesh includes props that are not independently observed match events. */
 export function isUnobservedHeroProp(name: string): boolean {
-  return name.startsWith("Soccer ball |") || name === "Soccer jersey number";
+  const normalized = name.trim().toLowerCase().replaceAll("_", " ").replaceAll("-", " ");
+  return unobservedHeroProps.some((prefix) => normalized.startsWith(prefix));
 }
