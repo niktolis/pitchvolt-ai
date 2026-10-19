@@ -52,6 +52,34 @@ describe("source-aligned pitch camera", () => {
     },
   );
 
+  it.each([0.75, 1.55, 2.1])(
+    "fills the Key Moment with a real-scale avatar without clipping at aspect %s",
+    (aspect) => {
+      for (const point of [
+        { x: 0, y: 0 },
+        { x: 52.5, y: 34 },
+        { x: 105, y: 68 },
+      ]) {
+        const pose = keyMomentCameraPose(point);
+        expect(pose).not.toBeNull();
+        if (!pose) continue;
+        expect(pose.position.distanceTo(pose.target)).toBeLessThan(5);
+        const camera = new THREE.PerspectiveCamera(34, aspect, 0.1, 160);
+        camera.position.copy(pose.position);
+        camera.lookAt(pose.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        const ground = toWorld(point);
+        const feet = ground.clone().project(camera);
+        const head = ground.clone().add(new THREE.Vector3(0, 1.93, 0)).project(camera);
+        expect(Math.abs(feet.y)).toBeLessThan(0.98);
+        expect(Math.abs(head.y)).toBeLessThan(0.98);
+        expect(Math.abs(head.x)).toBeLessThan(0.6);
+        expect(Math.abs(head.y - feet.y)).toBeGreaterThan(0.65);
+      }
+    },
+  );
+
   it("refuses a fabricated Key Moment location when no valid event exists", () => {
     expect(keyMomentCameraPose(null)).toBeNull();
     expect(keyMomentCameraPose({ x: Number.NaN, y: 8 })).toBeNull();
