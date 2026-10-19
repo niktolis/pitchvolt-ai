@@ -14,7 +14,14 @@ describe("source-backed tactical pitch control placement", () => {
         seekControls={
           <fieldset className="replay-seek-controls">
             <legend>Match time controls</legend>
-            <input type="range" aria-label="Seek match time" min={0} max={300_000} value={120_000} readOnly />
+            <input
+              type="range"
+              aria-label="Seek match time"
+              min={0}
+              max={300_000}
+              value={120_000}
+              readOnly
+            />
           </fieldset>
         }
       >
