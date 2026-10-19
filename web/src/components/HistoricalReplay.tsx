@@ -345,7 +345,9 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
           <a href="https://doi.org/10.6084/m9.figshare.28196177" target="_blank" rel="noreferrer">
             Original dataset
           </a>
-          {" · Adapted: 25-second tracking excerpt, converted coordinates and editorial 3D visualization."}
+          {
+            " · Adapted: 25-second tracking excerpt, converted coordinates and editorial 3D visualization."
+          }
         </span>
         <span>Historical source replay · No Foundry inference</span>
       </footer>
