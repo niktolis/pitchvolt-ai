@@ -36,7 +36,7 @@ jobs:
             'https://www.innerscene.com/api/library/soccer-player-standing-3d-person-team-sports-f55b1b4f/download' \
             --output "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb"
           test "$(head -c 4 "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb")" = "glTF"
-          sha256sum "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb"
+          echo "773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb  ${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb" | sha256sum --check
           wc -c "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb"
       - name: Reproducibly optimize with fixed glTF Transform version and web textures
         shell: bash
@@ -45,7 +45,7 @@ jobs:
           npx --yes @gltf-transform/cli@4.5.1 optimize \
             "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb" \
             "${RUNNER_TEMP}/pitchvolt-hero-audit/optimized.glb" \
-            --texture-compress webp --texture-size 1024 \
+            --no-compress --texture-compress webp --texture-size 1024 \
             --simplify-ratio 0.65 --simplify-error 0.005
       - name: Record actual binary hashes and materials, never guess origin/material names
         run: |
