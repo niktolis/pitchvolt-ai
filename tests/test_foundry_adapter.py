@@ -116,7 +116,7 @@ def test_unsupported_reasoning_setting_rejected_before_cloud() -> None:
     ("max_tool_calls_per_analyst", 33),
     ("max_prompt_characters", 100),
     ("timeout_seconds_per_role", 0),
-    ("timeout_seconds_per_role", 16),
+    ("timeout_seconds_per_role", 31),
 ])
 def test_live_readiness_limits_reject_invalid_config(field: str, value: int) -> None:
     with pytest.raises(ValueError):
