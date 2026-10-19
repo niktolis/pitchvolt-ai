@@ -2,7 +2,11 @@ import { useGLTF } from "@react-three/drei";
 import { Component, type ReactNode, Suspense, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import type { MatchEvent } from "../api/types";
-import { heroAssetForEvent, type VerifiedHeroAsset } from "../domain/heroAssetSelection";
+import {
+  heroAssetForEvent,
+  isUnobservedHeroProp,
+  type VerifiedHeroAsset,
+} from "../domain/heroAssetSelection";
 import { KeyMomentAthlete } from "./KeyMomentAthlete";
 
 interface HeroProps {
@@ -35,10 +39,7 @@ function StaticVerifiedHero({ asset, color }: { asset: VerifiedHeroAsset; color?
       // Asset decorative props are NOT PitchVolt match observations.
       // The source event controls ball-contact rendering independently;
       // never leak the bundled static ball or an arbitrary jersey number.
-      if (
-        node.name.startsWith("Soccer ball |") ||
-        node.name === "Soccer jersey number"
-      ) {
+      if (isUnobservedHeroProp(node.name)) {
         node.visible = false;
         return;
       }
