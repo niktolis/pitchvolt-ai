@@ -1,5 +1,5 @@
 import { useGLTF } from "@react-three/drei";
-import { Component, Suspense, useEffect, useMemo, type ReactNode } from "react";
+import { Component, type ReactNode, Suspense, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import type { MatchEvent } from "../api/types";
 import { heroAssetForEvent, type VerifiedHeroAsset } from "../domain/heroAssetSelection";
@@ -37,7 +37,10 @@ function StaticVerifiedHero({ asset, color }: { asset: VerifiedHeroAsset; color?
       node.receiveShadow = true;
       const original = node.material;
       const replaceKit = (material: THREE.Material) => {
-        if (material.name !== asset.kitMaterial || !(material instanceof THREE.MeshStandardMaterial)) {
+        if (
+          material.name !== asset.kitMaterial ||
+          !(material instanceof THREE.MeshStandardMaterial)
+        ) {
           return material;
         }
         const editable = material.clone();
@@ -48,9 +51,7 @@ function StaticVerifiedHero({ asset, color }: { asset: VerifiedHeroAsset; color?
         materials.push(editable);
         return editable;
       };
-      node.material = Array.isArray(original)
-        ? original.map(replaceKit)
-        : replaceKit(original);
+      node.material = Array.isArray(original) ? original.map(replaceKit) : replaceKit(original);
     });
     return { clone: scene, ownedMaterials: materials };
   }, [gltf.scene, asset.kitMaterial, color]);
