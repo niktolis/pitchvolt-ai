@@ -57,3 +57,5 @@ The diagram predates existing Azure deployment and must not be treated as a curr
 - [IDSSE bounded source-window audit](idsse-sportec-acquisition.md#phase-2-bounded-observed-frame-audit-and-shot-candidates) — stream original Sportec XML, source shot candidates, integrity and coverage statistics; no interpolation or public playback.
 
 - [IDSSE deterministic observed replay export](idsse-sportec-acquisition.md#phase-3--deterministic-compact-observed-replay-asset-issue-150) — exact 25-second source measured player and ball clip; Actions-only derived asset with CC BY attribution.
+
+- [Historical 22-player 3D source replay](historical-source-replay.md) — DFL CC BY attribution, exact frame playback, genuine ball height and distinct synthetic mode.

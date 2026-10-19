@@ -1,3 +1,31 @@
+# 19 October — genuine IDSSE 22-player 3D historical replay (Issue #153)
+
+PR #152 merged as eec040d387b48b3cb174e64925b46b481a7c5e24;
+Python/frontend/diagrams and Foundry merge-only smoke passed. Azure
+deployment status should be independently verified before declaring
+release green.
+
+New independent PR (Issue #153) includes 25-second authentic clip
+from original verified J03WMX DFL IDSE/Sportec source,
+625 frames/22 players + ball XYZ at 25 Hz, source event
+18226500000041 frame 12519. CC BY4.0/source attribution retained.
+Web asset exact SHA-256 d1b6dda14d84a266cd26ef607c12b62712fe906a8de9c9b75be860b464346db6,
+and file size 381441 bytes. A branch-limited workflow validates and
+commits the exact reviewed asset from prior authenticated Actions
+without carrying original 419MB XML or relying on expiring artifact
+at runtime. No invented player/ball positions or ball carrier.
+
+New historical mode in same approved broadcast shell: observed XY
+for all players, measured ball Z, under-pitch exact source-frame
+playback controls, source-only shot/key moment, DFL attribution.
+Synthetic/Foundry mode accessible separately and unchanged.
+No Azure resources or ad hoc inference, manager must approve merge.
+Future visual acceptance demands a *post-deployment* screenshot
+matched against 1672x941 approved preview. See
+docs/architecture/historical-source-replay.md.
+
+---
+
 # 19 October — Issue #150, authentic observed 25-second clip encoder
 
 **Merged PR #146**: commit cb5d897592c749d322aa3f3ce77f051a717a4ea1,
