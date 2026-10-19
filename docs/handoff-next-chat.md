@@ -1,3 +1,36 @@
+# 19 October: IDSSE authentic source-window inspection milestone
+
+PR #144 was explicitly approved and merged into main at
+8553bc11e21697182c923c22de13daee69f6d7be.
+Separate UI PR #143 also merged afterward at
+808215a495f9e79af3ca8414c919d90640858334;
+tracking development is based on this newer main.
+
+**Critical CI incident:** post-merge #144 and #143 actions (Python,
+frontend, D2, production deploy and Foundry merge-only smoke) failed
+within 2–3 seconds each with **zero recorded steps**, and GitHub job log
+download returns 404 BlobNotFound. This is not established as a
+source-code failure; investigate GitHub Actions billing/runner capacity,
+repo/account policy and GitHub status before retrying. Do NOT retry
+the billable Foundry smoke without explicit new authorization; no
+actual model execution is evidenced by those zero-step jobs. Last
+confirmed successful prod rollout precedes these merges.
+
+New separate PR after #144: an offline bounded Sportec FrameSet parser,
+actual ball XYZ and player coverage counters, time/detection integrity,
+registered roster filtering, and source `ShotAtGoal` candidates with
+explicit recorded CalculatedFrame. Full real tracking SHA required by
+the CLI. Unit tests use ONLY authored toy XML; the 419 MB source has not
+yet been downloaded and its real observations/joins remain unverified.
+No production 3D replay, interpolation, public data serving or Azure
+resource changes. See docs/architecture/idsse-sportec-acquisition.md.
+
+**Manager must approve each PR merge.** Preserve the bounded
+post-merge smoke policy; never initiate additional billed inference
+to compensate for Actions infrastructure problems.
+
+---
+
 # 19 October 2026 — approved IDSSE pivot / source acquisition milestone
 
 **Current approved direction:** technical manager accepted use of

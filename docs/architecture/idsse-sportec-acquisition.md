@@ -158,3 +158,139 @@ by this PR.
 **Do not merge this PR without manager review.** Existing merge-only
 Foundry smoke remains unchanged. No ad-hoc billable inference, new
 Azure resources, model deployments, or production replay activation.
+
+
+## Phase 2: bounded observed-frame audit and shot candidates
+
+Implemented in `src/pitchvolt/idsse_frame_audit.py`.
+
+Kloppy's source parser confirms that tracking XML stores a separate
+`FrameSet` for each physical player/ball object, grouped by
+`GameSection` (period), each containing source-numbered `Frame`
+records with timestamp `T` and source-native coordinates `X`, `Y`,
+and for the ball `Z`. The ball record also contains
+`BallStatus` and a *team-level* `BallPossession` flag.
+There is **no verified per-frame player ball-carrier** in that field.
+
+The audit:
+- refuses a production report until the original 418,524,833-byte
+  tracking source matches its published fixed SHA-256;
+- verifies the locally acquired match metadata and event XML with
+  operator-supplied digests, and extracts registered player/team IDs
+  (referee objects must not become extra field players);
+- streams the complete XML using stdlib ElementTree with bounded
+  memory, collecting only 2–750 selected source frame numbers from
+  one explicitly selected period; no full-match positional replay
+  is returned or cached;
+- preserves missing ball XYZ and player positions, checks unique
+  object/sample IDs, timestamp consistency among objects, 25 Hz
+  timing *for the sampled frames*, and actual player coverage;
+- never pads 22 players or creates a possession-holder, ball motion
+  path, source event alignment, or public playback asset;
+- separately lists only recorded `ShotAtGoal` events that contain
+  both an actual `CalculatedFrame` and `CalculatedTimestamp`.
+  Their game period remains **unknown** until separately verified;
+  no inferred event tracking joins are emitted.
+
+Run after downloading the original three files using the commands
+above. The frame IDs below are **operator input examples**, not a
+claim that these specific frames contain an eligible match scene:
+
+```bash
+uv run --frozen python -m pitchvolt.idsse_frame_audit \
+  --directory local-data/idsse/J03WMX \
+  --metadata-sha256 "$META_SHA" \
+  --events-sha256 "$EVENT_SHA" \
+  --period 1 \
+  --first-frame 10000 \
+  --frame-count 625
+```
+
+The CLI produces a privacy-safe **aggregate JSON report** including
+measured counts, verified-data flags and available source-linked
+shot candidate IDs. It does not output any player positions. A
+valid `CalculatedFrame` is only a *candidate anchor*: validate
+`GameSection`, absolute timestamp, 25 Hz and source match identity
+before claiming a synchronized 20–30-second replay.
+
+A separate, explicitly permitted `require_original_digest=False`
+parameter exists for pure unit-test XML fixtures. Its reports always
+state `source_tracking_sha256_verified=false` and
+`public_replay_enabled=false`; it is **not exposed by the CLI**.
+
+Source reference: PySport Kloppy's maintained Sportec XML tracking
+deserializer at
+https://github.com/PySport/kloppy/blob/master/kloppy/infra/serializers/tracking/sportec/deserializer.py
+
+No new Azure resources, GitHub billable source downloads, deployment
+changes or model invocations are authorized by this phase.
+
+## Authentic J03WMX 625-frame benchmark — verified in CI, 19 October
+
+The isolated read-only GitHub job
+https://github.com/niktolis/pitchvolt-ai/actions/runs/39252710693
+downloaded the **real immutable-revision tracking XML** (419 MB) and
+validated its entire byte stream against the upstream-published SHA-256
+`d3dd92e509421a6466acb0a083c009035f1751bc5fd9ef42ffa8f20d01cf7d49`.
+
+The audit artifact `idsse-j03wmx-authentic-coverage` reports:
+
+| Measured property | Genuine observed result |
+|---|---|
+| Match | DFL-MAT-J03WMX, source period 1 |
+| Window | Source frames **10000..10624** (625 samples) |
+| Registered player coverage | **22/22 at all 625 frames** |
+| Independent ball XYZ | **625/625 samples**; none missing |
+| Time spacing | Source frame IDs and timestamps conform to 25 Hz |
+| Shot events with recorded frame anchor | **18** |
+| Referee / unregistered tracking objects excluded | **3** |
+| Controlling individual | **Not established** |
+| Selected shot frame/event alignment | **Not established by this benchmark** |
+| Authentic live replay asset | **Not yet produced** |
+
+This is measured aggregate evidence; no player or ball coordinates were
+published, and the source XML was **not** checked into Git or uploaded
+as an Actions artifact.
+
+The next isolated CI pass extends this baseline by validating a
+particular genuine `ShotAtGoal` source event,
+`18226500000041`, with `CalculatedFrame=12519` and
+`CalculatedTimestamp=2023-05-27T15:31:53.360+02:00`.
+It chooses the exact frame window beginning at
+`12519 - 300 = 12219`, then checks the event timestamp directly against
+the observed original ball frame `T` (5 ms max difference).
+Unlike a nearest-frame guess, failure rejects the segment. The chosen
+scene only becomes admissible for replay **if** both the independently
+verified full source and its observed 22-player/ball coverage pass.
+
+The workflow's source downloads are fixed to the immutable mirror
+revision and run with read-only repository permissions. Only a small
+audit JSON report is retained briefly; no Foundry inference, Azure
+deployment or custom paid resources are invoked.
+
+### Authentic event-frame alignment acceptance — successful
+
+The second
+[real-source CI run](https://github.com/niktolis/pitchvolt-ai/actions/runs/39253468741)
+independently downloaded and rechecked the original 419 MB source, then
+audited the **actual recorded first-half shot event
+`18226500000041`**. The original `CalculatedFrame=12519` matched
+its own `CalculatedTimestamp=2023-05-27T15:31:53.360+02:00`
+against the timestamp of the independent, measured ball frame.
+
+The accepted 25-second observation window is **frames 12219–12843**
+(period 1; 625 frames). All 625 have **22 genuine player observations,
+ball XYZ**, correct 25 Hz timing, and a source-exact event-frame join.
+The audit artifact sets:
+`source_tracking_sha256_verified=true`,
+`event_frame_alignment_verified=true`, and
+`candidate_period_alignment_verified=true`.
+Individual player control remains unverified; the run deliberately
+reports `source_player_carrier_known=false`.
+
+This is sufficient to **select** the replay segment as source-based
+input for the next **offline compact asset encoder**, but this PR does
+not emit source coordinates or deploy a UI asset. The
+`selected_historical_clip_ready=false` field therefore remains
+appropriately false until encoding, round-trip playback and
+visual acceptance are reviewed.

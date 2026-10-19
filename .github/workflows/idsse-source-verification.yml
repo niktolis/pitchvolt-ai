@@ -1,0 +1,81 @@
+name: IDSSE original source validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/idsse-source-verification.yml'
+      - 'src/pitchvolt/idsse_frame_audit.py'
+      - 'src/pitchvolt/idsse_source_audit.py'
+      - 'tests/test_idsse_frame_audit.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: idsse-original-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authentic-source:
+    # Run this large, read-only original-data test once for its implementation
+    # branch. After merge, operators can explicitly request it via Actions.
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'feat/134-idsse-bounded-sample-and-events-audit'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Download ONLY the immutable, public DFL-licensed source match
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET=local-data/idsse/J03WMX
+          mkdir -p "$TARGET"
+          for kind in metadata events tracking; do
+            readarray -t pair < <(PYTHONPATH=src python - "$kind" <<'PY'
+          import sys
+          from pitchvolt.idsse_source_audit import SOURCE_NAMES, source_url
+          kind = sys.argv[1]
+          print(SOURCE_NAMES[kind])
+          print(source_url(kind))
+          PY
+            )
+            echo "Fetching pinned J03WMX $kind from publisher mirror"
+            curl --fail --location --silent --show-error --max-time 1000 \
+              --output "$TARGET/${pair[0]}" "${pair[1]}"
+          done
+      - name: Verify original SHA-256 and inspect genuine source frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET=local-data/idsse/J03WMX
+          META_SHA=$(sha256sum "$TARGET/DFL_02_01_matchinformation_DFL-COM-000001_DFL-MAT-J03WMX.xml" | cut -d' ' -f1)
+          EVENT_SHA=$(sha256sum "$TARGET/DFL_03_02_events_raw_DFL-COM-000001_DFL-MAT-J03WMX.xml" | cut -d' ' -f1)
+          PYTHONPATH=src python -m pitchvolt.idsse_frame_audit \
+            --directory "$TARGET" \
+            --metadata-sha256 "$META_SHA" \
+            --events-sha256 "$EVENT_SHA" \
+            --period 1 \
+            --frame-count 625 \
+            --shot-event-id 18226500000041 > idsse-audit-report.json
+          python -m json.tool idsse-audit-report.json > /dev/null
+          {
+            echo "### IDSSE J03WMX original-source verification"
+            echo ""
+            echo "Source: DFL IDSSE/Sportec Open Data, CC BY 4.0."
+            echo "Attribution: Deutsche Fußball Liga and Bassek et al. (2025), Scientific Data."
+            echo ""
+            echo '~~~json'
+            cat idsse-audit-report.json
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload ONLY aggregate audit (no raw tracking or derived trajectories)
+        uses: actions/upload-artifact@v4
+        with:
+          name: idsse-j03wmx-authentic-coverage
+          path: idsse-audit-report.json
+          if-no-files-found: error
+          retention-days: 3
