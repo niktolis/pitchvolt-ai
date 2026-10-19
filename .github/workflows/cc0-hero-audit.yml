@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: cc0-hero-asset-audit
@@ -52,7 +52,27 @@ jobs:
           node web/scripts/cc0-hero-inspect.mjs \
             "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb" \
             "${RUNNER_TEMP}/pitchvolt-hero-audit/optimized.glb"
-      - name: Upload optimized CC0 model for visual inspection (not to production)
+      - name: Import only the exact audited optimized GLB into the feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591  ${RUNNER_TEMP}/pitchvolt-hero-audit/optimized.glb" | sha256sum --check
+          node web/scripts/import-hero-asset.mjs \
+            --pose neutral \
+            --source "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb" \
+            --source-sha256 773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb \
+            --source-url 'https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f' \
+            --optimized "${RUNNER_TEMP}/pitchvolt-hero-audit/optimized.glb" \
+            --kit-material 'Micah | top' \
+            --height-metres 1.84
+          node web/scripts/check-hero-assets.mjs
+          node --test web/scripts/hero-asset-audit.nodecheck.mjs
+          git add web/src/assets/heroAssetManifest.json web/public/assets/hero
+          git diff --cached --quiet && { echo "No new binary was imported" >&2; exit 1; }
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m 'feat(assets): import pinned optimized CC0 footballer hero'
+          git push origin HEAD:feat/142-cc0-real-footballer
+      - name: Upload optimized CC0 model for audit inspection
         uses: actions/upload-artifact@v4
         with:
           name: audited-cc0-soccer-player
