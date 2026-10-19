@@ -1,3 +1,38 @@
+# 19 October 2026 — approved IDSSE pivot / source acquisition milestone
+
+**Current approved direction:** technical manager accepted use of
+DFL-authorized, CC BY 4.0 IDSSE/Sportec tracking for real source-backed
+22-player and moving-ball replay. Earlier Metrica redistribution concerns
+still apply to Metrica but are not a universal barrier to published
+tracking data.
+
+Selected historical match: J03WMX (1. FC Köln vs Bayern München),
+mirror revision a715a38dfbaf5f58e431727c2b78d174101a703c.
+Mirror tracking file ~419 MB, published SHA-256 pinned in
+src/pitchvolt/idsse_source_audit.py. Official DFL attribution plus the
+Bassek et al 2025 Scientific Data paper must be cited. First dedicated
+PR adds **local-only** metadata/event XML safety/integrity checks and
+full tracking digest verification; source bytes are not bundled and
+actual original-file compatibility/25Hz/coverage have NOT been tested
+by the assistant runtime. See
+docs/architecture/idsse-sportec-acquisition.md.
+
+Current main at kickoff: e28eac6f40963888ee3f9b593bd1c6e4f31c3ee5.
+PR #140 StatsBomb 360 adapter was merged; standalone UI PRs also
+merged. Preserve replay, production Foundry-disabled setup and all
+visual approval criteria. This IDSSE PR does NOT enable public
+historical replay, AI inference changes or extra Azure resources.
+Upon CI green, request explicit manager approval to merge; the
+existing single-bounded Foundry smoke remains the only authorized
+post-merge inference.
+
+Following milestone: independently verify original source bytes
+locally; normalize real Sportec player/ball XYZ and event timing via
+tested Kloppy adapter, audit coverage, select and render actual 20–30 s
+recorded source scene without synthetic trajectories.
+
+---
+
 # 19 October — source-exact historical tracking after PR #139
 
 Latest verified merge: PR #139, main commit
