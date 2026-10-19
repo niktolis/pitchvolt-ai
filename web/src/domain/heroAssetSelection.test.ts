@@ -27,5 +27,4 @@ describe("source-verified CC0 Key Moment asset selection", () => {
     expect(isUnobservedHeroProp("Micah | anatomical body")).toBe(false);
     expect(isUnobservedHeroProp("short01")).toBe(false);
   });
-
 });
