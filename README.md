@@ -86,8 +86,12 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 
 PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources or increases to the approved smoke workload require explicit approval. The bounded post-merge Foundry smoke is pre-authorized for each PR merged to main; it does not run on ordinary commits. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend. Existing legacy-named Azure resources are intentionally reused, not recreated during the repository rename.
 
-## License and intellectual property
+## License
 
-PitchVolt AI is **proprietary, source-available software**, not open source. Original code, documentation, and branding remain all-rights-reserved unless their respective rights holders state otherwise. See [LICENSE](LICENSE) for the scope of the notice and how to request permission.
+Original PitchVolt AI source code is licensed under the **GNU Affero General Public License v3.0 only** (SPDX: `AGPL-3.0-only`). The [LICENSE](LICENSE) file contains the unmodified standard AGPLv3 text.
 
-If this repository becomes public, GitHub's Terms of Service allow users to view and fork it through GitHub; a proprietary notice does **not** prevent such forks or technical copying. No general permission is granted to redistribute, deploy, or commercially reuse the original materials. Third-party dependencies, datasets, and assets retain their own terms, and separate agreements (including hackathon submission rights) remain unaffected.
+Copyright (c) 2026 Nikolaos Tolis, for original contributions to which this copyright applies.
+
+AGPLv3 permits copying, forking, modification, redistribution, and commercial use subject to its license conditions. Distributing covered derivatives generally requires providing corresponding source under AGPLv3; operating a modified version that interacts with users over a network also requires offering its corresponding source to those users (section 13).
+
+Third-party dependencies, datasets, and assets retain their respective licenses and rights. This notice does not claim ownership of third-party materials, override separately granted rights (including hackathon submission terms), or grant trademark rights.
