@@ -650,3 +650,44 @@ Do not overstate EA FC-level realism from this procedural-only PR.
 Run complete frontend/TypeScript/Vitest/Python/architecture checks,
 request review, do not merge without manager approval. Await exact
 production SHA and same-resolution screenshot for visual signoff.
+
+## 19 October 2026 — approved #143 merged, Issue #142 licensed hero pipeline
+
+PR #143 was **explicitly approved and merged** at
+`808215a495f9e79af3ca8414c919d90640858334`. Before it,
+independent Issue #134 offline tracking PR #144 merged at
+`8553bc11e21697182c923c22de13daee69f6d7be`,
+adding verified IDSSE Sportec source audit. Preserve the entire
+rights/provenance gate and independent Foundry workflow decisions;
+neither PR provides independent sampled match tracking or
+authorization to invent athlete coordinates.
+
+The next feature branch is
+`feat/142-verified-hero-asset-pipeline`: 
+**production-safe, opt-in, same-origin, SHA-verifiable soccer GLB import,
+not yet a shipped third-party player mesh.** It adds a GLB binary
+structure/triangle-size/URL/CC0/kit-material validator; build-enforced
+public manifest file hashes; a local import CLI requiring original
+SHA-256 and source provenance; and a R3F loader which uses a
+fingerprinted self-hosted model if truly included, otherwise
+keeps #143's medium-detail physically shaded procedural avatar.
+The empty default manifest means **no remote model download in production**
+and no change in player position semantics. Do not claim this alone
+has reached EA FC visuals.
+
+Approved Innerscene CC0 catalog entry for standing/running/kicking:
+https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f
+and https://www.innerscene.com/tools/library/terms .
+Original GLBs are advertised as 17.5 MB / 112k triangles;
+**not inspected or downloaded in this runtime**. Therefore no
+source SHA, optimized binary, materials, actual performance or visual
+integration is claimed. Follow `docs/architecture/hero-assets.md`
+to acquire under CC0, optimize to <=4 MiB and <=90k triangles,
+inspect kit material name, and prepare a separate verified binary PR.
+Never hotlink a model/CDN at runtime or ship unrelated source assets.
+This is a **distinct task from Issue #134** tracked player/ball data.
+User supplied approved target and actual screenshot; exact-SHA
+real deployed screenshot remains mandatory to accept fidelity.
+
+Run CI fully, mark Ready for Review, request manager approval;
+never merge this follow-up without explicit approval.
