@@ -230,6 +230,37 @@ def shot_candidates(event_xml: Path) -> list[dict[str, object]]:
     return candidates
 
 
+
+def find_first_ball_frame(path: Path, *, period: int) -> int:
+    """Read the genuine ball FrameSet to choose an observed, not invented, cursor."""
+    if period not in _PERIODS.values():
+        raise ValueError("Invalid source game section")
+    active_ball = False
+    for action, element in _safe_xml(path):
+        tag = _local(element.tag)
+        if action == "start" and tag == "FrameSet":
+            if element.get("MatchId") != DFL_MATCH_ID:
+                raise ValueError("Sportec FrameSet belongs to another match")
+            active_ball = (
+                _PERIODS.get(element.get("GameSection", "")) == period
+                and element.get("TeamId") == "BALL"
+            )
+        elif action == "start" and tag == "Frame" and active_ball:
+            try:
+                frame_id = int(element.attrib["N"])
+            except (KeyError, ValueError) as exc:
+                raise ValueError("Ball sample lacks a source frame number") from exc
+            if frame_id < 0:
+                raise ValueError("Negative source frame")
+            return frame_id
+        elif action == "end" and tag == "FrameSet":
+            active_ball = False
+            element.clear()
+        elif action == "end" and tag == "Frame":
+            element.clear()
+    raise ValueError("No authentic ball sample found in requested period")
+
+
 def registered_roster(metadata_root: ET.Element) -> dict[str, str]:
     """Only source-authoritative metadata roster IDs may count as players."""
     teams = [e for e in metadata_root.iter() if _local(e.tag) == "Team"]
@@ -269,7 +300,10 @@ def main() -> None:
     parser.add_argument("--metadata-sha256", required=True)
     parser.add_argument("--events-sha256", required=True)
     parser.add_argument("--period", required=True, type=int, choices=[1, 2, 3, 4])
-    parser.add_argument("--first-frame", required=True, type=int)
+    parser.add_argument(
+        "--first-frame", type=int,
+        help="Exact source frame; omit to seek the first observed ball frame in the period",
+    )
     parser.add_argument("--frame-count", type=int, default=625)
     args = parser.parse_args()
     prior = inspect_source_directory(
@@ -280,9 +314,13 @@ def main() -> None:
         args.directory / SOURCE_NAMES["metadata"], args.metadata_sha256,
     )
     roster = registered_roster(metadata)
+    first_frame = (
+        args.first_frame if args.first_frame is not None
+        else find_first_ball_frame(args.directory / SOURCE_NAMES["tracking"], period=args.period)
+    )
     tracking = inspect_frame_window(
         args.directory / SOURCE_NAMES["tracking"],
-        period=args.period, first_frame=args.first_frame,
+        period=args.period, first_frame=first_frame,
         frame_count=args.frame_count, roster=roster, require_original_digest=True,
     )
     events = shot_candidates(args.directory / SOURCE_NAMES["events"])

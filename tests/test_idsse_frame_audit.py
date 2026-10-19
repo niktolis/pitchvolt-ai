@@ -153,3 +153,14 @@ def test_metadata_roster_authority_and_duplicate_rejection():
     root.find(".//Team[@TeamId='away']/Players/Player").set("PersonId", "one")
     with pytest.raises(ValueError, match="duplicate registered source player"):
         registered_roster(root)
+
+
+def test_auto_window_start_uses_recorded_ball_frame_not_assumed_kickoff(tmp_path):
+    from pitchvolt.idsse_frame_audit import find_first_ball_frame
+
+    source = _source(tmp_path)
+    assert find_first_ball_frame(source, period=1) == 10000
+    with pytest.raises(ValueError, match="No authentic ball sample"):
+        find_first_ball_frame(source, period=2)
+    with pytest.raises(ValueError, match="Invalid source"):
+        find_first_ball_frame(source, period=5)
