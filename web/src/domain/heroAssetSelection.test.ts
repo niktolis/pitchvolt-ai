@@ -11,16 +11,19 @@ const cases = [
 ] as const;
 
 describe("same-family source-verified action-specific CC0 footballers", () => {
-  it.each(cases)("selects a provenance-pinned %s portrait without inventing motion", (event, filename) => {
-    const model = heroAssetForEvent(event);
-    expect(model).not.toBeNull();
-    expect(model?.url).toBe(`/assets/hero/${filename}`);
-    expect(model?.license).toBe("CC0-1.0");
-    expect(model?.sourceUrl).toContain("www.innerscene.com/tools/library/3d-parts/");
-    expect(model?.kitMaterial).toBe("Micah | top");
-    expect(model?.bytes).toBeLessThan(4 * 1024 * 1024);
-    expect(model?.sha256).toMatch(/^[0-9a-f]{64}$/);
-  });
+  it.each(cases)(
+    "selects a provenance-pinned %s portrait without inventing motion",
+    (event, filename) => {
+      const model = heroAssetForEvent(event);
+      expect(model).not.toBeNull();
+      expect(model?.url).toBe(`/assets/hero/${filename}`);
+      expect(model?.license).toBe("CC0-1.0");
+      expect(model?.sourceUrl).toContain("www.innerscene.com/tools/library/3d-parts/");
+      expect(model?.kitMaterial).toBe("Micah | top");
+      expect(model?.bytes).toBeLessThan(4 * 1024 * 1024);
+      expect(model?.sha256).toMatch(/^[0-9a-f]{64}$/);
+    },
+  );
 
   it("does not hide the actor while suppressing decorative soccer ball and shirt number", () => {
     expect(isUnobservedHeroProp("Soccer ball | pentagon and hexagon panels")).toBe(true);
