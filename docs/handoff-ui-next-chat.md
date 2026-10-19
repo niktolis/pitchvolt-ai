@@ -779,3 +779,12 @@ Check 3D body orientation and feet/ground alignment, correct
 on-kit color for both teams, consistent actor scale, letter labels,
 ball marker, WebGL failure fallback and mobile GPU performance.
 CI must pass fully; **do not merge without explicit manager approval**.
+
+**Critical asset provenance correction:** GLB examination discovered
+its embedded decorative `Soccer ball | ...` and `Soccer jersey number`
+objects. Both are now hidden by `isUnobservedHeroProp` in
+`KeyMomentHero`, with regression coverage. No static ball may appear
+merely because the purchased/open-source avatar asset depicts one;
+only the separately sourced, timestamp-qualified ball contact marker
+is allowed. Check this visually at pressure/turnover frames after
+exact-SHA deployment.
