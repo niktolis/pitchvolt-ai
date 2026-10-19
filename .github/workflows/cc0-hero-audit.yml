@@ -1,0 +1,61 @@
+name: CC0 hero asset audit (feature branch only)
+
+on:
+  push:
+    branches:
+      - feat/142-cc0-real-footballer
+    paths:
+      - .github/workflows/cc0-hero-audit.yml
+      - web/scripts/cc0-hero-inspect.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cc0-hero-asset-audit
+  cancel-in-progress: true
+
+jobs:
+  inspect-official-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - name: Download only the official CC0 catalog GLB, bounded to 30 MB
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/pitchvolt-hero-audit"
+          curl --fail --location --retry 2 --retry-delay 2 \
+            --connect-timeout 15 --max-time 150 --max-filesize 30000000 \
+            --silent --show-error \
+            'https://www.innerscene.com/api/library/soccer-player-standing-3d-person-team-sports-f55b1b4f/download' \
+            --output "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb"
+          test "$(head -c 4 "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb")" = "glTF"
+          sha256sum "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb"
+          wc -c "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb"
+      - name: Reproducibly optimize with fixed glTF Transform version and web textures
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes @gltf-transform/cli@4.5.1 optimize \
+            "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb" \
+            "${RUNNER_TEMP}/pitchvolt-hero-audit/optimized.glb" \
+            --texture-compress webp --texture-size 1024 \
+            --simplify-ratio 0.65 --simplify-error 0.005
+      - name: Record actual binary hashes and materials, never guess origin/material names
+        run: |
+          node web/scripts/cc0-hero-inspect.mjs \
+            "${RUNNER_TEMP}/pitchvolt-hero-audit/original.glb" \
+            "${RUNNER_TEMP}/pitchvolt-hero-audit/optimized.glb"
+      - name: Upload optimized CC0 model for visual inspection (not to production)
+        uses: actions/upload-artifact@v4
+        with:
+          name: audited-cc0-soccer-player
+          path: ${{ runner.temp }}/pitchvolt-hero-audit/optimized.glb
+          retention-days: 3
+          if-no-files-found: error
