@@ -211,3 +211,21 @@ CTA overlay and actor identity badges. CI is not screenshot acceptance.
 A separate Issue #142 is required for optimized, self-hosted high-detail
 CC0 GLB assets; do not claim this self-contained procedural pass
 matches full AAA realism.
+
+## Optional licensed footballer GLB stage after PR #143 (19 October 2026)
+
+The currently approved deployed target still needs externally
+verified realistic football player meshes. Branch
+`feat/142-verified-hero-asset-pipeline` introduces an **opt-in
+binary asset integration contract**, with an empty default manifest.
+Thus its UI must remain identical to post-#143 until an actual
+locally inspected, optimized, independently SHA-pinned original
+CC0 soccer-player GLB is bundled on a further reviewed PR.
+Do not claim a visual improvement merely because model selection
+and CDN-free loading exist. Validate self-hosted asset size and
+kit material; no team official kit, ball tracking, realistic joint
+samples or extra field players may be assumed from a static GLB.
+Review standalone GLB provenance, manifest digest, mobile budget
+and exact-SHA browser screenshot before accepting visual fidelity.
+Approved target screenshot remains authoritative; start from the
+same 3D cinematic Key Moment camera and source-only positional truth.
