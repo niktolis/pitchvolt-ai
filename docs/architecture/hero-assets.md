@@ -172,3 +172,16 @@ real optimized binary has been checked. A static pose by itself also
 cannot achieve EA FC-style gameplay animation. Truly moving players
 and ball require separately verified, legally usable match tracking
 (Issue #134).
+
+### Model-embedded decorations filtered at runtime
+
+Inspecting the original optimized GLB revealed meshes named
+`Soccer ball | pentagon and hexagon panels` and `Soccer jersey number`.
+These are illustration props, **not PitchVolt-sourced ball tracking or
+shirt/athlete identity**. The `KeyMomentHero` scene explicitly hides
+both through the tested `isUnobservedHeroProp` predicate, before
+rendering any mesh. Only the separately timestamp-authorized
+`RecordedBallContact` may draw an event-time marker, and only
+source-authored player surname/emblem information is displayed.
+Review actual render and source-action modes after deployment to
+ensure bundled ball/number are absent even during pressure/turnover.
