@@ -1,7 +1,7 @@
 import type { MatchEvent } from "../api/types";
+import { isSourcePitchPoint } from "../components/pitch-geometry";
 import { ballActionAtCursor } from "./ballAction";
 import { clockLabel, displayName } from "./presentation";
-import { isSourcePitchPoint } from "../components/pitch-geometry";
 
 export interface SourceActionFact {
   label: string;
@@ -57,7 +57,7 @@ export function sourceActionDetails(
   facts.push({
     label: "Individual ball holder",
     value: ball?.carrierId
-      ? actorLabel ?? displayName(ball.carrierId)
+      ? (actorLabel ?? displayName(ball.carrierId))
       : "Not established from this event",
   });
   if (ball?.pressingPlayerId) {
@@ -67,7 +67,10 @@ export function sourceActionDetails(
     });
   }
   if (ball?.pressured) {
-    facts.push({ label: "Pressure evidence", value: "Reported; a contested ball is not established" });
+    facts.push({
+      label: "Pressure evidence",
+      value: "Reported; a contested ball is not established",
+    });
   }
   facts.push({
     label: "Tracking / contest status",
@@ -78,6 +81,7 @@ export function sourceActionDetails(
     eventId: event.event_id,
     heading: `Recorded ${event.event_type.replaceAll("_", " ")}`,
     facts,
-    qualification: "Source-authored event facts only. No tactical conclusion or ball trajectory is inferred.",
+    qualification:
+      "Source-authored event facts only. No tactical conclusion or ball trajectory is inferred.",
   };
 }
