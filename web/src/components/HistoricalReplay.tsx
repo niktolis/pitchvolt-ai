@@ -120,7 +120,12 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
               >
                 – : –
               </span>
-              <span className="broadcast-match-clock" title="Elapsed time within the recorded 25-second excerpt">Clip {timeLabel(elapsedMs)}</span>
+              <span
+                className="broadcast-match-clock"
+                title="Elapsed time within the recorded 25-second excerpt"
+              >
+                Clip {timeLabel(elapsedMs)}
+              </span>
             </div>
             <div className="broadcast-fixture-team broadcast-fixture-away">
               <span
@@ -211,79 +216,79 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
                 : "Verifying original match asset and player/ball observations…"}
             </div>
           )}
-        <section
-          className="pitch-seek-strip historical-replay-controls"
-          aria-label="Historical replay controls"
-        >
-          <div className="historical-source-clock">
-            <span>{timeLabel(elapsedMs)}</span>
-            <span>Original frame {frame?.source_frame ?? "—"} · 25 s clip</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Seek to exact source tracking frame"
-            min={0}
-            max={HISTORICAL_FRAME_COUNT - 1}
-            step={1}
-            value={frameIndex}
-            disabled={!clip}
-            onChange={(event) => seekTo(Number(event.target.value))}
-          />
-          <div className="historical-playback-actions">
-            <button
-              className="replay-button"
-              type="button"
+          <section
+            className="pitch-seek-strip historical-replay-controls"
+            aria-label="Historical replay controls"
+          >
+            <div className="historical-source-clock">
+              <span>{timeLabel(elapsedMs)}</span>
+              <span>Original frame {frame?.source_frame ?? "—"} · 25 s clip</span>
+            </div>
+            <input
+              type="range"
+              aria-label="Seek to exact source tracking frame"
+              min={0}
+              max={HISTORICAL_FRAME_COUNT - 1}
+              step={1}
+              value={frameIndex}
               disabled={!clip}
-              onClick={() => {
-                if (frameIndex === HISTORICAL_FRAME_COUNT - 1) setFrameIndex(0);
-                setPlaying(
-                  (wasPlaying) => !wasPlaying || frameIndex === HISTORICAL_FRAME_COUNT - 1,
-                );
-              }}
-            >
-              {playing && frameIndex < HISTORICAL_FRAME_COUNT - 1 ? "Pause" : "Play"}
-            </button>
-            <button
-              className="replay-button"
-              type="button"
-              disabled={!clip}
-              onClick={() => seekTo(frameIndex - 50)}
-              aria-label="Back two source-observed seconds"
-            >
-              −2s
-            </button>
-            <button
-              className="replay-button"
-              type="button"
-              disabled={!clip}
-              onClick={() => seekTo(frameIndex + 50)}
-              aria-label="Forward two source-observed seconds"
-            >
-              +2s
-            </button>
-            <fieldset className="segmented">
-              <legend className="visually-hidden">Playback speed</legend>
-              {PLAYBACK_SPEEDS.map((value) => (
-                <button
-                  key={value}
-                  className={speed === value ? "active" : ""}
-                  type="button"
-                  onClick={() => setSpeed(value)}
-                >
-                  {value}×
-                </button>
-              ))}
-            </fieldset>
-            <button
-              type="button"
-              className="replay-button"
-              onClick={() => seekTo(0)}
-              disabled={!clip}
-            >
-              Restart
-            </button>
-          </div>
-        </section>
+              onChange={(event) => seekTo(Number(event.target.value))}
+            />
+            <div className="historical-playback-actions">
+              <button
+                className="replay-button"
+                type="button"
+                disabled={!clip}
+                onClick={() => {
+                  if (frameIndex === HISTORICAL_FRAME_COUNT - 1) setFrameIndex(0);
+                  setPlaying(
+                    (wasPlaying) => !wasPlaying || frameIndex === HISTORICAL_FRAME_COUNT - 1,
+                  );
+                }}
+              >
+                {playing && frameIndex < HISTORICAL_FRAME_COUNT - 1 ? "Pause" : "Play"}
+              </button>
+              <button
+                className="replay-button"
+                type="button"
+                disabled={!clip}
+                onClick={() => seekTo(frameIndex - 50)}
+                aria-label="Back two source-observed seconds"
+              >
+                −2s
+              </button>
+              <button
+                className="replay-button"
+                type="button"
+                disabled={!clip}
+                onClick={() => seekTo(frameIndex + 50)}
+                aria-label="Forward two source-observed seconds"
+              >
+                +2s
+              </button>
+              <fieldset className="segmented">
+                <legend className="visually-hidden">Playback speed</legend>
+                {PLAYBACK_SPEEDS.map((value) => (
+                  <button
+                    key={value}
+                    className={speed === value ? "active" : ""}
+                    type="button"
+                    onClick={() => setSpeed(value)}
+                  >
+                    {value}×
+                  </button>
+                ))}
+              </fieldset>
+              <button
+                type="button"
+                className="replay-button"
+                onClick={() => seekTo(0)}
+                disabled={!clip}
+              >
+                Restart
+              </button>
+            </div>
+          </section>
           <div className="pitch-ball-status">
             <strong>Observed 22-player tracking · 25 source frames per second</strong>
             <small>
