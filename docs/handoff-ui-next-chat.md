@@ -652,3 +652,88 @@ independent of the hero-avatar/rig asset choice.
 Never label preview visually accepted from CI alone. Seek exact
 deployment SHA and a fresh manager screenshot after merge. No merge
 without manager approval.
+
+## 25. Post-#143 3D asset integration phase (19 October 2026)
+
+Approved PR #143 merged at `808215a495f9e79af3ca8414c919d90640858334`.
+It improves the procedural Key Moment hero, camera, lighting,
+contact shadows, grass and editorial posture. This is **not yet**
+the AAA photorealism visible in the binding PitchVolt preview.
+
+Issue #142 now has an incremental implementation branch
+`feat/142-verified-hero-asset-pipeline`:
+`web/scripts/hero-asset-audit.mjs`,
+`web/scripts/import-hero-asset.mjs`,
+`web/scripts/check-hero-assets.mjs`,
+`web/src/assets/heroAssetManifest.json`,
+`web/src/domain/heroAssetSelection.ts` and
+`web/src/components/KeyMomentHero.tsx`.
+The loader chooses only a strictly verified app-origin CC0 GLB.
+When none exists (the default), the current procedural avatar
+loads immediately. Failures and Suspense render the current fallback.
+Existing replay clock, source actor, ball event/contact, pitch lines,
+camera and cinematic source provenance remain unchanged.
+No new runtime CDN or third-party binary is introduced by this PR.
+
+Source candidate: original Innerscene CC0 standing/running/kicking
+footballers; each advertised ~17.5 MB and 112k triangles. Importer
+requires independently acquired actual original, original sha256,
+local optimized GLB <=4MiB/90k tris and verified jersey material;
+CI rejects invalid cached files and unexpected external dependencies.
+**No actual model original/download/optimization was available here.**
+Separate source-verified asset PR is required to make a real figure
+appear and must validate kit recoloring, exact preview and GPU use.
+No fabricated players, animation, tracking or team kit licensing.
+See `docs/architecture/hero-assets.md`, Issue #142 and Issue #134.
+No merge before manager review; all CI must pass.
+
+Concurrent independent PR #144 merged ahead of #143 with source
+IDSSE Sportec provenance documentation. Preserve its logic/handoff.
+
+## 26. Critical CI/deployment blocking state, after PR #143 merge
+
+19 Oct 2026: Issue #149
+https://github.com/niktolis/pitchvolt-ai/issues/149 tracks **all GitHub
+hosted runner jobs failing before startup** in this private repo:
+main #143 `808215a495f9e79af3ca8414c919d90640858334`
+deployment, Foundry smoke, frontend/Python/D2 checks, and
+feature PR #148 plus independent PRs all fail with no runner,
+zero steps and missing log blobs. Attempted targeted retry also
+fails before checkout. GitHub billing/Actions quota/runner-entitlement
+is possible, but unconfirmed; owner must check. Do not assume website
+contains PR #143 or claim any PR #148 test passed. Do not change spend,
+privacy or runner setup without explicit approval.
+
+Pending: feature branch `feat/142-verified-hero-asset-pipeline`,
+PR #148, is DRAFT and implements GLB import/validation with
+**EMPTY optional asset manifest**. It therefore changes no visible
+player and has NOT shipped optimized third-party bytes.
+Run actual full green CI after Issue #149 is repaired, then manager
+review. Next separately approved action: real Innerscene source-byte
+acquisition, original hash pinning, optimize to <=4MiB/90k triangles,
+validated shirt material, actual on-site model, screenshot and GPU
+acceptance. Keep unrelated Issue #134 tracking license/temporal
+synchronization completely separate.
+
+## 27. GitHub Actions recovered; verified scope of GLB integration (19 October 2026)
+
+**Supersedes the Issue #149 outage note above**: the user changed
+repository visibility to public and added GNU AGPL-3.0. Issue #149
+has been closed. On `main`
+`65f026083eb92db2543f3253776824a2a0513a52`,
+actual frontend, Python, architecture and Azure deployment
+workflows **succeeded**. No visual claim until a screenshot
+of the exact deployed build is compared with the preview.
+
+PR #148 is the safe GLB import/build infrastructure, **not an
+imported realistic avatar**. Its manifest is `{}` and currently
+selects the procedural Key Moment hero. After runner recovery,
+real tests ran and surfaced Biome and Node-vs-Vitest discovery
+issues; both were corrected. The original test head
+`f095bc9955089aa8cdc09663ec502f715b2752ad`
+has all three full checks **green**. A subsequent docs-only commit
+requires fresh final check confirmation. Issue #142 is still
+the actual CC0 source-byte verification/optimization/model
+integration milestone. Continue strictly source-backed match
+positions; no fictional players/ball trajectories. Await
+manager merge approval on PR #148.

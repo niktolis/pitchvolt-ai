@@ -650,3 +650,100 @@ Do not overstate EA FC-level realism from this procedural-only PR.
 Run complete frontend/TypeScript/Vitest/Python/architecture checks,
 request review, do not merge without manager approval. Await exact
 production SHA and same-resolution screenshot for visual signoff.
+
+## 19 October 2026 — approved #143 merged, Issue #142 licensed hero pipeline
+
+PR #143 was **explicitly approved and merged** at
+`808215a495f9e79af3ca8414c919d90640858334`. Before it,
+independent Issue #134 offline tracking PR #144 merged at
+`8553bc11e21697182c923c22de13daee69f6d7be`,
+adding verified IDSSE Sportec source audit. Preserve the entire
+rights/provenance gate and independent Foundry workflow decisions;
+neither PR provides independent sampled match tracking or
+authorization to invent athlete coordinates.
+
+The next feature branch is
+`feat/142-verified-hero-asset-pipeline`: 
+**production-safe, opt-in, same-origin, SHA-verifiable soccer GLB import,
+not yet a shipped third-party player mesh.** It adds a GLB binary
+structure/triangle-size/URL/CC0/kit-material validator; build-enforced
+public manifest file hashes; a local import CLI requiring original
+SHA-256 and source provenance; and a R3F loader which uses a
+fingerprinted self-hosted model if truly included, otherwise
+keeps #143's medium-detail physically shaded procedural avatar.
+The empty default manifest means **no remote model download in production**
+and no change in player position semantics. Do not claim this alone
+has reached EA FC visuals.
+
+Approved Innerscene CC0 catalog entry for standing/running/kicking:
+https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f
+and https://www.innerscene.com/tools/library/terms .
+Original GLBs are advertised as 17.5 MB / 112k triangles;
+**not inspected or downloaded in this runtime**. Therefore no
+source SHA, optimized binary, materials, actual performance or visual
+integration is claimed. Follow `docs/architecture/hero-assets.md`
+to acquire under CC0, optimize to <=4 MiB and <=90k triangles,
+inspect kit material name, and prepare a separate verified binary PR.
+Never hotlink a model/CDN at runtime or ship unrelated source assets.
+This is a **distinct task from Issue #134** tracked player/ball data.
+User supplied approved target and actual screenshot; exact-SHA
+real deployed screenshot remains mandatory to accept fidelity.
+
+Run CI fully, mark Ready for Review, request manager approval;
+never merge this follow-up without explicit approval.
+
+## Immediate blocking operational state — GitHub-hosted Actions failure (19 October 2026)
+
+Independent **Issue #149** records a repository-wide hosted-runner
+failure, https://github.com/niktolis/pitchvolt-ai/issues/149.
+PR #143 was explicitly merged to main at
+`808215a495f9e79af3ca8414c919d90640858334`, but the subsequent
+`main` deployment, merge-only Foundry smoke and ALL usual CI jobs
+failed before assigning any runner or executing checkout. PR #148 and
+other independent feature branches show identical instant failure.
+Job API: `steps=[]`, `runner_name=""`, 404 `BlobNotFound` logs.
+A targeted frontend rerun failed identically. This is a **CI
+infrastructure/account-level blocker**, not test evidence.
+
+Suspect private-repo Actions free-minute exhaustion, spending limit,
+billing hold or runner-entitlement issue, but **billing state not
+verified**. Repository owner must inspect GitHub account Actions billing,
+quota, spending limit and payment failures, or contact GitHub Support.
+Do NOT spend money, increase spending limit, enable a self-hosted
+runner, change repository privacy or relax required checks without
+explicit manager approval. PR #148 MUST REMAIN DRAFT until actual
+frontend/Python/architecture workflows execute and pass. Latest #143
+production appearance is unverified because deployment failed.
+Manual local test commands after entitlement repair are documented
+in `docs/architecture/hero-assets.md`.
+
+## CI and deployment recovered — update superseding the earlier blocker (19 Oct 2026)
+
+The earlier runner-provisioning blocker **Issue #149 is closed**:
+the repository owner deliberately made the repository **public** and
+applied GNU AGPL-3.0. All checks plus the Azure deployment now
+succeed on `main` at
+`65f026083eb92db2543f3253776824a2a0513a52`.
+GitHub run IDs: Frontend `39249830666`, Python `39249830606`,
+Architecture `39249830657`, Azure deployment `39249830616`.
+This establishes successful deployment workflow execution but
+**does not** establish visual screenshot acceptance of PR #143.
+
+PR #148 (`feat/142-verified-hero-asset-pipeline`) resumed
+full checks after repo visibility changed. Four genuine Biome
+errors were corrected and a Node-only model verifier was removed
+from Vitest discovery (it runs instead under `npm run assets:check`).
+The frontend, Python, architecture and production build on
+`f095bc9955089aa8cdc09663ec502f715b2752ad` all passed.
+This follow-up documentation commit itself requires its own final
+CI verification before the PR is ready to review. No realistic
+GLB was imported: the default manifest remains empty, and the
+post-#143 procedural avatar is the current shipped visual.
+The first actual source-verified model import/optimization remains
+next once PR #148 is approved and merged; see Issue #142.
+Never merge without explicit technical-manager approval.
+
+Concurrently merged legal work on `main` is PR #145:
+standard AGPL-3.0 license, repo public; preserve the user's
+licensing decisions and do not accidentally reintroduce proprietary
+notice language or remove license files.
