@@ -181,7 +181,7 @@ def test_upstream_provenance_rejects_correct_sha256_for_wrong_bytes(tmp_path):
     path, hashes = _sample(tmp_path)
     original_manifest = _synthetic_manifest(path, 1)
     home_file = path / "Sample_Game_1_RawTrackingData_Home_Team.csv"
-    home_file.write_text(home_file.read_text().replace("0.2", "0.4", 1))
+    home_file.write_bytes(home_file.read_bytes().replace(b"0.2", b"0.4", 1))
     hashes["Home"] = hashlib.sha256(home_file.read_bytes()).hexdigest()
     with pytest.raises(ValueError, match="Git blob mismatch"):
         _run(path, hashes, test_manifest=original_manifest)
