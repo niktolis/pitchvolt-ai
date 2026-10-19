@@ -224,3 +224,46 @@ https://github.com/PySport/kloppy/blob/master/kloppy/infra/serializers/tracking/
 
 No new Azure resources, GitHub billable source downloads, deployment
 changes or model invocations are authorized by this phase.
+
+## Authentic J03WMX 625-frame benchmark — verified in CI, 19 October
+
+The isolated read-only GitHub job
+https://github.com/niktolis/pitchvolt-ai/actions/runs/39252710693
+downloaded the **real immutable-revision tracking XML** (419 MB) and
+validated its entire byte stream against the upstream-published SHA-256
+`d3dd92e509421a6466acb0a083c009035f1751bc5fd9ef42ffa8f20d01cf7d49`.
+
+The audit artifact `idsse-j03wmx-authentic-coverage` reports:
+
+| Measured property | Genuine observed result |
+|---|---|
+| Match | DFL-MAT-J03WMX, source period 1 |
+| Window | Source frames **10000..10624** (625 samples) |
+| Registered player coverage | **22/22 at all 625 frames** |
+| Independent ball XYZ | **625/625 samples**; none missing |
+| Time spacing | Source frame IDs and timestamps conform to 25 Hz |
+| Shot events with recorded frame anchor | **18** |
+| Referee / unregistered tracking objects excluded | **3** |
+| Controlling individual | **Not established** |
+| Selected shot frame/event alignment | **Not established by this benchmark** |
+| Authentic live replay asset | **Not yet produced** |
+
+This is measured aggregate evidence; no player or ball coordinates were
+published, and the source XML was **not** checked into Git or uploaded
+as an Actions artifact.
+
+The next isolated CI pass extends this baseline by validating a
+particular genuine `ShotAtGoal` source event,
+`18226500000041`, with `CalculatedFrame=12519` and
+`CalculatedTimestamp=2023-05-27T15:31:53.360+02:00`.
+It chooses the exact frame window beginning at
+`12519 - 300 = 12219`, then checks the event timestamp directly against
+the observed original ball frame `T` (5 ms max difference).
+Unlike a nearest-frame guess, failure rejects the segment. The chosen
+scene only becomes admissible for replay **if** both the independently
+verified full source and its observed 22-player/ball coverage pass.
+
+The workflow's source downloads are fixed to the immutable mirror
+revision and run with read-only repository permissions. Only a small
+audit JSON report is retained briefly; no Foundry inference, Azure
+deployment or custom paid resources are invoked.

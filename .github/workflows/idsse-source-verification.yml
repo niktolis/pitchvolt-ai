@@ -59,7 +59,8 @@ jobs:
             --metadata-sha256 "$META_SHA" \
             --events-sha256 "$EVENT_SHA" \
             --period 1 \
-            --frame-count 625 > idsse-audit-report.json
+            --frame-count 625 \
+            --shot-event-id 18226500000041 > idsse-audit-report.json
           python -m json.tool idsse-audit-report.json > /dev/null
           {
             echo "### IDSSE J03WMX original-source verification"
