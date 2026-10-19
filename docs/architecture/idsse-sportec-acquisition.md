@@ -294,3 +294,62 @@ not emit source coordinates or deploy a UI asset. The
 `selected_historical_clip_ready=false` field therefore remains
 appropriately false until encoding, round-trip playback and
 visual acceptance are reviewed.
+
+## Phase 3 — deterministic compact observed replay asset (Issue #150)
+
+Implementation: `src/pitchvolt/idsse_clip_export.py` and
+`tests/test_idsse_clip_export.py`. The existing standalone GitHub
+`IDSSE original source validation` workflow now exports an additional
+**seven-day Actions artifact**:
+`idsse-j03wmx-25s-observed-clip-v1`. It contains one verified JSON
+asset and a short SHA-256/coverage report, **not original tracking XML**.
+
+The source exporter requires:
+- The official pinned SHA-256 of the entire J03WMX tracking original,
+  verified metadata and events, two identified match teams, and an
+  exact recorded `ShotAtGoal` event aligned to source frame `12519`
+- Frames **12219 through 12843**, period 1, exactly 625 unique,
+  uninterrupted 25-Hz observed samples
+- Actual ball X/Y/Z in all 625 samples and exactly **11 source-identified
+  players per verified team** in every frame
+- An explicit, source-backed **pitch-center to canonical pitch-corner
+  translation**: `x = source_x + 52.5`,
+  `y = source_y + 34`, `z = source_z` metres.
+  The transform is reversible and does **not** clamp outside-pitch
+  source measurements, interpolate a gap or infer player possession.
+
+The deterministically serialized JSON is version 1, carries full
+source revision/file SHA metadata, DFL/CC BY 4.0 attribution and
+publication DOI, match/period/source event and frame IDs, exact ISO
+source timestamps, actual team-linked player IDs, one ball XYZ record
+per frame and original source ball state and **uninterpreted team-level**
+possession code. A sorted global player roster provides stable
+frame slots. A `null` slot means the player was not actually observed
+in that frame; it must **never** be forwarded from a previous frame.
+No source reports an individual controlling player.
+
+The independent `verify_compact_asset` acceptance checks
+source identity, SHA-256, complete frames, timestamps, all 22 verified
+observations per sample, genuine ball XYZ, source shot alignment,
+JSON schema version and `public_replay_enabled=false`.
+Unit tests use original **purpose-created fixtures**, not original match
+sample bytes; the read-only CI job executes against the authentic
+third-party source, not illustrative poses.
+
+Manual authorized offline regeneration from the pinned input directory:
+
+```bash
+uv run --frozen python -m pitchvolt.idsse_clip_export \
+  --directory local-data/idsse/J03WMX \
+  --metadata-sha256 "$META_SHA" \
+  --events-sha256 "$EVENT_SHA" \
+  --output local-data/derived/j03wmx-shot-12519-observed-v1.json
+```
+
+The clip is an **Actions-only derived artifact** for review. This PR
+does not add the clip to production static assets, activate an API or
+alter existing Harbor/Ridge replay, Azure deployment, Foundry roles
+or controlled narrative publication. A separate, manager-reviewed
+UI integration may consume the verified output after visual and
+licensing/attribution acceptance. No TV footage or proprietary
+club logos are included.

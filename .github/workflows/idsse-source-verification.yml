@@ -7,6 +7,8 @@ on:
       - 'src/pitchvolt/idsse_frame_audit.py'
       - 'src/pitchvolt/idsse_source_audit.py'
       - 'tests/test_idsse_frame_audit.py'
+      - 'src/pitchvolt/idsse_clip_export.py'
+      - 'tests/test_idsse_clip_export.py'
   workflow_dispatch:
 
 permissions:
@@ -20,7 +22,7 @@ jobs:
   authentic-source:
     # Run this large, read-only original-data test once for its implementation
     # branch. After merge, operators can explicitly request it via Actions.
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'feat/134-idsse-bounded-sample-and-events-audit'
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'feat/150-idsse-source-backed-clip-export'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -79,3 +81,50 @@ jobs:
           path: idsse-audit-report.json
           if-no-files-found: error
           retention-days: 3
+
+      - name: Encode and verify source-observed 25-second replay asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET=local-data/idsse/J03WMX
+          OUTPUT=local-data/derived/j03wmx-shot-12519-observed-v1.json
+          mkdir -p local-data/derived
+          META_SHA=$(sha256sum "$TARGET/DFL_02_01_matchinformation_DFL-COM-000001_DFL-MAT-J03WMX.xml" | cut -d' ' -f1)
+          EVENT_SHA=$(sha256sum "$TARGET/DFL_03_02_events_raw_DFL-COM-000001_DFL-MAT-J03WMX.xml" | cut -d' ' -f1)
+          PYTHONPATH=src python -m pitchvolt.idsse_clip_export \
+            --directory "$TARGET" \
+            --metadata-sha256 "$META_SHA" \
+            --events-sha256 "$EVENT_SHA" \
+            --output "$OUTPUT" > idsse-export-report.json
+          PYTHONPATH=src python - "$OUTPUT" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          from pitchvolt.idsse_clip_export import verify_compact_asset
+          report = json.loads(Path("idsse-export-report.json").read_text())
+          validated = verify_compact_asset(
+              Path(sys.argv[1]), expected_sha256=report["asset_sha256"]
+          )
+          assert validated["exact_shot_aligned"]
+          assert validated["ball_xyz_frames"] == 625
+          assert validated["players_per_frame"] == 22
+          print("Genuine original-source clip accepted:", report["asset_sha256"])
+          PY
+          {
+            echo "### Source-observed replay asset"
+            echo "Original J03WMX source verified at immutable revision."
+            echo "No source movement extrapolated, padded or interpolated."
+            echo "DFL/IDSSE — CC BY 4.0; Bassek et al (2025)."
+            echo '~~~json'
+            cat idsse-export-report.json
+            echo '~~~'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload compact observed 25-second clip (not original XML)
+        uses: actions/upload-artifact@v4
+        with:
+          name: idsse-j03wmx-25s-observed-clip-v1
+          path: |
+            local-data/derived/j03wmx-shot-12519-observed-v1.json
+            idsse-export-report.json
+          if-no-files-found: error
+          retention-days: 7
