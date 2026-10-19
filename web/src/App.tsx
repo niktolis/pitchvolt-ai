@@ -569,8 +569,6 @@ export function App() {
               Replay scenario
             </button>
 
-
-
             <fieldset className="segmented audience-switch">
               <legend className="visually-hidden">Audience mode</legend>
               {MODES.map((item) => (
