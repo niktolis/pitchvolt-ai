@@ -100,7 +100,7 @@ export function keyMomentCameraPose(
   // stays at the exact source point and no tracking or gesture is inferred.
   const target = recorded.clone().add(new THREE.Vector3(0, 1.0, 0));
   return {
-    position: target.clone().add(new THREE.Vector3(2.5, 1.8, 3.2)),
+    position: target.clone().add(new THREE.Vector3(1.95, 1.55, 2.75)),
     target,
   };
 }

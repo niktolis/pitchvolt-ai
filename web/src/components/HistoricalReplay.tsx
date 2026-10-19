@@ -120,7 +120,7 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
               >
                 – : –
               </span>
-              <span className="broadcast-match-clock">{timeLabel(elapsedMs)}</span>
+              <span className="broadcast-match-clock" title="Elapsed time within the recorded 25-second excerpt">Clip {timeLabel(elapsedMs)}</span>
             </div>
             <div className="broadcast-fixture-team broadcast-fixture-away">
               <span
@@ -211,49 +211,8 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
                 : "Verifying original match asset and player/ball observations…"}
             </div>
           )}
-          <div className="pitch-ball-status">
-            <strong>Observed 22-player tracking · 25 source frames per second</strong>
-            <small>
-              Exact frames only · DFL IDSSE · Camera is illustrative; player and ball locations are
-              measured
-            </small>
-          </div>
-        </section>
-
-        <section className="panel key-moment-panel" aria-label="Source-linked key moment">
-          <div className="panel-heading">
-            <h2>Key Moment</h2>
-            <span className="proof-badge">Source event</span>
-          </div>
-          {clip && shot ? (
-            <div className="historical-shot-view">
-              <HistoricalTrackingScene clip={clip} frame={shot} shotFocus />
-            </div>
-          ) : (
-            <div className="historical-shot-placeholder">
-              {error ? "Source cannot be verified" : "Loading measured shot position…"}
-            </div>
-          )}
-          <div className="historical-source-facts">
-            <strong>Recorded shot at goal</strong>
-            <p>
-              {shotReached ? "Reached in replay" : "Upcoming in replay"}
-              {" · "}Source event 18226500000041
-            </p>
-            <div className="historical-metric-pair">
-              <span>Exact event frame</span>
-              <strong>{HISTORICAL_SHOT_FRAME}</strong>
-            </div>
-            <div className="historical-metric-pair">
-              <span>Ball height at shot</span>
-              <strong>{shot ? `${shot.ball_xyz_m[2].toFixed(2)} m` : "—"}</strong>
-            </div>
-            <small>Player carrier and shot outcome are not established by this clip.</small>
-          </div>
-        </section>
-
         <section
-          className="pitch-replay-deck historical-replay-controls"
+          className="pitch-seek-strip historical-replay-controls"
           aria-label="Historical replay controls"
         >
           <div className="historical-source-clock">
@@ -325,12 +284,63 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
             </button>
           </div>
         </section>
+          <div className="pitch-ball-status">
+            <strong>Observed 22-player tracking · 25 source frames per second</strong>
+            <small>
+              Exact frames only · DFL IDSSE · Camera is illustrative; player and ball locations are
+              measured
+            </small>
+          </div>
+        </section>
+
+        <section className="panel key-moment-panel" aria-label="Source-linked key moment">
+          <div className="panel-heading">
+            <h2>Key Moment</h2>
+            <span className="proof-badge">Source event</span>
+          </div>
+          {clip && shot ? (
+            <div className="historical-shot-view">
+              <HistoricalTrackingScene clip={clip} frame={shot} shotFocus />
+            </div>
+          ) : (
+            <div className="historical-shot-placeholder">
+              {error ? "Source cannot be verified" : "Loading measured shot position…"}
+            </div>
+          )}
+          <div className="historical-source-facts">
+            <strong>Recorded shot at goal</strong>
+            <p>
+              {shotReached ? "Reached in replay" : "Upcoming in replay"}
+              {" · "}Source event 18226500000041
+            </p>
+            <div className="historical-metric-pair">
+              <span>Exact event frame</span>
+              <strong>{HISTORICAL_SHOT_FRAME}</strong>
+            </div>
+            <div className="historical-metric-pair">
+              <span>Ball height at shot</span>
+              <strong>{shot ? `${shot.ball_xyz_m[2].toFixed(2)} m` : "—"}</strong>
+            </div>
+            <small>Player carrier and shot outcome are not established by this clip.</small>
+          </div>
+        </section>
+
+
       </section>
 
       <footer className="historical-attribution">
         <span>
           {clip?.source.attribution ??
             "Deutsche Fußball Liga · IDSSE/Sportec Open Data · CC BY 4.0 · Bassek et al. (2025)"}
+          {" · "}
+          <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">
+            CC BY 4.0 license
+          </a>
+          {" · "}
+          <a href="https://doi.org/10.6084/m9.figshare.28196177" target="_blank" rel="noreferrer">
+            Original dataset
+          </a>
+          {" · Adapted: 25-second tracking excerpt, converted coordinates and editorial 3D visualization."}
         </span>
         <span>Historical source replay · No Foundry inference</span>
       </footer>

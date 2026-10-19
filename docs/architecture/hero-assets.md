@@ -185,3 +185,55 @@ rendering any mesh. Only the separately timestamp-authorized
 source-authored player surname/emblem information is displayed.
 Review actual render and source-action modes after deployment to
 ensure bundled ball/number are absent even during pressure/turnover.
+
+## 19 October 2026 — source-matched action character set and stripped model props
+
+**Implementation branch:** `feat/ui-cc0-action-pose-prop-safety-153`.
+All three variants were independently downloaded from their official
+Innerscene CC0 catalog endpoints on isolated GitHub-hosted runners;
+original source SHA-256 and exact reproducibly optimized SHA-256 were
+verified **before** import. Source identity and same descriptive Micah
+material set were present in each model. The final scene-graph exclusion
+step detached the embedded `Soccer ball | pentagon and hexagon panels`
+and `Soccer jersey number` nodes from scene roots and parent links.
+No unsourced ball/number node remains reachable by the R3F scene graph;
+runtime name-based suppression remains defense-in-depth.
+
+| Source pose | Original SHA-256 | Unstripped optimized SHA-256 | Imported scene-safe GLB | Triangles |
+|---|---|---|---|---:|
+| Standing / neutral | `773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb` | `5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591` | `neutral-59ee4cbe96e07698.glb` | 70,839 |
+| Running / stride | `450f18f276d7be1a1b4e314ca928d4e6bdb68fdd0bb771c8a91a0cead5e2005a` | `ebbed8336c2e12a50cfb9f69357a2e36a74c06b3c8b1666b289cbed8496ae161` | `stride-61e0538d75e289c1.glb` | 71,033 |
+| Kicking / strike | `37aff382d98f0742124e871115df388286d7506cf0192eb798b93a11ddeee739` | `9ddfee44a2fd0a243c583064adde5d448c1bd7aa33e22aacc199ed97e87ff721` | `strike-4d09e5934a5ba79c.glb` | 70,904 |
+
+The imported files each use approx. 2.6 MB and no external/geometry
+decoder CDN. The runner logs pinned source bytes and confirmed both
+decorative nodes were excluded for every model. The asset pipeline's
+`web/src/assets/unobservedHeroProps.json` is the common rejection
+policy for TypeScript runtime and Node build/audit; `strip-hero-props.mjs`
+rewrites GLB scene references to prevent reappearance, and
+`assertNoRenderedAssetProps` fails production asset checks if any
+rejected node is reachable. Unreferenced raw buffer payload may remain
+in the GLB; **the safeguard is removal from the render graph**, not
+a claim of binary-level geometry erasure. The old unsafe unsanitized
+neutral asset was deleted from the feature branch.
+
+Action routing: `carry` and `pressure` → running, `pass`,
+`shot` and `goal` → kicking, neutral/turnover → standing. The
+`pressure` case uses the validated running asset as an editorial
+defensive pose until an independent defending figure is verified.
+This changes **only depicted art-directed posture**, not player
+field coordinates, ball holder, multi-player tracking or measured
+individual movement.
+
+Tighter hero camera is also *editorial framing* and source location
+remains unchanged. All temporary write-enabled or audit-only GitHub
+Actions workflows used to import originals have been deleted from
+the final feature branch. The original 2D SVG and procedural GLB-load
+fallback continue to apply.
+
+Manual acceptance still needs deployed-SHA screenshots: one carry,
+one shot/pass, one pressure/turnover; check **zero duplicate ball**
+plus only the event-time contact marker, coherent body/hair/jersey
+appearance, feet grounding, actor legibility, close-up crop and
+replay/render performance. No pose animates along an invented path.
+The independent real spatial-tracking issue is #134.

@@ -3,6 +3,33 @@ import { readFileSync, statSync } from "node:fs";
 import { extname } from "node:path";
 
 export const MAX_HERO_BYTES = 4 * 1024 * 1024;
+const rejectedPrefixes = JSON.parse(
+  readFileSync(new URL("../src/assets/unobservedHeroProps.json", import.meta.url), "utf8"),
+);
+export function isRejectedHeroNodeName(name) {
+  const normalized = String(name).trim().toLowerCase().replaceAll("_", " ").replaceAll("-", " ");
+  return rejectedPrefixes.some((prefix) => normalized.startsWith(prefix));
+}
+
+export function assertNoRenderedAssetProps(bytes) {
+  const size = bytes.readUInt32LE(12);
+  const gltf = JSON.parse(bytes.toString("utf8", 20, 20 + size).trim());
+  const nodes = gltf.nodes ?? [];
+  const visited = new Set();
+  const visit = (index) => {
+    if (!Number.isInteger(index) || !nodes[index]) throw new Error("Invalid scene node");
+    if (visited.has(index)) return;
+    visited.add(index);
+    if (isRejectedHeroNodeName(nodes[index].name ?? "")) {
+      throw new Error(`Embedded unobserved object still reachable: ${nodes[index].name}`);
+    }
+    (nodes[index].children ?? []).forEach(visit);
+  };
+  (gltf.scenes ?? []).forEach((scene) => (scene.nodes ?? []).forEach(visit));
+  if (!visited.size) throw new Error("No renderable scene nodes present");
+  return visited.size;
+}
+
 export const MAX_HERO_TRIANGLES = 90000;
 
 export function sha256(buffer) {
@@ -104,6 +131,7 @@ export function verifyHeroAsset(path, entry) {
     throw new Error("Expected immutable documented terms reference");
   }
   const glb = inspectGLB(bytes);
+  assertNoRenderedAssetProps(bytes);
   if (
     !entry.kitMaterial ||
     !glb.materialNames.includes(entry.kitMaterial) ||

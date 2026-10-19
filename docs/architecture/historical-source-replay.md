@@ -78,3 +78,30 @@ in-app historical attribution credits DFL, CC BY 4.0, and the paper.
   deployed actual screenshot.
 - Manager approval required before merge. Do not initiate extra
   Foundry inference, provision Azure resources or bypass main rules.
+
+## Integration review after PR #155
+
+The historical replay control deck sits **inside the central pitch card
+immediately after the WebGL viewport** and ahead of ball/source status,
+matching the one-scrubber ergonomics of the existing synthetic replay.
+It uses a distinct 25 Hz source-frame cursor, with no duplicated slider.
+The historical clock is explicitly labelled *clip-relative*, not actual
+match wall-clock time.
+
+The public data license is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
+which permits redistribution and adaptation with attribution,
+license reference and indication of modifications. In the page footer,
+credit DFL and link to the original dataset and license, and describe
+the derived excerpt/coordinate/3D rendering changes. The repository's
+AGPL source license does not override the dataset's CC BY terms.
+
+**Publication-gate discrepancy requiring product approval:** The
+SHA-pinned derived source JSON currently contains
+`public_replay_enabled: false`, inherited from the offline export
+contract, while the proposed UI makes the excerpt selectable by the
+public. Do not change this field in place (doing so would break the
+verified SHA-256). Before enabling the historical mode on production,
+obtain explicit release-gate confirmation and, if necessary, publish
+a new immutable source-verified manifest/artifact with a distinct
+publication-enabled schema. Technical CI passing alone is not the
+release authorization.

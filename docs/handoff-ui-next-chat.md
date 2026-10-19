@@ -788,3 +788,69 @@ merely because the purchased/open-source avatar asset depicts one;
 only the separately sourced, timestamp-qualified ball contact marker
 is allowed. Check this visually at pressure/turnover frames after
 exact-SHA deployment.
+
+## 29. Following visual feedback on real GLB: duplicate ball and mannequin (19 Oct 2026)
+
+Actual screenshot `image(20261019-131536).png` showed the
+post-#151 Key Moment still displaying what appeared to be a
+decorative plus a source-contact football and only the same standing
+avatar regardless of event. User explicitly requests source-safe
+correction, a more lifelike consistent character family and a
+tighter cinematic shot.
+
+Branch `feat/ui-cc0-action-pose-prop-safety-153` adds a
+source-verified trio of Innerscene CC0 **same Micah athlete**
+standing/running/kicking GLBs; each ~2.6MB, <=71,033
+triangles, distinct fingerprint, original source SHA, official CC0
+provenance and named `Micah | top` kit material. Import jobs
+verified and detached **both embedded ball and decorative
+jersey number nodes** from the GLB scene graphs; builder
+now asserts that all shipped hero GLBs have no scene-reachable
+unsourced props. One shared JSON rejection policy drives runtime,
+stripper and audit. The app-owned `RecordedBallContact` remains
+the sole eligible ball representation for specific events, and
+its provenance semantics are unchanged. The old unsafe GLB is
+replaced by the sanitized standing model.
+
+New action routing:
+- `carry` and `pressure` → running/press editorial illustration
+- `pass`, `shot`, `goal` → kicking editorial illustration
+- `turnover`/other → standing
+These images are **static action-category art direction**, not
+continuous genuine athlete tracking or pose samples. The avatar
+is larger due to closer camera, without moving the source player
+point, inventing defending positions or interpolating ball motion.
+The baseline three-card preview and beneath-pitch transport stay
+unchanged. All one-off GitHub-hosted write-privileged import
+workflows have been removed after successful model import.
+
+Acceptance must use the exact deployed SHA and current screenshot
+of representative carry, shot, pressure and fallback; compare
+against the approved reference. No PR merging without explicit
+manager approval or CI green.
+
+## 30. Match time scrubber moved under the tactical pitch (19 October 2026)
+
+The user explicitly requested the time bar directly beneath the central
+tactical pitch for easier manipulation. **Same review PR #155**, not an
+extra PR: the existing controlled `fieldset.replay-seek-controls`
+(with Play/Pause, −2 s, match-clock range slider and +2 s) was moved
+from the lower `pitch-replay-deck > control-bar` into the
+`Pitch` component's new `seekControls` slot, immediately after
+the field and **before** the recorded ball-status information.
+
+The slider still uses the original canonical `cursorMs`/
+`bounds.start`/`bounds.end`, pauses playback on seeking, clears
+manual event selection, and preserves ±2 s bounded stepping. **No
+duplicate slider or second clock state.** The lower replay deck retains
+the event activity rail plus scenario/speed/audience controls.
+The new dark-lime compact scrubber CSS uses a full-width range,
+visible current replay time, keyboard focus and a mobile layout.
+A component test checks field → unique seek input → ball facts →
+lower activity rail DOM ordering, including disabled/absent state.
+
+Visually verify at exact deployment SHA, desktop and narrow mobile:
+the slider must appear directly under the green pitch without scrolling
+past the event timeline, remain easy to drag, and not obscure the
+recorded ball-status or under-pitch activity. PR #155 still requires
+full CI green and explicit manager approval before merge.
