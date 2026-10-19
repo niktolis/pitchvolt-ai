@@ -142,8 +142,11 @@ class ObservedLocation(BaseModel):
                 raise ValueError("Observed on-pitch sample requires source and pitch coordinates")
             x, y = _canonical_position(self.raw)
             if not (
-                math.isclose(x, self.pitch.x, abs_tol=1e-7)
-                and math.isclose(y, self.pitch.y, abs_tol=1e-7)
+                # The pre-existing StatsBomb normalizer outputs six
+                # decimal places; tolerate ONLY its <=0.5 micrometre
+                # rounding while rejecting a changed source position.
+                math.isclose(x, self.pitch.x, rel_tol=0, abs_tol=5.1e-7)
+                and math.isclose(y, self.pitch.y, rel_tol=0, abs_tol=5.1e-7)
             ):
                 raise ValueError("Pitch coordinate differs from recorded source position")
         return self

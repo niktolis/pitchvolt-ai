@@ -1,3 +1,30 @@
+# 19 October — source-exact historical tracking after PR #139
+
+Latest verified merge: PR #139, main commit
+3fa7d684a60e2e91274a71ee2d68e50d0b257f89.
+Python, frontend, architecture, Azure deployment and automated
+Foundry smoke passed (run 39216369022).
+Independent UI PR #138 merged afterward at main commit
+946caf4c9006c3aa0160d099d17cbabac6dc2725.
+Keep both streams intact; recheck live main before every change.
+
+Next separate Issue #134 PR: offline source-exact StatsBomb 360
+camera freeze-frame projection into the approved versioned tracking
+contract. Existing SHA-checked historical source loaders feed
+the adapter; source event ID, period, clock and team are revalidated.
+Camera-visible actor and anonymous detections retain measured positions.
+Ball location and player possession remain explicitly unknown.
+Nothing is interpolated, fabricated, publicly hosted, or joined
+to fictional Harbor/Ridge. No extra Azure resources or model inference.
+
+See docs/architecture/tracking-observation-contract.md.
+Manager approval is required for the PR merge. Only that reviewed
+merge triggers the standing-authorized bounded Foundry smoke.
+The critical remaining dependency for continuous 22-player+ball
+broadcast rendering is lawful source rights and original-file coverage.
+
+---
+
 # 19 October — verified Foundry CI and source-neutral tracking contract
 
 **Authoritative newest checkpoint (older notes below are historical).**

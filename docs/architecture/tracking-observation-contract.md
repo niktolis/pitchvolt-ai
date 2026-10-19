@@ -1,7 +1,7 @@
 # Versioned source-observed player/ball contract (Issue #134, phase B)
 
-**Status: schema and synthetic unit tests only. No tracking source is
-redistributed, hosted, or used by the production web application.**
+**Status: v1 schema plus one read-only StatsBomb 360 projection; no tracking
+source is redistributed, hosted, or used by the production web application.**
 No new Azure resources and no inference calls are needed for this change.
 
 Implementation: `src/pitchvolt/tracking_contract.py`, tests:
@@ -14,9 +14,9 @@ The existing `MatchEvent` and `ReplayDataset` are authoritative for
 tracking or an independently observed ball. StatsBomb 360 supports
 **event-exact camera-visible frozen observations**, and Metrica's
 anonymized Game 1/2 CSVs describe **time-sampled** Home/Away + ball
-channels. Their temporal semantics differ. This module does not convert
+channels. Their temporal semantics differ. The contract does not convert
 one to the other or mix matches. It defines immutable, provider-neutral
-Pydantic objects to be populated by separately reviewed adapters.
+Pydantic objects; the first separate source adapter is documented below.
 
 ## Structured v1 model
 
@@ -34,7 +34,8 @@ coordinates with source units `normalized_0_1`,
 `statsbomb_120x80`, or `pitch_meters`, and a provider-neutral
 `Point(x_m, y_m)` represented in the existing canonical
 `105 × 68` pitch domain. The source-to-meters conversion is checked
-by the validator. Out-of-field raw observations remain available for
+by the validator, with a sub-micrometre absolute tolerance matching
+the existing six-decimal StatsBomb source normalizer. Out-of-field raw observations remain available for
 diagnostics, with no renderable `pitch` position. Missing observations
 have neither raw nor pitch coordinates; the ball has its own required
 location (which can be explicitly missing) rather than being offset
@@ -68,7 +69,7 @@ from an observed event actor.
 
 ## Explicit non-deliverables of this PR
 
-No Metrica source-file fetching/embedding, no historical player/ball
+No Metrica source-file fetching/embedding, no continuous player/ball
 adapter, no web/SSE endpoint, no 3D player movement and no inference
 on ball possession from proximity. Actual 30+ MB Metrica CSV files
 remain untested against the provisional offline audit until authorized
@@ -94,3 +95,42 @@ prove licensed, 22-player, end-to-end historical replay.
 
 See [offline Metrica feasibility](metrica-tracking-feasibility.md)
 and [rendering constraints](pitch-rendering.md).
+
+## First offline source adapter: StatsBomb 360 event freezes (19 October 2026)
+
+Implementation: `src/pitchvolt/providers/statsbomb_360_tracking.py`,
+regressions: `tests/test_statsbomb_360_tracking.py`.
+
+The existing original-file loaders require independently provided SHA-256
+fingerprints and verify each original source event and 360 freeze frame.
+This read-only projection uses only their previously validated results.
+It requires an official commit-pinned StatsBomb Open Data event URL
+and a separately supplied official 360 source URL with **the same
+revision and match**. A pinned URL does not independently prove
+that file exists in the public upstream or grant redistribution rights.
+
+Each camera observation retains its source-native 120×80 coordinate
+and auditable canonical 105×68 position. Real off-pitch measurements
+remain unrenderable rather than clamped to a fake field edge.
+Only the original event actor retains a persistent source player ID;
+teammates may keep the event team ID; opposition detection team IDs
+are deliberately **unknown** without an independently verified mapping.
+A unique detection ID is **event-scoped**, not a persistent roster identity.
+
+The 360 format has **no independently observed ball position channel**.
+Every projected snapshot therefore has an explicitly **missing ball**
+and **unknown possession**. No controlling player, challenge, duel,
+or ball position is inferred from an actor, event or proximity.
+
+Only exact-event lookup is permitted. Different source event records
+may have the same match-clock time; each remains an independent frame.
+Any event without its own frame produces no new position observations.
+There is no interpolated motion, API publication, historical mode,
+rendering, external source-file copy, Azure deployment modification,
+or Foundry model invocation. Tests use only original tiny synthetic JSON.
+Both public serving switches remain enforced **false**.
+
+This adapter is **sparse event-only historical projection**, not
+continuous 11v11 player tracking, measured ball motion, or proof of
+real historical replay eligibility. Authentic licensed continuous
+player/ball observations remain a separate blocker.

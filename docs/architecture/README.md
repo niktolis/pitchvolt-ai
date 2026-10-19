@@ -49,3 +49,5 @@ The core owns every football fact. The existing Foundry Analyst uses **GPT-5 min
 The diagram predates existing Azure deployment and must not be treated as a current resource inventory. Production Azure inference remains disabled; the isolated Foundry CI smoke is standing-authorized on each approved PR merge only.
 
 - [Source-neutral tracking observation contract](tracking-observation-contract.md) — v1 observed player/ball locations, source frame identity, null/out-of-pitch and rights gates; no public playback.
+
+- [Offline StatsBomb 360 tracking projection](tracking-observation-contract.md#first-offline-source-adapter-statsbomb-360-event-freezes-19-october-2026) — exact events, ball and possession explicitly unknown; no public replay.
