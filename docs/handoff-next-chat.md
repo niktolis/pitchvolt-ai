@@ -870,3 +870,17 @@ character appearance and action-readability. Issue #134 tracks
 separately licensed genuine multi-player tracking. Do not touch
 its ongoing work or claim actual skeletal movement from these
 static action-category illustrations.
+
+## Additional user-requested UI change in PR #155: immediate pitch time bar
+
+The current action-specific CC0 model/provenance PR also contains the
+user-requested **time scrubber immediately under the tactical pitch**.
+`Pitch` accepts the one existing `seekControls` JSX from `App`,
+placing Play/Pause, −2s, single canonical 100ms-step range slider and
++2s between the pitch and ball facts. The events/timeline and advanced
+configuration remain below in `pitch-replay-deck`. No duplicated
+clock/seek state, SSE logic change or new tracking inference.
+Responsive dark-lime styling and source order regression tests
+were added. Verify seek/drag, timeline sync, keyboard access,
+and mobile wrap after exact deploy SHA. **Do not merge PR #155
+without manager approval and full final-head checks.**
