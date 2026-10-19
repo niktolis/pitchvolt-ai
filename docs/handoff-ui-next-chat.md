@@ -828,3 +828,29 @@ Acceptance must use the exact deployed SHA and current screenshot
 of representative carry, shot, pressure and fallback; compare
 against the approved reference. No PR merging without explicit
 manager approval or CI green.
+
+## 30. Match time scrubber moved under the tactical pitch (19 October 2026)
+
+The user explicitly requested the time bar directly beneath the central
+tactical pitch for easier manipulation. **Same review PR #155**, not an
+extra PR: the existing controlled `fieldset.replay-seek-controls`
+(with Play/Pause, −2 s, match-clock range slider and +2 s) was moved
+from the lower `pitch-replay-deck > control-bar` into the
+`Pitch` component's new `seekControls` slot, immediately after
+the field and **before** the recorded ball-status information.
+
+The slider still uses the original canonical `cursorMs`/
+`bounds.start`/`bounds.end`, pauses playback on seeking, clears
+manual event selection, and preserves ±2 s bounded stepping. **No
+duplicate slider or second clock state.** The lower replay deck retains
+the event activity rail plus scenario/speed/audience controls.
+The new dark-lime compact scrubber CSS uses a full-width range,
+visible current replay time, keyboard focus and a mobile layout.
+A component test checks field → unique seek input → ball facts →
+lower activity rail DOM ordering, including disabled/absent state.
+
+Visually verify at exact deployment SHA, desktop and narrow mobile:
+the slider must appear directly under the green pitch without scrolling
+past the event timeline, remain easy to drag, and not obscure the
+recorded ball-status or under-pitch activity. PR #155 still requires
+full CI green and explicit manager approval before merge.
