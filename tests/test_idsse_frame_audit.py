@@ -168,10 +168,10 @@ def test_auto_window_start_uses_recorded_ball_frame_not_assumed_kickoff(tmp_path
 
 def test_source_shot_anchor_must_match_exact_observed_ball_time(tmp_path):
     file = _source(tmp_path)
-    kwargs = dict(
-        period=1, first_frame=10000, frame_count=3,
-        roster={"DFL-OBJ-1": "home"}, require_original_digest=False,
-    )
+    kwargs = {
+        "period": 1, "first_frame": 10000, "frame_count": 3,
+        "roster": {"DFL-OBJ-1": "home"}, "require_original_digest": False,
+    }
     aligned = inspect_frame_window(
         file, anchor_frame=10001,
         anchor_timestamp="2023-05-27T15:30:00.040+02:00", **kwargs,

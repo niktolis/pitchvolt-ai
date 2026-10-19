@@ -267,3 +267,30 @@ The workflow's source downloads are fixed to the immutable mirror
 revision and run with read-only repository permissions. Only a small
 audit JSON report is retained briefly; no Foundry inference, Azure
 deployment or custom paid resources are invoked.
+
+### Authentic event-frame alignment acceptance — successful
+
+The second
+[real-source CI run](https://github.com/niktolis/pitchvolt-ai/actions/runs/39253468741)
+independently downloaded and rechecked the original 419 MB source, then
+audited the **actual recorded first-half shot event
+`18226500000041`**. The original `CalculatedFrame=12519` matched
+its own `CalculatedTimestamp=2023-05-27T15:31:53.360+02:00`
+against the timestamp of the independent, measured ball frame.
+
+The accepted 25-second observation window is **frames 12219–12843**
+(period 1; 625 frames). All 625 have **22 genuine player observations,
+ball XYZ**, correct 25 Hz timing, and a source-exact event-frame join.
+The audit artifact sets:
+`source_tracking_sha256_verified=true`,
+`event_frame_alignment_verified=true`, and
+`candidate_period_alignment_verified=true`.
+Individual player control remains unverified; the run deliberately
+reports `source_player_carrier_known=false`.
+
+This is sufficient to **select** the replay segment as source-based
+input for the next **offline compact asset encoder**, but this PR does
+not emit source coordinates or deploy a UI asset. The
+`selected_historical_clip_ready=false` field therefore remains
+appropriately false until encoding, round-trip playback and
+visual acceptance are reviewed.
