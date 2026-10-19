@@ -504,3 +504,34 @@ Last owner-supplied actual after PR #132:
 requested again if not present in future chat; they are not commit assets.
 Screenshot CI remains intentionally disabled. Compare post-deploy exact
 SHA manually at matching viewport/zoom.
+
+## 21. Source-tracking data next step after avatar merge (19 October 2026)
+
+PR #135 is **merged** at `7e6cdb3b83f5e856ea2589d4d3855b118668f0b0`.
+The more human proportioned single recorded player, surname/fictional
+team crest and side-aware badge are no longer pending.
+
+The next major progress toward the approved 1672 × 941 preview is
+**genuine observed multi-player and ball tracking**, not cosmetic
+stand-in formations. Issue #134 is the execution issue (parent #129).
+Upstream Metrica samples, pinned at
+`e706dd506b360d69d9d123d5b8026e7294b13996`, contain anonymized
+CSV Game 1/2 player+ball channels and source events; Metrica's README
+does not supply explicit source redistribution permission. The current
+PR branch `feat/134-metrica-offline-feasibility` is **data feasibility
+only**: offline pinned SHA-256 original file integrity, Home/Away
+synchronization, frame/sample/ball coverage and cross-file event joins;
+synthetic-only regression fixtures and no hosted source data.
+
+Original Metrica tracking bytes **have not been inspected** inside this
+engineering runtime; do not represent format/coverage as empirically
+accepted until a reviewed original-file offline report is available.
+No new API player positions, no motion interpolation, no ball trajectory
+or license grant is introduced. Follow-up: licensing clearance, verified
+source frame audit, source-neutral observation contract and separately
+approved licensed historical game replay. Keep the synthetic replay
+independent, and preserve camera/replay controls/hero layout.
+
+See `docs/architecture/metrica-tracking-feasibility.md`. All required
+CI and explicit manager merge approval apply. Do not invent a screenshot
+capture or say visual acceptance is complete.

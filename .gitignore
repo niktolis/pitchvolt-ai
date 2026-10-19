@@ -223,3 +223,7 @@ __marimo__/
 node_modules/
 .vite/
 *.tsbuildinfo
+
+# Third-party football tracking sources: local inspection only, never commit or host.
+/local-data/
+/data/Sample_Game_*/

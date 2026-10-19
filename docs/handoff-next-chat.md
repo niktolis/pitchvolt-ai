@@ -434,3 +434,51 @@ Prioritize Issue #134 after this unblocked avatar-visibility PR. Do not
 start another speculative CSS-only redesign or relabel PR #133 as ball
 tracking. Maintain under-pitch replay controls and keep approved
 three-card broadcast look and feel. Preserve DRY/provenance rules.
+
+## 19 October 2026 — merged #135, Issue #134 offline feasibility delivery
+
+Latest verified `main`: `7e6cdb3b83f5e856ea2589d4d3855b118668f0b0`
+(PR #135 merged). Previous "actor avatar currently in progress" text
+is historical: the improved source-actor avatar and badge are merged.
+There are no open PRs at the start of this Issue #134 workstream.
+The approved Application Preview plus later source-backed moving-ROI
+camera and provenance rules remain authoritative.
+
+**Primary next milestone / Issue #134: synchronized player/ball tracking.**
+Do **NOT** assume Metrica source data is licensed for redistribution merely
+because its GitHub repository is public. Pinned upstream
+`metrica-sports/sample-data` commit
+`e706dd506b360d69d9d123d5b8026e7294b13996`, games 1–2 CSV
+player and ball tracking, synchronized event data, expected 25 Hz.
+No LICENSE file found; public-use acknowledgement is not a redistribution
+permission. Game 3 is a distinct EPTS/FIFA metadata/tracking format.
+
+Current isolated branch `feat/134-metrica-offline-feasibility` implements
+a **read-only, SHA-256-pinned local game auditor** (Home/Away/Events;
+per-frame timing, player/ball coverage, event joins, unknown values,
+no arbitrary network access), original synthetic unit tests,
+`docs/architecture/metrica-tracking-feasibility.md`, and ignore
+rules for locally acquired data. CI must pass before review.
+No actual upstream 30+ MB tracking files were loaded in the assistant
+runtime, so production compatibility with original bytes remains
+**unverified**. Never claim otherwise.
+
+Follow-on task after approval: obtain verifiable written permission or
+choose clearly licensed tracking data, perform authorized offline original
+CSV audit, design provider-neutral tracking contract, then a separately
+approved historical ROI replay with real player and ball observations.
+Never join to the fictional Harbor/Ridge replay and never fabricate
+a ball carrier/duel from inferred proximity. No public source-data
+hosting, billable inference or Azure provisioning in this bundle.
+Keep the existing **approved merge-only Foundry smoke** workflow intact.
+
+### Metrica offline audit provenance hardening (19 October)
+
+Before merge, the #136 review found SHA-256 supplied by the operator
+and commit supplied by the operator were not cryptographically linked.
+The auditor now embeds the six actual Git blob OIDs/byte counts from
+the exact pinned Metrica upstream commit, and verifies local data
+against SHA-256 AND Git object identities, without network calls.
+Source event joins now require period+frame. No upstream bytes added to
+Git; no hosting license inferred. All synthetic test fixtures are
+explicitly marked not upstream-bound.
