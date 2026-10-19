@@ -137,8 +137,10 @@ def test_source_pitch_dimensions_demand_explicit_review(tmp_path):
 
 
 @pytest.mark.parametrize("content", [
-    b'<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>'
-    b'<PutDataRequest>&xxe;</PutDataRequest>',
+    (
+        b'<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>'
+        b'<PutDataRequest>&xxe;</PutDataRequest>'
+    ),
     b'<WrongRoot />',
 ])
 def test_xml_entity_or_wrong_root_fails_closed(tmp_path, content):
