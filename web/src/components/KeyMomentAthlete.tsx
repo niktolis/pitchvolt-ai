@@ -12,7 +12,7 @@ export type EditorialPose = "neutral" | "stride" | "strike" | "defend";
 export function editorialPoseForEvent(eventType: MatchEvent["event_type"]): EditorialPose {
   if (eventType === "shot" || eventType === "goal" || eventType === "pass") return "strike";
   if (eventType === "carry") return "stride";
-  if (eventType === "pressure" || eventType === "tackle") return "defend";
+  if (eventType === "pressure") return "defend";
   return "neutral";
 }
 
