@@ -14,7 +14,10 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from pitchvolt.events import Point
 
-STRICT = ConfigDict(frozen=True, extra="forbid", strict=True)
+# JSON payloads represent tuples as arrays and enums as strings; strict=True
+# at model scope rejects valid wire-format roundtrips. Keep unknown fields
+# forbidden and apply strict checks to the sensitive numeric sample keys.
+STRICT = ConfigDict(frozen=True, extra="forbid")
 SHA256 = r"^[0-9a-f]{64}$"
 GIT_COMMIT = r"^[0-9a-f]{40}$"
 
@@ -198,11 +201,11 @@ class TrackingSnapshot(BaseModel):
     model_config = STRICT
     match_id: str = Field(min_length=1)
     source_record_id: str = Field(min_length=1)
-    period: int = Field(ge=1, le=4)
-    clock_ms: int = Field(ge=0)
+    period: int = Field(ge=1, le=4, strict=True)
+    clock_ms: int = Field(ge=0, strict=True)
     # Event-exact frames require event_id. Continuous samples require a frame.
     source_event_id: str | None = None
-    source_frame: int | None = Field(default=None, ge=0)
+    source_frame: int | None = Field(default=None, ge=0, strict=True)
     players: tuple[PlayerObservation, ...] = Field(max_length=22)
     ball: ObservedLocation
     possession: PossessionObservation = Field(default_factory=PossessionObservation)

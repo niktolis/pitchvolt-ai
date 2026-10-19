@@ -258,3 +258,10 @@ def test_sequence_serialization_roundtrip_preserves_null_provenance_and_flags():
     assert wire["snapshots"][0]["ball"]["pitch"] is None
     assert TrackingSequence.model_validate(wire) == seq
     assert "synthetic" not in str(wire).lower()
+
+
+def test_numeric_sample_keys_forbid_string_or_float_coercion():
+    original = snapshot().model_dump()
+    for key, bad in (("period", "1"), ("clock_ms", "40"), ("source_frame", 1.5)):
+        with pytest.raises(ValidationError):
+            TrackingSnapshot.model_validate(original | {key: bad})
