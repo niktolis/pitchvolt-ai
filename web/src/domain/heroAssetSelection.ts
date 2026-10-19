@@ -19,7 +19,7 @@ const modelAssets = manifest as Partial<Record<EditorialPose, VerifiedHeroAsset>
 /** Never load an external GLB, and prefer the original procedural fallback. */
 export function heroAssetForEvent(eventType: MatchEvent["event_type"]): VerifiedHeroAsset | null {
   const pose = editorialPoseForEvent(eventType);
-  const asset = modelAssets[pose] ?? modelAssets.neutral;
+  // A pressure player is shown in an editorial running/press stance until a\n  // separately verified defensive pose exists; the observed position is unchanged.\n  const asset = modelAssets[pose] ?? (pose === "defend" ? modelAssets.stride : undefined) ?? modelAssets.neutral;
   if (
     !asset ||
     !/^\/assets\/hero\/[a-z-]+-[a-f0-9]{16}\.glb$/.test(asset.url) ||
