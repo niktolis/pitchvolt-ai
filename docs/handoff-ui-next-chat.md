@@ -652,3 +652,40 @@ independent of the hero-avatar/rig asset choice.
 Never label preview visually accepted from CI alone. Seek exact
 deployment SHA and a fresh manager screenshot after merge. No merge
 without manager approval.
+
+## 25. Post-#143 3D asset integration phase (19 October 2026)
+
+Approved PR #143 merged at `808215a495f9e79af3ca8414c919d90640858334`.
+It improves the procedural Key Moment hero, camera, lighting,
+contact shadows, grass and editorial posture. This is **not yet**
+the AAA photorealism visible in the binding PitchVolt preview.
+
+Issue #142 now has an incremental implementation branch
+`feat/142-verified-hero-asset-pipeline`:
+`web/scripts/hero-asset-audit.mjs`,
+`web/scripts/import-hero-asset.mjs`,
+`web/scripts/check-hero-assets.mjs`,
+`web/src/assets/heroAssetManifest.json`,
+`web/src/domain/heroAssetSelection.ts` and
+`web/src/components/KeyMomentHero.tsx`.
+The loader chooses only a strictly verified app-origin CC0 GLB.
+When none exists (the default), the current procedural avatar
+loads immediately. Failures and Suspense render the current fallback.
+Existing replay clock, source actor, ball event/contact, pitch lines,
+camera and cinematic source provenance remain unchanged.
+No new runtime CDN or third-party binary is introduced by this PR.
+
+Source candidate: original Innerscene CC0 standing/running/kicking
+footballers; each advertised ~17.5 MB and 112k triangles. Importer
+requires independently acquired actual original, original sha256,
+local optimized GLB <=4MiB/90k tris and verified jersey material;
+CI rejects invalid cached files and unexpected external dependencies.
+**No actual model original/download/optimization was available here.**
+Separate source-verified asset PR is required to make a real figure
+appear and must validate kit recoloring, exact preview and GPU use.
+No fabricated players, animation, tracking or team kit licensing.
+See `docs/architecture/hero-assets.md`, Issue #142 and Issue #134.
+No merge before manager review; all CI must pass.
+
+Concurrent independent PR #144 merged ahead of #143 with source
+IDSSE Sportec provenance documentation. Preserve its logic/handoff.
