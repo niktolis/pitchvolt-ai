@@ -278,6 +278,101 @@ def export_verified_clip(
     }
 
 
+def verify_compact_asset(path: Path, *, expected_sha256: str | None = None) -> dict[str, object]:
+    """Independently validate compact file structure, exact timebase and roster.
+
+    This cannot independently prove source coordinates: that comes from the
+    pinned-source producer's full original-byte verification above.
+    """
+    original = path.read_bytes()
+    digest = hashlib.sha256(original).hexdigest()
+    if expected_sha256 is not None and digest != expected_sha256:
+        raise ValueError("Compact observed asset SHA-256 mismatch")
+    if len(original) > 10 * 1024 * 1024:
+        raise ValueError("Unexpectedly large derived sample")
+    obj = json.loads(original)
+    if obj.get("asset_kind") != "source_observed_sportec_clip":
+        raise ValueError("Not an observed Sportec source clip")
+    if obj.get("schema_version") != 1:
+        raise ValueError("Unsupported observed clip schema")
+    if obj.get("source", {}).get("original_tracking_sha256") != TRACKING_SHA256:
+        raise ValueError("Original source SHA missing or changed")
+    if obj.get("public_replay_enabled") is not False:
+        raise ValueError("Observed clip cannot enable serving in v1")
+    if obj.get("player_carrier_known") is not False:
+        raise ValueError("Observed sample cannot invent a source carrier")
+    if obj.get("match", {}).get("id") != DFL_MATCH_ID:
+        raise ValueError("Observed clip match identity mismatch")
+    segment = obj.get("segment", {})
+    if (segment.get("first_frame"), segment.get("last_frame")) != (
+        FIRST_FRAME, FIRST_FRAME + SAMPLE_COUNT - 1
+    ):
+        raise ValueError("Observed segment frame range mismatch")
+    if segment.get("source_shot_frame") != EVENT_FRAME:
+        raise ValueError("Observed source shot frame mismatch")
+    if segment.get("source_event_id") != EVENT_ID:
+        raise ValueError("Observed source shot event mismatch")
+    if segment.get("frame_rate_hz") != RATE_HZ:
+        raise ValueError("Observed frame rate mismatch")
+    roster = obj.get("roster", [])
+    ids = [p.get("source_player_id") for p in roster]
+    teams = {t["id"] for t in obj["match"]["teams"]}
+    if len(ids) != len(set(ids)) or any(not p or p["source_team_id"] not in teams for p in roster):
+        raise ValueError("Invalid or duplicate observed source roster")
+    frames = obj.get("frames", [])
+    if len(frames) != SAMPLE_COUNT:
+        raise ValueError("Incomplete compact original sequence")
+    prev_time: datetime | None = None
+    event_time = datetime.fromisoformat(segment["source_shot_timestamp"])
+    if event_time.utcoffset() is None:
+        raise ValueError("Source event timestamp lacks timezone")
+    for index, row in enumerate(frames):
+        if row["source_frame"] != FIRST_FRAME + index:
+            raise ValueError("Source frame ID missing or out of order")
+        timestamp = datetime.fromisoformat(row["timestamp"])
+        if timestamp.utcoffset() is None:
+            raise ValueError("Source frame timestamp lacks timezone")
+        if prev_time is not None and abs(
+            (timestamp - prev_time).total_seconds() - 1 / RATE_HZ
+        ) > 0.002:
+            raise ValueError("Source tracking sample time gap")
+        prev_time = timestamp
+        samples = row["players_xy_m"]
+        if len(samples) != len(roster):
+            raise ValueError("Source roster size differs from observed samples")
+        observed_teams: dict[str, int] = {team: 0 for team in teams}
+        for player, coords in zip(roster, samples, strict=True):
+            if coords is None:
+                continue
+            if len(coords) != 2 or not all(isinstance(n, (int, float)) and
+                                              not isinstance(n, bool) and
+                                              abs(n) < 10000 for n in coords):
+                raise ValueError("Invalid observed player coordinates")
+            observed_teams[player["source_team_id"]] += 1
+        if sorted(observed_teams.values()) != [11, 11]:
+            raise ValueError("Compact frame lacks 11 observed players per team")
+        ball = row["ball_xyz_m"]
+        if ball is None or len(ball) != 3 or not all(
+            isinstance(n, (int, float)) and not isinstance(n, bool)
+            and abs(n) < 10000 for n in ball
+        ) or ball[2] < 0:
+            raise ValueError("Original observed ball XYZ missing or invalid")
+        if row["source_frame"] == EVENT_FRAME and abs(
+            (timestamp - event_time).total_seconds()
+        ) > 0.005:
+            raise ValueError("Source event not aligned to observed ball frame")
+    return {
+        "asset_sha256": digest,
+        "schema_version": 1,
+        "frame_count": SAMPLE_COUNT,
+        "players_per_frame": 22,
+        "ball_xyz_frames": SAMPLE_COUNT,
+        "original_source_sha256": TRACKING_SHA256,
+        "exact_shot_aligned": True,
+        "public_replay_enabled": False,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--directory", required=True, type=Path)
