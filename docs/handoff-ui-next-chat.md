@@ -689,3 +689,28 @@ No merge before manager review; all CI must pass.
 
 Concurrent independent PR #144 merged ahead of #143 with source
 IDSSE Sportec provenance documentation. Preserve its logic/handoff.
+
+## 26. Critical CI/deployment blocking state, after PR #143 merge
+
+19 Oct 2026: Issue #149
+https://github.com/niktolis/pitchvolt-ai/issues/149 tracks **all GitHub
+hosted runner jobs failing before startup** in this private repo:
+main #143 `808215a495f9e79af3ca8414c919d90640858334`
+deployment, Foundry smoke, frontend/Python/D2 checks, and
+feature PR #148 plus independent PRs all fail with no runner,
+zero steps and missing log blobs. Attempted targeted retry also
+fails before checkout. GitHub billing/Actions quota/runner-entitlement
+is possible, but unconfirmed; owner must check. Do not assume website
+contains PR #143 or claim any PR #148 test passed. Do not change spend,
+privacy or runner setup without explicit approval.
+
+Pending: feature branch `feat/142-verified-hero-asset-pipeline`,
+PR #148, is DRAFT and implements GLB import/validation with
+**EMPTY optional asset manifest**. It therefore changes no visible
+player and has NOT shipped optimized third-party bytes.
+Run actual full green CI after Issue #149 is repaired, then manager
+review. Next separately approved action: real Innerscene source-byte
+acquisition, original hash pinning, optimize to <=4MiB/90k triangles,
+validated shirt material, actual on-site model, screenshot and GPU
+acceptance. Keep unrelated Issue #134 tracking license/temporal
+synchronization completely separate.
