@@ -805,3 +805,39 @@ Concurrently merged legal work on `main` is PR #145:
 standard AGPL-3.0 license, repo public; preserve the user's
 licensing decisions and do not accidentally reintroduce proprietary
 notice language or remove license files.
+
+## 19 October 2026 — PR #148 merged and real CC0 player asset branch
+
+PR #148 was merged at
+`49561456f6df2ba666a8cd3964fe3f9024ef77e9`.
+The next branch `feat/142-cc0-real-footballer` has completed a
+**real official CC0 model import**, unlike the prior empty-manifest
+stage. Original Innerscene GLB SHA
+`773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb`
+at 18,349,744 bytes, optimized local-integration GLB SHA
+`5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591`
+at **2,583,972 bytes**, **70,839 triangles**. File is checked in
+at `web/public/assets/hero/neutral-5bb8a63f2824d84c.glb`.
+Material `Micah | top` retained for team-color recolor. CC0 terms
+from https://www.innerscene.com/tools/library/terms .
+One-shot GitHub Action audit/import completed at
+https://github.com/niktolis/pitchvolt-ai/actions/runs/39255686666 ,
+then the privilege-bearing workflow was **deleted** from branch.
+Source and build SHA bounds were enforced using PR #148 tools,
+no external model network dependency remains.
+
+Current source's *standing* figure is non-animated illustration
+for all available action categories. It is not live observed body
+pose, a reconstructed shot, opponent/player tracking, 22-player
+formation or live ball position. Next real gameplay motion work
+remains gated by independent data Issue #134. Multi-pose realism
+(running/kicking) could be a subsequent optimized asset bundle
+only after actual bytes are checked; do not guess source data or
+claimed poses.
+
+Run green frontend/Python/architecture CI, present one
+manager-reviewable PR and **do not merge without approval**.
+After manager deploy, request a current screenshot to compare with
+authoritative approved pitch preview. Verify body/ground orientation,
+team kit material isolation, badge position and GPU performance;
+do not claim visual match merely from compiled GLB.

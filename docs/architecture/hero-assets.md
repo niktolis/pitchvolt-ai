@@ -1,5 +1,64 @@
 # Licensed footballer GLB import pipeline — Issue #142
 
+## Imported standing CC0 athlete — source-pinned integration, 19 October 2026
+
+**Current feature branch** `feat/142-cc0-real-footballer` contains the
+first **real third-party footballer mesh**, not just the GLB integration API.
+This section supersedes the older empty-manifest descriptions below.
+
+| Provenance / measured property | Value |
+|---|---|
+| Source | [Innerscene CC0 soccer player, standing](https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f) |
+| Source download | `https://www.innerscene.com/api/library/soccer-player-standing-3d-person-team-sports-f55b1b4f/download` |
+| CC0 terms | `https://www.innerscene.com/tools/library/terms` |
+| Original SHA-256 | `773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb` |
+| Original size | 18,349,744 bytes |
+| Optimized SHA-256 | `5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591` |
+| Optimized size | **2,583,972 bytes (2.46 MiB)** |
+| Triangles / meshes | **70,839 / 13** |
+| Optimized model required extensions | `EXT_texture_webp`, `KHR_texture_transform` (both ordinary supported glTF/WebGL features; no meshopt/Draco decoder CDN) |
+| Named recolorable material | `Micah | top` |
+| Manifest | `web/src/assets/heroAssetManifest.json` |
+| Embedded artifact | `web/public/assets/hero/neutral-5bb8a63f2824d84c.glb` |
+| Production status | Only after explicit PR approval, merge and successful Azure deploy |
+
+**Actual verified import procedure:** An isolated feature-branch GitHub
+Actions runner downloaded the *official* CC0 binary, printed its SHA and
+GLB material names, then verified the original SHA-256 on a subsequent
+run. Pinned CLI:
+
+```sh
+npx --yes @gltf-transform/cli@4.5.1 optimize original.glb optimized.glb \
+  --no-compress --texture-compress webp --texture-size 1024 \
+  --simplify-ratio 0.65 --simplify-error 0.005
+```
+
+The optimized SHA was independently recorded and subsequently **checked
+before import**. The existing `import-hero-asset.mjs` validated the original
+hash, named jersey material, optimized GLB structure/mesh budget, expected
+CC0 catalog origin, and generated the fingerprinted manifest. The
+existing `check-hero-assets.mjs` and Node asset tests passed inside the
+runner; the binary was committed to the **feature branch only**. The
+temporary **write-privileged workflow was deleted after import** and does
+not belong in the final application PR. See official job
+https://github.com/niktolis/pitchvolt-ai/actions/runs/39255686666 .
+
+**Identity, body pose and asset caveats:** This model is a static, textured,
+anonymous footballer illustration; it has no real athlete identity,
+observed joint tracking, runtime dribbling or source match footage. The
+same **standing pose** is currently selected for all action event types
+until separately verified standing/running/kicking models exist.
+Recoloring `Micah | top` was authorized by its descriptive source
+material name, not yet visually approved in-browser for both team
+colors. The source player position/orientation and event-contact ball
+marker rules are unchanged. Do not assume full AAA realism from merely
+loading a static mesh. Require a screenshot at the exact deployed SHA
+and check anatomy/feet, color/skin isolation, correct ground scale, camera
+cropping, fallback and performance before accepting this upgrade.
+
+---
+
+
 **Status as of 19 October 2026:** Safe import path and fallback implemented.
 **No binary third-party player asset is included in this PR**, and there is
 no claim that the Key Moment already renders an external model. The
@@ -113,3 +172,16 @@ real optimized binary has been checked. A static pose by itself also
 cannot achieve EA FC-style gameplay animation. Truly moving players
 and ball require separately verified, legally usable match tracking
 (Issue #134).
+
+### Model-embedded decorations filtered at runtime
+
+Inspecting the original optimized GLB revealed meshes named
+`Soccer ball | pentagon and hexagon panels` and `Soccer jersey number`.
+These are illustration props, **not PitchVolt-sourced ball tracking or
+shirt/athlete identity**. The `KeyMomentHero` scene explicitly hides
+both through the tested `isUnobservedHeroProp` predicate, before
+rendering any mesh. Only the separately timestamp-authorized
+`RecordedBallContact` may draw an event-time marker, and only
+source-authored player surname/emblem information is displayed.
+Review actual render and source-action modes after deployment to
+ensure bundled ball/number are absent even during pressure/turnover.

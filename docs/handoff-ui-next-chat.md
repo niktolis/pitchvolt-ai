@@ -737,3 +737,54 @@ the actual CC0 source-byte verification/optimization/model
 integration milestone. Continue strictly source-backed match
 positions; no fictional players/ball trajectories. Await
 manager merge approval on PR #148.
+
+## 28. First authentic self-hosted footballer GLB integrated (19 October 2026)
+
+PR #148 **merged** at `49561456f6df2ba666a8cd3964fe3f9024ef77e9`.
+It delivered the CC0 asset audit/import/loader and production build gate
+but intentionally **no model**. In the next branch
+`feat/142-cc0-real-footballer`, that missing binary is now actually
+acquired from Innerscene's original CC0 catalog and **imported into Git
+on the feature branch**. The temporary GitHub Actions importer was
+removed after success; no lasting write-privileged workflow change.
+
+Source SHA-256:
+`773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb`
+(18,349,744 original bytes).
+Optimized GLB SHA-256:
+`5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591`
+(2,583,972 bytes, 70,839 triangles, 13 meshes).
+The optimization uses **gltf-transform CLI 4.5.1,
+`--no-compress --texture-compress webp --texture-size 1024
+--simplify-ratio 0.65 --simplify-error 0.005`**, keeping WebP textures
+but no nonstandard runtime geometry decoder. Material
+`Micah | top` is explicitly declared for recoloring in the
+source-checked manifest. The bundle is first-party-hosted as
+`web/public/assets/hero/neutral-5bb8a63f2824d84c.glb`.
+
+Source category: **editorial static footballer**, one observed
+event-position avatar, no measured pose/skeleton/player animation;
+fallback from exact same-source event remains procedural if GLB fails.
+For all actions the loader uses this standing model as a base
+until separately verified running/kicking assets are present.
+No real player images, unofficial club marks, invented 22-player
+formations or fake ball motion are introduced. Source tracking
+Issue #134 remains separately unresolved.
+
+Original asset verified by successful GitHub Actions job
+`39255686666` and `docs/architecture/hero-assets.md`.
+The manager still must compare the actual deployed PR build
+against the approved 1672×941 preview before accepting visuals.
+Check 3D body orientation and feet/ground alignment, correct
+on-kit color for both teams, consistent actor scale, letter labels,
+ball marker, WebGL failure fallback and mobile GPU performance.
+CI must pass fully; **do not merge without explicit manager approval**.
+
+**Critical asset provenance correction:** GLB examination discovered
+its embedded decorative `Soccer ball | ...` and `Soccer jersey number`
+objects. Both are now hidden by `isUnobservedHeroProp` in
+`KeyMomentHero`, with regression coverage. No static ball may appear
+merely because the purchased/open-source avatar asset depicts one;
+only the separately sourced, timestamp-qualified ball contact marker
+is allowed. Check this visually at pressure/turnover frames after
+exact-SHA deployment.
