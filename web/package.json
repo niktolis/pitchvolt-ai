@@ -13,7 +13,7 @@
     "test": "vitest run",
     "lint": "biome check .",
     "contracts:generate": "openapi-typescript ./openapi.json -o ./src/api/generated.ts && biome format --write ./src/api/generated.ts",
-    "assets:check": "node scripts/check-hero-assets.mjs && node --test scripts/hero-asset-audit.test.mjs",
+    "assets:check": "node scripts/check-hero-assets.mjs && node --test scripts/hero-asset-audit.nodecheck.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "format": "biome format --write ."
   },
