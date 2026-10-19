@@ -918,3 +918,16 @@ without manager approval and full final-head checks.**
 ## PR #154 integration after merged #155
 
 The original historical replay branch predates main PR #155. Resolved its conflicts preserving same-Micah sanitized GLBs and the canonical synthetic time bar, consolidating the historical transport directly beneath the pitch. The derived-source `public_replay_enabled:false` field requires explicit release interpretation; CC BY 4.0 does grant attributed re-use but is separate from internal product publication control. No public release is authorized by this merge conflict-resolution commit alone.
+
+## PR #154 conservative default-mode correction
+
+Following review after #155, `App` starts with the existing
+**synthetic AI demo** exactly as before, retaining its under-pitch
+clock, source-safe avatar set, SSE insights and Key Moment.
+The historically measured 22-player mode is accessible via a
+distinct explicit "Historical 22-player replay" navigation button.
+This avoids silently replacing the hackathon's main AI application
+with a source replay that does not run Foundry inference.
+The underlying source clip retains its immutable hash and existing
+`public_replay_enabled: false` release gate; manager must explicitly
+approve publishing the derived DFL excerpt before #154 merges.
