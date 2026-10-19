@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
-import { toWorld, type PitchPoint } from "./pitch-geometry";
+import { type PitchPoint, toWorld } from "./pitch-geometry";
 
 const BLADE_COUNT = 1400;
 
@@ -12,11 +12,13 @@ const BLADE_COUNT = 1400;
 export function KeyMomentGrass({ focus }: { focus: PitchPoint }) {
   const ref = useRef<THREE.InstancedMesh>(null);
   const invalidate = useThree((state) => state.invalidate);
+  const x = focus.x;
+  const y = focus.y;
 
   useLayoutEffect(() => {
     const mesh = ref.current;
     if (!mesh) return;
-    const origin = toWorld(focus);
+    const origin = toWorld({ x, y });
     const dummy = new THREE.Object3D();
     const dark = new THREE.Color("#294a20");
     const bright = new THREE.Color("#79a960");
@@ -46,16 +48,12 @@ export function KeyMomentGrass({ focus }: { focus: PitchPoint }) {
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     invalidate();
-  }, [focus.x, focus.y, invalidate]);
+  }, [x, y, invalidate]);
 
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, BLADE_COUNT]} frustumCulled={false}>
       <coneGeometry args={[0.017, 0.14, 3]} />
-      <meshStandardMaterial
-        color="#e1f2d7"
-        roughness={0.94}
-        side={THREE.DoubleSide}
-      />
+      <meshStandardMaterial color="#e1f2d7" roughness={0.94} side={THREE.DoubleSide} />
     </instancedMesh>
   );
 }
