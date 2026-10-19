@@ -44,8 +44,7 @@ export type HistoricalClip = {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === "object" && !Array.isArray(value);
-const validNumber = (value: unknown) =>
-  typeof value === "number" && Number.isFinite(value);
+const validNumber = (value: unknown) => typeof value === "number" && Number.isFinite(value);
 const validXY = (v: unknown): v is [number, number] =>
   Array.isArray(v) && v.length === 2 && v.every(validNumber);
 const validXYZ = (v: unknown): v is [number, number, number] =>

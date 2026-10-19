@@ -4,8 +4,8 @@ import {
   HISTORICAL_FIRST_FRAME,
   HISTORICAL_FRAME_COUNT,
   HISTORICAL_SHOT_FRAME,
-  loadHistoricalClip,
   type HistoricalClip,
+  loadHistoricalClip,
 } from "../domain/historicalReplay";
 import { HistoricalTrackingScene } from "./HistoricalTrackingScene";
 
@@ -66,10 +66,7 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
     () => (clip ? exactFrameAtCursor(clip, elapsedMs) : null),
     [clip, elapsedMs],
   );
-  const shot = useMemo(
-    () => (clip ? exactFrameAtCursor(clip, SHOT_OFFSET_MS) : null),
-    [clip],
-  );
+  const shot = useMemo(() => (clip ? exactFrameAtCursor(clip, SHOT_OFFSET_MS) : null), [clip]);
   const home = clip?.match.teams.find((team) => team.role === "home");
   const away = clip?.match.teams.find((team) => team.role === "away");
   const shotReached = frameIndex >= HISTORICAL_SHOT_FRAME - HISTORICAL_FIRST_FRAME;
@@ -85,10 +82,14 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
         <header className="broadcast-navigation">
           <div className="broadcast-brand">
             <img className="brand-logo" src="/pitchvolt-mark.svg" alt="" />
-            <strong>PITCHVOLT <span>AI</span></strong>
+            <strong>
+              PITCHVOLT <span>AI</span>
+            </strong>
           </div>
           <nav className="broadcast-primary-nav" aria-label="Replay mode navigation">
-            <span className="current" aria-current="page">Historical replay</span>
+            <span className="current" aria-current="page">
+              Historical replay
+            </span>
             <button type="button" className="historical-nav-button" onClick={onSynthetic}>
               Synthetic / AI demo
             </button>
@@ -105,22 +106,37 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
           <div className="broadcast-score-content">
             <div className="broadcast-fixture-team broadcast-fixture-home">
               <strong>{home?.name ?? "1. FC Köln"}</strong>
-              <span className="broadcast-team-shield shield-home" title="Neutral home team identifier">K</span>
+              <span
+                className="broadcast-team-shield shield-home"
+                title="Neutral home team identifier"
+              >
+                K
+              </span>
             </div>
             <div className="broadcast-score-center">
-              <span className="broadcast-score-unavailable" title="Score is not established by this 25-second source clip">
+              <span
+                className="broadcast-score-unavailable"
+                title="Score is not established by this 25-second source clip"
+              >
                 – : –
               </span>
               <span className="broadcast-match-clock">{timeLabel(elapsedMs)}</span>
             </div>
             <div className="broadcast-fixture-team broadcast-fixture-away">
-              <span className="broadcast-team-shield shield-away" title="Neutral away team identifier">B</span>
+              <span
+                className="broadcast-team-shield shield-away"
+                title="Neutral away team identifier"
+              >
+                B
+              </span>
               <strong>{away?.name ?? "FC Bayern München"}</strong>
             </div>
           </div>
         </div>
         <nav className="broadcast-tabs" aria-label="Historical match sections">
-          <span className="selected" aria-current="page">Observed tracking</span>
+          <span className="selected" aria-current="page">
+            Observed tracking
+          </span>
           <span>22 recorded players</span>
           <span>Ball XYZ</span>
           <span>Source event replay</span>
@@ -139,7 +155,9 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
       <section className="broadcast-grid historical-grid">
         <section className="panel insight-panel" aria-label="Historical source evidence">
           <div className="panel-heading">
-            <div><h2>Source Insights</h2></div>
+            <div>
+              <h2>Source Insights</h2>
+            </div>
             <span className="proof-badge">Measured</span>
           </div>
           <div className="historical-source-facts">
@@ -147,7 +165,9 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
             <p>Recorded event and tracking observations—not generative predictions.</p>
             <div className="historical-metric-pair">
               <span>Observed players</span>
-              <strong>{frame ? frame.players_xy_m.filter((p) => p !== null).length : "—"} / 22</strong>
+              <strong>
+                {frame ? frame.players_xy_m.filter((p) => p !== null).length : "—"} / 22
+              </strong>
             </div>
             <div className="historical-metric-pair">
               <span>Tracked ball elevation</span>
@@ -162,29 +182,41 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
               <strong>25 Hz</strong>
             </div>
             <p className="historical-provenance">
-              Team possession markers are not proof of an individual ball carrier.
-              No player paths, formations, duels, or ball locations are inferred.
+              Team possession markers are not proof of an individual ball carrier. No player paths,
+              formations, duels, or ball locations are inferred.
             </p>
-            <button type="button" className="historical-shot-action" disabled={!clip}
-              onClick={() => seekTo(HISTORICAL_SHOT_FRAME - HISTORICAL_FIRST_FRAME)}>
+            <button
+              type="button"
+              className="historical-shot-action"
+              disabled={!clip}
+              onClick={() => seekTo(HISTORICAL_SHOT_FRAME - HISTORICAL_FIRST_FRAME)}
+            >
               Jump to recorded shot ↗
             </button>
           </div>
         </section>
 
-        <section className="panel pitch-panel historical-pitch-panel" aria-label="3D recorded match tracking">
+        <section
+          className="panel pitch-panel historical-pitch-panel"
+          aria-label="3D recorded match tracking"
+        >
           {clip && frame ? (
             <div className="pitch">
               <HistoricalTrackingScene clip={clip} frame={frame} />
             </div>
           ) : (
             <div className="historical-pitch-loading">
-              {error ? "Source replay could not be verified." : "Verifying original match asset and player/ball observations…"}
+              {error
+                ? "Source replay could not be verified."
+                : "Verifying original match asset and player/ball observations…"}
             </div>
           )}
           <div className="pitch-ball-status">
             <strong>Observed 22-player tracking · 25 source frames per second</strong>
-            <small>Exact frames only · DFL IDSSE · Camera is illustrative; player and ball locations are measured</small>
+            <small>
+              Exact frames only · DFL IDSSE · Camera is illustrative; player and ball locations are
+              measured
+            </small>
           </div>
         </section>
 
@@ -220,41 +252,75 @@ export function HistoricalReplay({ onSynthetic }: { onSynthetic: () => void }) {
           </div>
         </section>
 
-        <section className="pitch-replay-deck historical-replay-controls" aria-label="Historical replay controls">
+        <section
+          className="pitch-replay-deck historical-replay-controls"
+          aria-label="Historical replay controls"
+        >
           <div className="historical-source-clock">
             <span>{timeLabel(elapsedMs)}</span>
             <span>Original frame {frame?.source_frame ?? "—"} · 25 s clip</span>
           </div>
           <input
-            type="range" aria-label="Seek to exact source tracking frame"
-            min={0} max={HISTORICAL_FRAME_COUNT - 1} step={1} value={frameIndex}
+            type="range"
+            aria-label="Seek to exact source tracking frame"
+            min={0}
+            max={HISTORICAL_FRAME_COUNT - 1}
+            step={1}
+            value={frameIndex}
             disabled={!clip}
             onChange={(event) => seekTo(Number(event.target.value))}
           />
           <div className="historical-playback-actions">
-            <button className="replay-button" type="button" disabled={!clip}
+            <button
+              className="replay-button"
+              type="button"
+              disabled={!clip}
               onClick={() => {
                 if (frameIndex === HISTORICAL_FRAME_COUNT - 1) setFrameIndex(0);
-                setPlaying((wasPlaying) => !wasPlaying || frameIndex === HISTORICAL_FRAME_COUNT - 1);
-              }}>
+                setPlaying(
+                  (wasPlaying) => !wasPlaying || frameIndex === HISTORICAL_FRAME_COUNT - 1,
+                );
+              }}
+            >
               {playing && frameIndex < HISTORICAL_FRAME_COUNT - 1 ? "Pause" : "Play"}
             </button>
-            <button className="replay-button" type="button" disabled={!clip}
-              onClick={() => seekTo(frameIndex - 50)} aria-label="Back two source-observed seconds">
+            <button
+              className="replay-button"
+              type="button"
+              disabled={!clip}
+              onClick={() => seekTo(frameIndex - 50)}
+              aria-label="Back two source-observed seconds"
+            >
               −2s
             </button>
-            <button className="replay-button" type="button" disabled={!clip}
-              onClick={() => seekTo(frameIndex + 50)} aria-label="Forward two source-observed seconds">
+            <button
+              className="replay-button"
+              type="button"
+              disabled={!clip}
+              onClick={() => seekTo(frameIndex + 50)}
+              aria-label="Forward two source-observed seconds"
+            >
               +2s
             </button>
             <fieldset className="segmented">
               <legend className="visually-hidden">Playback speed</legend>
               {PLAYBACK_SPEEDS.map((value) => (
-                <button key={value} className={speed === value ? "active" : ""}
-                  type="button" onClick={() => setSpeed(value)}>{value}×</button>
+                <button
+                  key={value}
+                  className={speed === value ? "active" : ""}
+                  type="button"
+                  onClick={() => setSpeed(value)}
+                >
+                  {value}×
+                </button>
               ))}
             </fieldset>
-            <button type="button" className="replay-button" onClick={() => seekTo(0)} disabled={!clip}>
+            <button
+              type="button"
+              className="replay-button"
+              onClick={() => seekTo(0)}
+              disabled={!clip}
+            >
               Restart
             </button>
           </div>

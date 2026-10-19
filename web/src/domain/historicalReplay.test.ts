@@ -22,10 +22,7 @@ function syntheticContract() {
   const frames = Array.from({ length: HISTORICAL_FRAME_COUNT }, (_, i) => ({
     source_frame: HISTORICAL_FIRST_FRAME + i,
     timestamp: new Date(original + i * 40).toISOString(),
-    players_xy_m: Array.from({ length: 22 }, (_, j) => [
-      j + i * 0.01,
-      (j % 11) + 8,
-    ]),
+    players_xy_m: Array.from({ length: 22 }, (_, j) => [j + i * 0.01, (j % 11) + 8]),
     ball_xyz_m: [40 + i * 0.01, 30, i === 300 ? 4.2 : 0.2],
     source_ball_status: "1",
     source_ball_possession_code: "2",
@@ -35,8 +32,7 @@ function syntheticContract() {
     schema_version: 1,
     source: {
       license: "CC-BY-4.0",
-      original_tracking_sha256:
-        "d3dd92e509421a6466acb0a083c009035f1751bc5fd9ef42ffa8f20d01cf7d49",
+      original_tracking_sha256: "d3dd92e509421a6466acb0a083c009035f1751bc5fd9ef42ffa8f20d01cf7d49",
       attribution: "Deutsche Fußball Liga · TEST ORIGINAL FICTION",
       revision: "pinned-authored-test",
     },
@@ -72,12 +68,24 @@ describe("IDSSE historical replay source-only semantics", () => {
 
   it("refuses missing players, fabricated in-between frames and wrong IDs", () => {
     for (const mutate of [
-      (raw: ReturnType<typeof syntheticContract>) => { raw.frames[7].players_xy_m.pop(); },
-      (raw: ReturnType<typeof syntheticContract>) => { raw.frames[22].source_frame += 1; },
-      (raw: ReturnType<typeof syntheticContract>) => { raw.frames[27].timestamp = raw.frames[26].timestamp; },
-      (raw: ReturnType<typeof syntheticContract>) => { raw.frames[40].ball_xyz_m[2] = Number.NaN; },
-      (raw: ReturnType<typeof syntheticContract>) => { raw.roster[1].source_player_id = raw.roster[0].source_player_id; },
-      (raw: ReturnType<typeof syntheticContract>) => { raw.public_replay_enabled = true; },
+      (raw: ReturnType<typeof syntheticContract>) => {
+        raw.frames[7].players_xy_m.pop();
+      },
+      (raw: ReturnType<typeof syntheticContract>) => {
+        raw.frames[22].source_frame += 1;
+      },
+      (raw: ReturnType<typeof syntheticContract>) => {
+        raw.frames[27].timestamp = raw.frames[26].timestamp;
+      },
+      (raw: ReturnType<typeof syntheticContract>) => {
+        raw.frames[40].ball_xyz_m[2] = Number.NaN;
+      },
+      (raw: ReturnType<typeof syntheticContract>) => {
+        raw.roster[1].source_player_id = raw.roster[0].source_player_id;
+      },
+      (raw: ReturnType<typeof syntheticContract>) => {
+        raw.public_replay_enabled = true;
+      },
     ]) {
       const bad = syntheticContract();
       mutate(bad);

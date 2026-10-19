@@ -6,11 +6,7 @@ import { FieldMarkings, GoalFrame, Turf } from "./BroadcastPitchScene";
 import { FootballActorAvatar } from "./FootballActorAvatar";
 import { actionCameraPose, toWorld } from "./pitch-geometry";
 
-function FixedSourceCamera({
-  focus,
-}: {
-  focus: { x: number; y: number } | null;
-}) {
+function FixedSourceCamera({ focus }: { focus: { x: number; y: number } | null }) {
   const { camera, size } = useThree();
   const pose = useMemo(
     () => actionCameraPose(size.width / Math.max(1, size.height), focus),
@@ -33,13 +29,7 @@ function FixedSourceCamera({
  * Each position is the current exact source sample. Model anatomy and neutral
  * orientation are illustrative, but source coordinates are never interpolated.
  */
-function SourceActors({
-  clip,
-  frame,
-}: {
-  clip: HistoricalClip;
-  frame: SourceFrame;
-}) {
+function SourceActors({ clip, frame }: { clip: HistoricalClip; frame: SourceFrame }) {
   const homes = clip.match.teams.find((t) => t.role === "home")?.id;
   return (
     <>
@@ -57,11 +47,7 @@ function SourceActors({
         );
       })}
       {/* Ball vertical coordinate is source-measured Z, not a drawn pass arc. */}
-      <group position={[
-        frame.ball_xyz_m[0] - 52.5,
-        frame.ball_xyz_m[2],
-        frame.ball_xyz_m[1] - 34,
-      ]}>
+      <group position={[frame.ball_xyz_m[0] - 52.5, frame.ball_xyz_m[2], frame.ball_xyz_m[1] - 34]}>
         <mesh castShadow>
           <sphereGeometry args={[0.22, 16, 12]} />
           <meshStandardMaterial color="#ffffff" roughness={0.6} />
@@ -84,17 +70,17 @@ export function HistoricalTrackingScene({
   frame: SourceFrame;
   shotFocus?: boolean;
 }) {
-  const focus = shotFocus
-    ? { x: frame.ball_xyz_m[0], y: frame.ball_xyz_m[1] }
-    : null;
+  const focus = shotFocus ? { x: frame.ball_xyz_m[0], y: frame.ball_xyz_m[1] } : null;
 
   return (
     <div
       className="broadcast-webgl historical-webgl"
       role="img"
-      aria-label={shotFocus
-        ? "3D view of the observed historical shot location"
-        : "3D source-observed 22-player and measured-ball football replay"}
+      aria-label={
+        shotFocus
+          ? "3D view of the observed historical shot location"
+          : "3D source-observed 22-player and measured-ball football replay"
+      }
     >
       <Canvas
         camera={{ fov: 40, position: [0, 125, 80], near: 0.1, far: 450 }}
