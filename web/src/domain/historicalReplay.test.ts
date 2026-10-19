@@ -9,6 +9,11 @@ import {
   validateHistoricalClip,
 } from "./historicalReplay";
 
+function required<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("Missing synthetic test fixture");
+  return value;
+}
+
 function syntheticContract() {
   const teams = [
     { id: "verified-home-id", name: "Home (TEST)", role: "home" },
@@ -16,7 +21,7 @@ function syntheticContract() {
   ];
   const roster = Array.from({ length: 22 }, (_, i) => ({
     source_player_id: `authored-test-${i}`,
-    source_team_id: teams[i < 11 ? 0 : 1].id,
+    source_team_id: required(teams[i < 11 ? 0 : 1]).id,
   }));
   const original = Date.parse("2023-05-27T13:31:41.360+00:00");
   const frames = Array.from({ length: HISTORICAL_FRAME_COUNT }, (_, i) => ({
@@ -69,19 +74,19 @@ describe("IDSSE historical replay source-only semantics", () => {
   it("refuses missing players, fabricated in-between frames and wrong IDs", () => {
     for (const mutate of [
       (raw: ReturnType<typeof syntheticContract>) => {
-        raw.frames[7].players_xy_m.pop();
+        required(raw.frames[7]).players_xy_m.pop();
       },
       (raw: ReturnType<typeof syntheticContract>) => {
-        raw.frames[22].source_frame += 1;
+        required(raw.frames[22]).source_frame += 1;
       },
       (raw: ReturnType<typeof syntheticContract>) => {
-        raw.frames[27].timestamp = raw.frames[26].timestamp;
+        required(raw.frames[27]).timestamp = required(raw.frames[26]).timestamp;
       },
       (raw: ReturnType<typeof syntheticContract>) => {
-        raw.frames[40].ball_xyz_m[2] = Number.NaN;
+        required(raw.frames[40]).ball_xyz_m[2] = Number.NaN;
       },
       (raw: ReturnType<typeof syntheticContract>) => {
-        raw.roster[1].source_player_id = raw.roster[0].source_player_id;
+        required(raw.roster[1]).source_player_id = required(raw.roster[0]).source_player_id;
       },
       (raw: ReturnType<typeof syntheticContract>) => {
         raw.public_replay_enabled = true;
