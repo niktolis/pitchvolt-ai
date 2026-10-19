@@ -179,3 +179,35 @@ widths without stretching the card. The cinematic 3D scene
 and approved card appearance remain unchanged when overlay
 is closed. Exact-SHA production screenshot comparison is
 still required after merge.
+
+## High-fidelity Key Moment after PR #141 (19 October 2026)
+
+Manager's current actual screenshot: `image(20261019-082157).png`
+in the conversation, showing a lone simple low-poly avatar and flat
+grass in the right-side 3D panel. Authoritative target remains the
+`Neon Football Analytics Dashboard(2).png` 1672×941 brand preview.
+Explicit request: aim for realistic premium EA FC-like rendering
+quality, while maintaining source-grounded match events.
+
+Visual pass on branch `feat/ui-key-moment-render-fidelity-142`
+uses a more detailed original 3D art-directed human silhouette,
+woven kit fabric shading, skin/hair/footwear anatomy, stronger low
+stadium lighting and shadow definition, a closer ~4.3m hero camera,
+seeded fine-grass instancing and cinematic vignette. The current
+event's exact 105×68m canonical location/valid orientation is
+unchanged. Art-directed strike/stride/defensive postures are **not**
+measured poses; public label must disclose the difference.
+No licensed EA/FIFA/club/real-player assets, cross-fixture players,
+source-nonexistent ball trajectories or tracking claims are added.
+Demand rendering and fallback remain mandatory.
+
+Manual acceptance on deployed SHA: actor should occupy substantially
+more vertical space, remain within the 16:9 Key Moment at every
+field corner, receive plausible localized shade and contact shadows;
+second WebGL view must not trigger continuous 60FPS repaint or mobile
+performance regression; verify normal/light/dark DOM readability,
+WebGL-off SVG path, action/event changes, replay rewind, hover/keyboard
+CTA overlay and actor identity badges. CI is not screenshot acceptance.
+A separate Issue #142 is required for optimized, self-hosted high-detail
+CC0 GLB assets; do not claim this self-contained procedural pass
+matches full AAA realism.
