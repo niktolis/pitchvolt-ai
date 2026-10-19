@@ -40,7 +40,10 @@ describe("source-aligned pitch camera", () => {
         camera.lookAt(pose.target);
         camera.updateProjectionMatrix();
         camera.updateMatrixWorld();
-        const head = world.clone().add(new THREE.Vector3(0, 1.8, 0)).project(camera);
+        const head = world
+          .clone()
+          .add(new THREE.Vector3(0, 1.8, 0))
+          .project(camera);
         expect(Math.abs(head.x)).toBeLessThan(0.7);
         expect(Math.abs(head.y)).toBeLessThan(0.7);
         expect(head.z).toBeGreaterThan(-1);
