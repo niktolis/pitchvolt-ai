@@ -1,3 +1,4 @@
+import { ContactShadows } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useState } from "react";
 import * as THREE from "three";
@@ -5,7 +6,8 @@ import type { MatchEvent } from "../api/types";
 import { ballActionAtCursor } from "../domain/ballAction";
 import { displayName } from "../domain/presentation";
 import { FieldMarkings, GoalFrame, RecordedBallContact, Turf } from "./BroadcastPitchScene";
-import { FootballActorAvatar } from "./FootballActorAvatar";
+import { KeyMomentAthlete } from "./KeyMomentAthlete";
+import { KeyMomentGrass } from "./KeyMomentGrass";
 import {
   isSourcePitchPoint,
   keyMomentCameraPose,
@@ -67,36 +69,54 @@ export function SourceMomentPreview({
         >
           <Canvas
             frameloop="demand"
-            dpr={[1, 1.25]}
+            dpr={[1, 1.5]}
             shadows
-            camera={{ fov: 38, near: 0.1, far: 160, position: [0, 6, 9] }}
-            gl={{ antialias: true, alpha: false, powerPreference: "low-power" }}
+            camera={{ fov: 34, near: 0.1, far: 160, position: [0, 5, 9] }}
+            gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+            onCreated={({ gl }) => {
+              gl.toneMapping = THREE.ACESFilmicToneMapping;
+              gl.toneMappingExposure = 1.12;
+            }}
           >
             <KeyMomentCamera focus={actor.location} />
-            <color attach="background" args={["#08190f"]} />
-            <fog attach="fog" args={["#08190f", 22, 80]} />
-            <hemisphereLight args={["#edffe6", "#05150c", 1.8]} />
-            <ambientLight intensity={0.35} />
+            <color attach="background" args={["#07130d"]} />
+            <fog attach="fog" args={["#07130d", 17, 62]} />
+            <hemisphereLight args={["#e6f4e8", "#112419", 0.95]} />
+            <ambientLight intensity={0.22} />
+            {/* Art-directed stadium floodlights; not measured lighting from this game. */}
             <directionalLight
-              position={[-12, 24, 15]}
-              color="#f2ffe4"
-              intensity={2.8}
+              position={[-7, 16, 10]}
+              color="#f6ffe8"
+              intensity={3.4}
               castShadow
-              shadow-mapSize={[512, 512]}
-              shadow-camera-left={-24}
-              shadow-camera-right={24}
-              shadow-camera-top={24}
-              shadow-camera-bottom={-24}
+              shadow-mapSize={[1024, 1024]}
+              shadow-camera-left={-9}
+              shadow-camera-right={9}
+              shadow-camera-top={9}
+              shadow-camera-bottom={-9}
+              shadow-bias={-0.0004}
+              shadow-normalBias={0.012}
             />
-            <directionalLight position={[14, 12, -7]} color="#adff71" intensity={0.8} />
+            <directionalLight position={[7, 8, -8]} color="#d0f7b0" intensity={2.0} />
+            <directionalLight position={[-4, 5, -9]} color="#84aef1" intensity={0.6} />
             <Turf />
+            <KeyMomentGrass focus={actor.location} />
             <FieldMarkings />
             <GoalFrame side={-1} />
             <GoalFrame side={1} />
+            <ContactShadows
+              position={[toWorld(actor.location).x, 0.012, toWorld(actor.location).z]}
+              opacity={0.44}
+              scale={6}
+              blur={2.2}
+              far={4}
+              resolution={256}
+              frames={1}
+            />
             {ball?.location ? <RecordedBallContact contact={ball} /> : null}
             <group position={toWorld(actor.location)}>
               <group rotation={[0, sourceActorHeading(actor.location, actor.destination), 0]}>
-                <FootballActorAvatar kitColor={actorColor} />
+                <KeyMomentAthlete kitColor={actorColor} eventType={actor.event_type} />
               </group>
             </group>
           </Canvas>
@@ -187,7 +207,7 @@ export function SourceMomentPreview({
       <span className="moment-provenance-label">
         {actor
           ? hasWebGL
-            ? "3D editorial reconstruction · recorded position"
+            ? "3D editorial portrait · illustrated pose, recorded position"
             : "Recorded event actor · 2D fallback"
           : "No source position"}
       </span>
