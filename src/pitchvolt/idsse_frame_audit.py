@@ -258,7 +258,10 @@ def main() -> None:
     import json
 
     from pitchvolt.idsse_source_audit import (
-        MATCH_ID, SOURCE_NAMES, _xml_from_verified_bytes, inspect_source_directory,
+        MATCH_ID,
+        SOURCE_NAMES,
+        _xml_from_verified_bytes,
+        inspect_source_directory,
     )
 
     parser = argparse.ArgumentParser(description=__doc__)

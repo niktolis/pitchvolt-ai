@@ -140,6 +140,7 @@ def test_cross_match_or_xml_entity_attack_rejected(tmp_path):
 
 def test_metadata_roster_authority_and_duplicate_rejection():
     from xml.etree import ElementTree as ET
+
     from pitchvolt.idsse_frame_audit import registered_roster
 
     root = ET.fromstring(
