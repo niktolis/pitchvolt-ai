@@ -20,8 +20,7 @@ Workflow: `.github/workflows/foundry-merge-smoke.yml`.
   inference requests. An Actions run may appear as skipped for an unmerged PR.
 - Check out the exact `merge_commit_sha` after merging and verify it is in
   trusted `origin/main` history. Never execute PR-head code with OIDC.
-  The `pull_request_target` default-branch OIDC subject is reused from the
-  existing production GitHub federation.
+  The merge-only PR OIDC subject is separate from production's branch subject.
 - Runner: GitHub-hosted Ubuntu 24.04 / Python 3.12; `uv --frozen` optional
   Foundry dependency graph; no custom image, hosted agent, or new resource.
 - Offline URL/SDK preflight, followed by OIDC login, subscription/deployment
@@ -54,17 +53,16 @@ Existing deployment | Model | Azure capacity
 
 The repository already defines `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
 `AZURE_SUBSCRIPTION_ID` for `azure/login@v3` on `main`. Reuse its federated
-credential subject `repo:niktolis/pitchvolt-ai:ref:refs/heads/main` and
-audience `api://AzureADTokenExchange`. The client ID belongs to the
+merge-event subject
+`repo:niktolis@1533654/pitchvolt-ai@1419712503:pull_request`
+and audience `api://AzureADTokenExchange`. The separate production
+credential ends with `:ref:refs/heads/main`. The client ID belongs to the
 existing CI Entra app, **not** the operator's workstation login.
 
-**One-time RBAC verification may be necessary:** production deployment
-permissions do not imply Microsoft Foundry inference permission.
-Authorize the existing CI Entra service principal with **Foundry User**
-(previously Azure AI User) on the **existing Foundry project scope**, with
-account-level scope only if the project-scoped grant proves insufficient.
-An Azure administrator must perform this assignment if it does not
-exist. This is an IAM configuration step, *not* a model invocation and
+**One-time Azure configuration completed 19 October 2026:** both OIDC
+credentials were verified, and Reader on the existing Foundry account
+plus Foundry User on the project were assigned. PR #135 successfully
+authenticated and executed both model roles. This is an IAM configuration step, *not* a model invocation and
 not an approval needed per merge. Do not give the CI identity Owner,
 subscription Contributor, model management or key access for this job.
 See [GitHub/Azure OIDC runbook](../github-azure-oidc.md).
@@ -96,9 +94,11 @@ Agent Framework tool rounds may still issue more than two model calls.
 The production public `/narratives/stream` remains locally controlled,
 with Foundry inference disabled and the original 256-token defaults.
 
-A passing run should report `source=controlled`, **6/6** observed evidence
-tools, exactly two specialist roles, a publish action, a shadow-only
-candidate, and a zero exit code. The sanitized JSON artifact includes
+A passing run requires `source=controlled`, **6/6** unique evidence
+tools, both specialist roles and typed decisions, a verifier publish
+trace, and a zero exit code. Shadow-model-authored prose is **optional**.
+If supplied, it must be assessed as non-publishable; if absent, its
+omission is reported but does not fail controlled narrative verification. The sanitized JSON artifact includes
 structured role decisions, evidence identifiers, role latency, verifier
 status, and supported token usage if available. Null token usage means
 **unknown**, never zero cost. A failure requires analysis of the **existing
@@ -141,3 +141,15 @@ a pre-merge source branch after its merge.
 For exceptional manual debugging, the same `foundry_smoke` CLI retains
 its explicit flags, but the operational default is automated
 merge-only CI. Do not add local commands to mandatory handovers.
+
+## First real merged-PR run, after OIDC setup
+
+[PR #135 run 39211398821](https://github.com/niktolis/pitchvolt-ai/actions/runs/39211398821)
+completed OIDC login, Foundry deployment validation, Analyst (**11.57s**)
+and Storyteller (**3.08s**) execution, all six exact evidence lookups,
+both typed role decisions and deterministic verifier `publish` with
+`source=controlled`. CI returned **FAIL** solely because the optional
+shadow-prose/assessment fields were absent. The corrected acceptance
+logic makes controlled verified publication mandatory and optional
+shadow prose non-publishable without requiring its presence. SDK token
+usage remains unknown.

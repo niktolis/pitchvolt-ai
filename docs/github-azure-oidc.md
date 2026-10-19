@@ -10,10 +10,9 @@ receive Azure OIDC authentication. Production Foundry inference stays off.
 
 Use a **dedicated Entra app registration and service principal with federated
 GitHub Actions OIDC credentials**, not an interactive human account, password,
-registry admin credential or client secret. After the repository rename, federation must match
-`repo:niktolis/pitchvolt-ai:ref:refs/heads/main` and audience
-`api://AzureADTokenExchange`. The GitHub job requests `id-token: write`
-only for the deployment job. The separate existing user-assigned managed
+registry admin credential or client secret. The production deployment and merged-PR workflows use **separate OIDC
+subjects** and audience `api://AzureADTokenExchange`. Both authenticated
+jobs request `id-token: write`. The separate existing user-assigned managed
 identity `matchpulse-acr-pull` continues to serve private ACR image pulls at
 Container Apps runtime; do not remove or reuse it for CI.
 
@@ -70,33 +69,32 @@ the already-deployed models after approved PR merges.
 The independent `.github/workflows/foundry-merge-smoke.yml` uses
 `pull_request_target` **only** on PR closure to `main`, runs its job **only**
 for `merged=true`, and checks out the trusted **merge commit**, never the
-unmerged PR head. GitHub's post-2025 default-branch context preserves
-the existing subject `repo:niktolis/pitchvolt-ai:ref:refs/heads/main`.
+unmerged PR head. This event uses the verified immutable `:pull_request` subject below,
+not the main-branch deployment subject.
 It requests `id-token: write` only in this job and reuses
 `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`.
 There are **no push/synchronize/schedule/manual-dispatch triggers**.
 Automatic retries and rerun attempts are suppressed.
 
-The existing deployment service principal has no documented Foundry data-plane
-grant. An Azure IAM administrator must **once** assign **Foundry User**
-(formerly Azure AI User) at the existing Foundry project scope to that
-service principal if the assignment does not already exist. Project
+The user verified on 19 October 2026 that the existing CI service principal
+has **Reader** on the Foundry account and **Foundry User** on the project.
+No additional IAM assignment is required unless permissions change. Project
 resource scope:
 `/subscriptions/98d4eb09-a320-4b90-aa9c-e561835357af/resourceGroups/rg-matchpulse-dev/providers/Microsoft.CognitiveServices/accounts/matchpulse-ai-resource/projects/matchpulse-ai`.
 
-Example, for an administrator authorized to manage IAM (review scope first):
+Read-only audit (do not create duplicate role assignments):
 ```bash
 CI_PRINCIPAL_OBJECT_ID="$(az ad sp show --id "$AZURE_CLIENT_ID" --query id -o tsv)"
-az role assignment create --assignee-object-id "$CI_PRINCIPAL_OBJECT_ID" \
-  --assignee-principal-type ServicePrincipal --role "Foundry User" \
-  --scope "/subscriptions/98d4eb09-a320-4b90-aa9c-e561835357af/resourceGroups/rg-matchpulse-dev/providers/Microsoft.CognitiveServices/accounts/matchpulse-ai-resource/projects/matchpulse-ai"
+az role assignment list --assignee "$CI_PRINCIPAL_OBJECT_ID" \
+  --scope "/subscriptions/98d4eb09-a320-4b90-aa9c-e561835357af/resourceGroups/rg-matchpulse-dev/providers/Microsoft.CognitiveServices/accounts/matchpulse-ai-resource/projects/matchpulse-ai" \
+  --include-inherited --query '[].{role:roleDefinitionName,scope:scope}' -o table
 ```
 
 Avoid granting Owner, Contributor, Key Vault access, key-based inference or
 additional model-deployment privileges. If the project-scoped role is
 incompatible with the account's inference API, inspect the actual 403 and
 Foundry RBAC documentation; do not silently assign broad subscription roles.
-This step is **one-time IAM configuration**, not a merge-by-merge approval.
+This one-time IAM configuration is already complete.
 
 The workflow generates a sanitized CI Job Summary and 7-day JSON artifact
 with factual evidence IDs, typed role decisions, timings, verifier status and
@@ -105,3 +103,25 @@ The existing free-trial spending limit is the Azure-side financial boundary;
 GitHub action settings/TPM do not hard-stop spending at a specified amount.
 
 [Automatic merge smoke runbook](architecture/foundry-smoke-test.md).
+
+## Verified GitHub OIDC federation and first authenticated run
+
+The Entra CI app (client ID `ac059fd4-4f84-43ca-ab1f-ff0ac3d4aa51`) now
+has **both** credentials with issuer `https://token.actions.githubusercontent.com`
+and audience `api://AzureADTokenExchange`:
+
+| Credential | Exact observed OIDC subject |
+|---|---|
+| `pitchvolt-main` | `repo:niktolis@1533654/pitchvolt-ai@1419712503:ref:refs/heads/main` |
+| `pitchvolt-foundry-pr-merge` | `repo:niktolis@1533654/pitchvolt-ai@1419712503:pull_request` |
+
+Do not remove the branch credential to configure the pull-request
+credential. Initial PR #130 merge returned `AADSTS700213` for the
+missing second subject before inference. The PR #135 merge
+[automated workflow](https://github.com/niktolis/pitchvolt-ai/actions/runs/39211398821)
+subsequently **authenticated**, validated deployments, and executed
+both model roles plus the controlled verifier. It ended **FAIL** only
+because smoke acceptance incorrectly required optional shadow prose
+that was not returned. No generated text was published, and model
+token usage was unavailable. The acceptance fix does not change IAM
+or authorize retries.
