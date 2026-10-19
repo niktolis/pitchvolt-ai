@@ -65,7 +65,7 @@ export function SourceMomentPreview({
         <div
           className="key-moment-3d"
           role="img"
-          aria-label={`3D editorial view of recorded action by ${actorLabel ?? displayName(actor.player_id)} at ${actor.clock_ms} milliseconds; not source footage`}
+          aria-label={`3D illustration of ${actor.event_type} by ${actorLabel ?? displayName(actor.player_id)} at recorded field location and ${actor.clock_ms} milliseconds; body pose and lighting are artistic, not source tracking`}
         >
           <Canvas
             frameloop="demand"
@@ -105,6 +105,7 @@ export function SourceMomentPreview({
             <GoalFrame side={-1} />
             <GoalFrame side={1} />
             <ContactShadows
+              key={actor.event_id}
               position={[toWorld(actor.location).x, 0.012, toWorld(actor.location).z]}
               opacity={0.44}
               scale={6}
