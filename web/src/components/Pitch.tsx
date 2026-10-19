@@ -13,6 +13,7 @@ interface PitchProps {
   actorEmblem?: string;
   cursorMs: number;
   children?: ReactNode;
+  seekControls?: ReactNode;
   playing: boolean;
   canReplay: boolean;
   onTogglePlayback: () => void;
@@ -33,6 +34,7 @@ export function Pitch({
   actorEmblem,
   cursorMs,
   children,
+  seekControls,
   playing,
   canReplay,
   onTogglePlayback,
@@ -181,6 +183,12 @@ export function Pitch({
             </div>
           ) : null}
         </div>
+
+        {seekControls ? (
+          <div className="pitch-seek-strip" aria-label="Match time scrubber">
+            {seekControls}
+          </div>
+        ) : null}
 
         <section className="pitch-ball-status" aria-label="Recorded ball action and possession">
           <strong>
