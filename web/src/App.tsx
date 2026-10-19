@@ -17,6 +17,7 @@ import type {
 } from "./api/types";
 import { isMatchEvent, isTacticalInsight } from "./api/types";
 import { EventTimeline } from "./components/EventTimeline";
+import { HistoricalReplay } from "./components/HistoricalReplay";
 import { Pitch } from "./components/Pitch";
 import { SourceActionDetailsPanel } from "./components/SourceActionDetailsPanel";
 import { SourceMomentPreview } from "./components/SourceMomentPreview";
@@ -50,6 +51,15 @@ const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
 
 export function App() {
+  const [replaySource, setReplaySource] = useState<"historical" | "synthetic">("historical");
+  return replaySource === "historical" ? (
+    <HistoricalReplay onSynthetic={() => setReplaySource("synthetic")} />
+  ) : (
+    <SyntheticApp onHistorical={() => setReplaySource("historical")} />
+  );
+}
+
+function SyntheticApp({ onHistorical }: { onHistorical: () => void }) {
   const [scenarios, setScenarios] = useState<string[]>([]);
   const [scenario, setScenario] = useState("");
   const [speed, setSpeed] = useState<number>(5);
@@ -266,6 +276,9 @@ export function App() {
             <span className="current" aria-current="page">
               Live
             </span>
+            <button type="button" className="historical-nav-button" onClick={onHistorical}>
+              Historical 22-player replay
+            </button>
             <span>Matches</span>
             <span>Analysis</span>
             <span>Teams</span>

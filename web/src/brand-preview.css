@@ -881,3 +881,135 @@ body::after {
   .pitch-replay-deck > .control-bar > label { flex: 1 1 100%; }
   .pitch-replay-deck .audience-switch { margin-left: 0; }
 }
+
+/* Authenticated historical replay: preserve approved three-column broadcast shell. */
+.historical-nav-button {
+  border: 1px solid rgba(177, 233, 108, .32);
+  border-radius: 8px;
+  padding: 9px 13px;
+  background: rgba(30, 77, 27, .35);
+  color: #d5efbd;
+  font-size: 12px;
+  font-weight: 750;
+}
+.historical-nav-button:hover,
+.historical-nav-button:focus-visible {
+  background: rgba(92, 143, 45, .32);
+  outline-color: #a8dc5b;
+}
+.historical-source-indicator {
+  padding: 8px 10px;
+  border: 1px solid rgba(176, 230, 83, .42);
+  border-radius: 8px;
+  background: rgba(9, 47, 23, .72);
+  color: #b6e64b;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .075em;
+}
+.historical-grid > .pitch-panel { overflow: hidden; }
+.historical-pitch-panel .pitch { margin: 0; border-radius: 8px; }
+.historical-pitch-panel .pitch .historical-webgl { min-height: 300px; }
+.historical-pitch-loading,
+.historical-shot-placeholder {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  padding: 20px;
+  color: #b3c9b4;
+  font-size: 13px;
+  text-align: center;
+}
+.historical-source-facts {
+  display: grid;
+  gap: 12px;
+  padding: 18px 23px;
+  color: #cde0cc;
+  font-size: 13px;
+}
+.historical-source-facts > strong { color: #e5f6e4; font-size: 15px; }
+.historical-source-facts p { margin: 0; line-height: 1.5; }
+.historical-metric-pair {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(176, 216, 134, .12);
+}
+.historical-metric-pair span { color: #a8bda8; }
+.historical-metric-pair strong { color: #c9f56a; font-variant-numeric: tabular-nums; }
+.historical-provenance {
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(2, 16, 8, .65);
+  color: #98ad9c;
+  font-size: 11px;
+}
+.historical-shot-action {
+  min-height: 42px;
+  border: 1px solid rgba(174, 232, 82, .48);
+  border-radius: 9px;
+  background: rgba(72, 102, 26, .48);
+  color: #dfffba;
+  font-size: 12px;
+  font-weight: 750;
+}
+.historical-shot-action:disabled { opacity: .45; }
+.historical-shot-view {
+  position: relative;
+  margin: 0 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  aspect-ratio: 1.16;
+}
+.historical-shot-view .historical-webgl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.historical-replay-controls {
+  display: grid;
+  gap: 12px;
+  padding: 15px 17px;
+  border: 1px solid rgba(145, 208, 132, .26);
+  border-radius: 11px;
+  background: rgba(4, 23, 14, .91);
+}
+.historical-source-clock,
+.historical-playback-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.historical-source-clock {
+  color: #cdebb3;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.historical-replay-controls input[type="range"] {
+  width: 100%;
+  accent-color: #b6e64b;
+}
+.historical-playback-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.historical-playback-actions .replay-button,
+.historical-playback-actions .segmented button { min-height: 38px; }
+.historical-attribution span:first-child { max-width: 82%; }
+@media (max-width: 900px) {
+  .historical-grid { grid-template-columns: 1fr; }
+  .historical-grid > .insight-panel,
+  .historical-grid > .pitch-panel,
+  .historical-grid > .key-moment-panel,
+  .historical-grid > .pitch-replay-deck {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .historical-shot-view { aspect-ratio: 2; }
+  .historical-attribution { flex-direction: column; }
+  .historical-attribution span:first-child { max-width: 100%; }
+}
