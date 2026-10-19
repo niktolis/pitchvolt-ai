@@ -477,6 +477,57 @@ export function App() {
           playing={playing}
           canReplay={messages.length > 0}
           onTogglePlayback={togglePlayback}
+          seekControls={
+            <fieldset className="replay-seek-controls">
+              <legend className="visually-hidden">Timeline playback controls</legend>
+              <button type="button" onClick={togglePlayback} disabled={!messages.length}>
+                {playing ? "Pause" : "Play"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
+                  setPlaying(false);
+                  setSelectedId(null);
+                }}
+                disabled={!messages.length}
+                aria-label="Back 2 seconds"
+              >
+                −2s
+              </button>
+              <label className="replay-seek-range">
+                <span>Match time</span>
+                <input
+                  type="range"
+                  min={bounds.start}
+                  max={Math.max(bounds.start + 1, bounds.end)}
+                  step={100}
+                  value={cursorMs}
+                  onChange={(event) => {
+                    setCursorMs(Number(event.target.value));
+                    setPlaying(false);
+                    setSelectedId(null);
+                  }}
+                  disabled={!messages.length}
+                  aria-label="Seek match time"
+                  aria-valuetext={clockLabel(cursorMs)}
+                />
+                <output aria-label="Current replay time">{clockLabel(cursorMs)}</output>
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
+                  setPlaying(false);
+                  setSelectedId(null);
+                }}
+                disabled={!messages.length}
+                aria-label="Forward 2 seconds"
+              >
+                +2s
+              </button>
+            </fieldset>
+          }
         >
           <EventTimeline
             messages={visibleMessages}
@@ -518,54 +569,7 @@ export function App() {
               Replay scenario
             </button>
 
-            <fieldset className="replay-seek-controls">
-              <legend className="visually-hidden">Timeline playback controls</legend>
-              <button type="button" onClick={togglePlayback} disabled={!messages.length}>
-                {playing ? "Pause" : "Play"}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setCursorMs((c) => clampCursor(c - 2000, bounds.start, bounds.end));
-                  setPlaying(false);
-                  setSelectedId(null);
-                }}
-                disabled={!messages.length}
-                aria-label="Back 2 seconds"
-              >
-                −2s
-              </button>
-              <label>
-                Match clock
-                <input
-                  type="range"
-                  min={bounds.start}
-                  max={Math.max(bounds.start + 1, bounds.end)}
-                  step={100}
-                  value={cursorMs}
-                  onChange={(event) => {
-                    setCursorMs(Number(event.target.value));
-                    setPlaying(false);
-                    setSelectedId(null);
-                  }}
-                  disabled={!messages.length}
-                  aria-label="Seek match time"
-                  aria-valuetext={clockLabel(cursorMs)}
-                />
-              </label>
-              <button
-                type="button"
-                onClick={() => {
-                  setCursorMs((c) => clampCursor(c + 2000, bounds.start, bounds.end));
-                  setPlaying(false);
-                  setSelectedId(null);
-                }}
-                disabled={!messages.length}
-                aria-label="Forward 2 seconds"
-              >
-                +2s
-              </button>
-            </fieldset>
+
 
             <fieldset className="segmented audience-switch">
               <legend className="visually-hidden">Audience mode</legend>
