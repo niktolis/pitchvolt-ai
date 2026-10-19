@@ -136,3 +136,19 @@ def test_cross_match_or_xml_entity_attack_rejected(tmp_path):
     )
     with pytest.raises(ValueError, match="DTD or entity"):
         shot_candidates(path)
+
+
+def test_metadata_roster_authority_and_duplicate_rejection():
+    from xml.etree import ElementTree as ET
+    from pitchvolt.idsse_frame_audit import registered_roster
+
+    root = ET.fromstring(
+        '<PutDataRequest><Teams>'
+        '<Team TeamId="home"><Players><Player PersonId="one"/></Players></Team>'
+        '<Team TeamId="away"><Players><Player PersonId="two"/></Players></Team>'
+        '</Teams></PutDataRequest>'
+    )
+    assert registered_roster(root) == {"one": "home", "two": "away"}
+    root.find(".//Team[@TeamId='away']/Players/Player").set("PersonId", "one")
+    with pytest.raises(ValueError, match="duplicate registered source player"):
+        registered_roster(root)

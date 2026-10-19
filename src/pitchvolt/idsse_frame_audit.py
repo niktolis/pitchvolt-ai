@@ -228,3 +228,73 @@ def shot_candidates(event_xml: Path) -> list[dict[str, object]]:
         if root is not None:
             root.clear()
     return candidates
+
+
+def registered_roster(metadata_root: ET.Element) -> dict[str, str]:
+    """Only source-authoritative metadata roster IDs may count as players."""
+    teams = [e for e in metadata_root.iter() if _local(e.tag) == "Team"]
+    if len(teams) != 2:
+        raise ValueError("Source metadata requires two registered teams")
+    roster: dict[str, str] = {}
+    for team in teams:
+        team_id = team.get("TeamId")
+        if not team_id:
+            raise ValueError("Source team must have TeamId")
+        for player in team.iter():
+            if _local(player.tag) != "Player":
+                continue
+            player_id = player.get("PersonId")
+            if not player_id or player_id in roster:
+                raise ValueError("Missing or duplicate registered source player")
+            roster[player_id] = team_id
+    if not roster:
+        raise ValueError("Missing registered source players")
+    return roster
+
+
+def main() -> None:
+    """Real local-file audit; never download, emit raw coordinates, or host data."""
+    import argparse
+    import json
+
+    from pitchvolt.idsse_source_audit import (
+        MATCH_ID, SOURCE_NAMES, _xml_from_verified_bytes, inspect_source_directory,
+    )
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--directory", required=True, type=Path)
+    parser.add_argument("--metadata-sha256", required=True)
+    parser.add_argument("--events-sha256", required=True)
+    parser.add_argument("--period", required=True, type=int, choices=[1, 2, 3, 4])
+    parser.add_argument("--first-frame", required=True, type=int)
+    parser.add_argument("--frame-count", type=int, default=625)
+    args = parser.parse_args()
+    prior = inspect_source_directory(
+        args.directory, metadata_sha256=args.metadata_sha256,
+        events_sha256=args.events_sha256, verify_tracking=True,
+    )
+    metadata = _xml_from_verified_bytes(
+        args.directory / SOURCE_NAMES["metadata"], args.metadata_sha256,
+    )
+    roster = registered_roster(metadata)
+    tracking = inspect_frame_window(
+        args.directory / SOURCE_NAMES["tracking"],
+        period=args.period, first_frame=args.first_frame,
+        frame_count=args.frame_count, roster=roster, require_original_digest=True,
+    )
+    events = shot_candidates(args.directory / SOURCE_NAMES["events"])
+    print(json.dumps({
+        "selected_match": MATCH_ID,
+        "verified_original_tracking_digest": prior["tracking_sha256_verified"],
+        "metadata_event_files_have_independent_upstream_digest_pins": False,
+        "source_window": tracking,
+        "exact_shot_frame_candidates": events[:50],
+        "candidate_count": len(events),
+        "candidate_period_alignment_verified": False,
+        "selected_historical_clip_ready": False,
+        "public_replay_enabled": False,
+    }, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
