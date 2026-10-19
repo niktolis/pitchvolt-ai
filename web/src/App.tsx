@@ -51,7 +51,7 @@ const SPEEDS = [1, 5, 25] as const;
 const MODES: AudienceMode[] = ["casual", "analyst", "club"];
 
 export function App() {
-  const [replaySource, setReplaySource] = useState<"historical" | "synthetic">("historical");
+  const [replaySource, setReplaySource] = useState<"historical" | "synthetic">("synthetic");
   return replaySource === "historical" ? (
     <HistoricalReplay onSynthetic={() => setReplaySource("synthetic")} />
   ) : (
