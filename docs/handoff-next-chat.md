@@ -622,3 +622,31 @@ The right card does not grow and the approved cinematic appearance
 remains at rest. Verify regression tests and CI before presenting it
 for review, never merge without manager approval. After exact deployed
 SHA #138/#140 screenshot, compare with the approved design again.
+
+## 19 October 2026 — PR #141 merged, Key Moment fidelity work underway
+
+Verified GitHub main `e28eac6f40963888ee3f9b593bd1c6e4f31c3ee5`
+is merged PR #141, source-only Key Moment View Analysis CTA. PR #138
+3D close-up and PR #139 observed tracking schema also merged previously,
+but genuinely observed multiple athletes/ball from a licensed original
+dataset remain outstanding (Issue #134). No inferred tracking is allowed.
+
+Current isolated branch `feat/ui-key-moment-render-fidelity-142`:
+medium-detail self-contained 3D Key Moment hero, cloth shading, lighting,
+closer camera and instance-batched local grass scene. Only editorial
+static pose changes follow event category; **source event coordinates,
+real play/ball coordinates, possession and body tracking do not change**.
+SVG fallback, fixed target broadcast layout and existing replay
+transport are preserved. New Issue #142 records the longer-term
+self-hosted verified CC0 realistic athlete GLB/LOD workflow, separate
+from licensed match observation Issue #134. Third-party candidate GLBs
+were researched but **not verified or loaded** and must not become a
+brittle runtime CDN dependency. CC0 candidate research includes
+https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f
+and kicking/running versions; verify binaries, checksums and optimization
+before shipping.
+
+Do not overstate EA FC-level realism from this procedural-only PR.
+Run complete frontend/TypeScript/Vitest/Python/architecture checks,
+request review, do not merge without manager approval. Await exact
+production SHA and same-resolution screenshot for visual signoff.
