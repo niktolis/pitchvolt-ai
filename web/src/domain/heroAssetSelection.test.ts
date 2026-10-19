@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { heroAssetForEvent } from "./heroAssetSelection";
+import { heroAssetForEvent, isUnobservedHeroProp } from "./heroAssetSelection";
 
 describe("source-verified CC0 Key Moment asset selection", () => {
   it.each(["pass", "carry", "shot", "pressure", "turnover", "goal"] as const)(
@@ -20,4 +20,12 @@ describe("source-verified CC0 Key Moment asset selection", () => {
       expect(model?.sourceUrl).toContain("www.innerscene.com/tools/library/3d-parts/");
     },
   );
+  it("hides bundled static ball and fabricated shirt number, never real actor geometry", () => {
+    expect(isUnobservedHeroProp("Soccer ball | pentagon and hexagon panels")).toBe(true);
+    expect(isUnobservedHeroProp("Soccer jersey number")).toBe(true);
+    expect(isUnobservedHeroProp("male_casualsuit04")).toBe(false);
+    expect(isUnobservedHeroProp("Micah | anatomical body")).toBe(false);
+    expect(isUnobservedHeroProp("short01")).toBe(false);
+  });
+
 });
