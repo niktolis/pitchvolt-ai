@@ -85,3 +85,8 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 ## Cost and deployment guardrail
 
 PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources or increases to the approved smoke workload require explicit approval. The bounded post-merge Foundry smoke is pre-authorized for each PR merged to main; it does not run on ordinary commits. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend. Existing legacy-named Azure resources are intentionally reused, not recreated during the repository rename.
+## License and intellectual property
+
+PitchVolt AI is **proprietary, source-available software**, not open source. Original code, documentation, and branding remain all-rights-reserved unless their respective rights holders state otherwise. See [LICENSE](LICENSE) for the scope of the notice and how to request permission.
+
+If this repository becomes public, GitHub's Terms of Service allow users to view and fork it through GitHub; a proprietary notice does **not** prevent such forks or technical copying. No general permission is granted to redistribute, deploy, or commercially reuse the original materials. Third-party dependencies, datasets, and assets retain their own terms, and separate agreements (including hackathon submission rights) remain unaffected.
