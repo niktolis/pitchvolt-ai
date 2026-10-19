@@ -32,6 +32,16 @@ function StaticVerifiedHero({ asset, color }: { asset: VerifiedHeroAsset; color?
     const scene = gltf.scene.clone(true);
     const materials: THREE.Material[] = [];
     scene.traverse((node) => {
+      // Asset decorative props are NOT PitchVolt match observations.
+      // The source event controls ball-contact rendering independently;
+      // never leak the bundled static ball or an arbitrary jersey number.
+      if (
+        node.name.startsWith("Soccer ball |") ||
+        node.name === "Soccer jersey number"
+      ) {
+        node.visible = false;
+        return;
+      }
       if (!(node instanceof THREE.Mesh)) return;
       node.castShadow = true;
       node.receiveShadow = true;
