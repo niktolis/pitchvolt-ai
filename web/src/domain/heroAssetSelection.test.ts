@@ -1,11 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { heroAssetForEvent } from "./heroAssetSelection";
+import { heroAssetForEvent, isUnobservedHeroProp } from "./heroAssetSelection";
 
-describe("CC0 Key Moment model selection guard", () => {
+describe("source-verified CC0 Key Moment asset selection", () => {
   it.each(["pass", "carry", "shot", "pressure", "turnover", "goal"] as const)(
-    "keeps procedural fallback for %s while no verified self-hosted GLB is supplied",
+    "uses the pinned static footballer for %s until a dedicated pose model is verified",
     (kind) => {
-      expect(heroAssetForEvent(kind)).toBeNull();
+      const model = heroAssetForEvent(kind);
+      expect(model).not.toBeNull();
+      expect(model?.url).toBe("/assets/hero/neutral-5bb8a63f2824d84c.glb");
+      expect(model?.sha256).toBe(
+        "5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591",
+      );
+      expect(model?.sourceSha256).toBe(
+        "773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb",
+      );
+      expect(model?.license).toBe("CC0-1.0");
+      expect(model?.kitMaterial).toBe("Micah | top");
+      expect(model?.bytes).toBeLessThan(4 * 1024 * 1024);
+      expect(model?.sourceUrl).toContain("www.innerscene.com/tools/library/3d-parts/");
     },
   );
+  it("hides bundled static ball and fabricated shirt number, never real actor geometry", () => {
+    expect(isUnobservedHeroProp("Soccer ball | pentagon and hexagon panels")).toBe(true);
+    expect(isUnobservedHeroProp("Soccer jersey number")).toBe(true);
+    expect(isUnobservedHeroProp("male_casualsuit04")).toBe(false);
+    expect(isUnobservedHeroProp("Micah | anatomical body")).toBe(false);
+    expect(isUnobservedHeroProp("short01")).toBe(false);
+  });
 });

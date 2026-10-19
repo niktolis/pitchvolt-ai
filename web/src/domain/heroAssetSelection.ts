@@ -28,3 +28,8 @@ export function heroAssetForEvent(eventType: MatchEvent["event_type"]): Verified
   }
   return asset;
 }
+
+/** Original CC0 mesh includes props that are not independently observed match events. */
+export function isUnobservedHeroProp(name: string): boolean {
+  return name.startsWith("Soccer ball |") || name === "Soccer jersey number";
+}

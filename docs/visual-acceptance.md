@@ -229,3 +229,37 @@ Review standalone GLB provenance, manifest digest, mobile budget
 and exact-SHA browser screenshot before accepting visual fidelity.
 Approved target screenshot remains authoritative; start from the
 same 3D cinematic Key Moment camera and source-only positional truth.
+
+## Real CC0 footballer — source-pinned 3D asset visual acceptance (19 Oct 2026)
+
+PR #148's asset framework is merged, and the first **actual optimized,
+self-hosted, independently source-hash-pinned** GLB has been added
+to branch `feat/142-cc0-real-footballer`:
+
+- Innerscene "Soccer player, standing" (MakeHuman-based CC0 1.0).
+- Original 18,349,744 B, SHA-256
+  `773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb`.
+- Optimized 2,583,972 B, 70,839 triangles / 13 meshes, SHA-256
+  `5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591`.
+- Art-directed anonymous **standing** player replaces the placeholder
+  only in the 3D Key Moment scene; source match event location and
+  canonical camera stay identical. Other action categories use the same
+  verified neutral model until action-specific figures are licensed
+  and loaded separately.
+
+**Not yet visually accepted:** Need real deployed-SHA screenshot at
+reference 1672×941 and typical 16:9 desktop, correct feet-on-turf
+orientation, believable scale in 3D hero camera, factual event actor
+badge unobscured, team-color top material (both fictional colors),
+consistent model texture lighting and backup procedural player for
+WebGL/GLB failure, no continuous WebGL repaint or mobile stalls.
+This is a standing static portrait, *not* a sampled athletic skeleton,
+animation, production photorealism or measured ball trajectory.
+Do not declare EA FC equivalence from asset validator/CI alone.
+
+**Extra GLB fidelity check:** The official standing player asset contains
+a decorative static soccer ball and jersey-number object. Both are
+suppressed as unobserved match props. Inspect a possession-free/pressure
+frame for zero decorative ball, and verify the separately sourced
+ball-contact indicator is the only allowed ball graphic. Do not show
+invented shirt numbers or branded kits.

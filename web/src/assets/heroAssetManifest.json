@@ -1,1 +1,13 @@
-{}
+{
+  "neutral": {
+    "url": "/assets/hero/neutral-5bb8a63f2824d84c.glb",
+    "sha256": "5bb8a63f2824d84c4f8a346ca11d6af0eefd1854050cfa3dde4fb12a134c6591",
+    "bytes": 2583972,
+    "sourceSha256": "773cfa73bbcf659d7044934aaeacf1c3c9a49ae2955a51f56de7ad61ad1b6ffb",
+    "sourceUrl": "https://www.innerscene.com/tools/library/3d-parts/soccer-player-standing-3d-person-team-sports-f55b1b4f",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://www.innerscene.com/tools/library/terms",
+    "kitMaterial": "Micah | top",
+    "heightMetres": 1.84
+  }
+}
