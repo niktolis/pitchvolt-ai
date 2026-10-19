@@ -36,6 +36,19 @@ export function inspectGLB(bytes) {
   if (gltf?.asset?.version !== "2.0" || !Array.isArray(gltf.meshes) || !gltf.meshes.length) {
     throw new Error("GLB needs glTF 2.0 asset metadata and at least one mesh");
   }
+  // Unsupported compression must not trigger a hidden third-party decoder CDN.
+  for (const name of gltf.extensionsRequired ?? []) {
+    if (["KHR_draco_mesh_compression", "EXT_meshopt_compression", "KHR_texture_basisu"].includes(name)) {
+      throw new Error("Model requires unsupported external decoder or texture codec");
+    }
+  }
+  if (!Array.isArray(gltf.buffers) || !gltf.buffers.length) {
+    throw new Error("A self-contained GLB binary buffer is mandatory");
+  }
+  const secondOffset = 20 + jsonSize;
+  if (secondOffset + 8 > bytes.byteLength || bytes.toString("ascii", secondOffset + 4, secondOffset + 8) !== "BIN\\0") {
+    throw new Error("GLB must contain embedded binary chunk");
+  }
   // Self-hosted models must be self-contained and must not reference external resources.
   for (const resource of [...(gltf.buffers ?? []), ...(gltf.images ?? [])]) {
     if (resource.uri !== undefined) {
