@@ -428,6 +428,80 @@ body::after {
     repeating-linear-gradient(90deg, #163b20 0 12%, #1b502a 12% 24%);
 }
 
+/* Cinematic source-event reconstruction, not a match photograph.
+   All 3D subjects are anchored to the same verified replay event as the main pitch. */
+.key-moment-panel .key-moment-source-scene {
+  aspect-ratio: 16 / 9;
+  min-height: 202px;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 48% 35%, #285632, #07160c 80%);
+}
+
+.key-moment-panel .key-moment-source-scene .key-moment-svg-fallback {
+  display: none;
+}
+
+.key-moment-3d {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.key-moment-3d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.key-moment-3d::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 8, 4, .02) 28%, rgba(1, 12, 6, .88) 100%);
+}
+
+.key-moment-actor-tag {
+  position: absolute;
+  left: 12px;
+  bottom: 29px;
+  z-index: 2;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  max-width: calc(100% - 24px);
+  padding: 6px 9px;
+  border: 1px solid rgba(176, 237, 112, .4);
+  border-radius: 8px;
+  background: rgba(0, 17, 8, .83);
+  color: #f2f9ef;
+  font-size: 12px;
+  text-shadow: 0 1px 4px #020900;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, .4);
+}
+
+.key-moment-actor-tag strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.key-moment-panel .key-moment-source-scene .moment-provenance-label {
+  z-index: 3;
+  bottom: 6px;
+  right: 10px;
+  left: 10px;
+  overflow: hidden;
+  color: #dcf6c6;
+  text-align: right;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 9px;
+  letter-spacing: .025em;
+}
+
 .key-moment-panel .key-moment-copy {
   margin: 0 18px 16px;
 }
