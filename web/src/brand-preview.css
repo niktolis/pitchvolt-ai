@@ -502,6 +502,110 @@ body::after {
   letter-spacing: .025em;
 }
 
+/* The approved Key Moment layout stays fixed; factual inspection overlays the card,
+   rather than stretching all three broadcast columns or fabricating image analysis. */
+.key-moment-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.key-moment-details {
+  position: absolute;
+  z-index: 8;
+  inset: 55px 15px 68px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 14px 15px 12px;
+  overflow: auto;
+  border: 1px solid rgba(189, 247, 116, .57);
+  border-radius: 12px;
+  background: rgba(2, 18, 10, .97);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .80), inset 0 0 20px rgba(33, 95, 22, .12);
+  color: #ecf5e8;
+  scrollbar-width: thin;
+  scrollbar-color: #759c55 transparent;
+}
+
+.key-moment-details-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(190, 231, 150, .2);
+}
+
+.key-moment-details-header h3 {
+  margin: 5px 0 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.key-moment-details-eyebrow {
+  color: var(--pv-stage-lime);
+  font-size: 10px;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+
+.key-moment-details-close {
+  flex: 0 0 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border: 1px solid rgba(194, 236, 159, .3);
+  border-radius: 7px;
+  background: rgba(18, 49, 22, .85);
+  color: #f1ffe8;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.key-moment-details-close:focus-visible {
+  outline: 2px solid var(--pv-stage-lime);
+  outline-offset: 2px;
+}
+
+.key-moment-fact-list {
+  display: grid;
+  gap: 0;
+  margin: 8px 0;
+}
+
+.key-moment-fact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 8px;
+  align-items: start;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(176, 218, 155, .09);
+  font-size: 11px;
+}
+
+.key-moment-fact dt {
+  color: #94ad99;
+}
+
+.key-moment-fact dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 650;
+}
+
+.key-moment-details-note {
+  margin: 8px 0 0;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #a6bd9e;
+}
+
+@media (max-width: 760px) {
+  .key-moment-details {
+    inset: 48px 12px 63px;
+  }
+}
+
 .key-moment-panel .key-moment-copy {
   margin: 0 18px 16px;
 }
