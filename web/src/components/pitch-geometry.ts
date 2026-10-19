@@ -88,6 +88,22 @@ export function actionCameraPose(
 }
 
 /**
+ * Cinematic but editorial close-up of an *observed event location*.
+ * Moves the camera only; never supplies an athlete or ball trajectory.
+ */
+export function keyMomentCameraPose(
+  focus: PitchPoint | null | undefined,
+): { position: THREE.Vector3; target: THREE.Vector3 } | null {
+  if (!isSourcePitchPoint(focus)) return null;
+  const recorded = toWorld(focus);
+  const target = recorded.clone().add(new THREE.Vector3(0, 1.05, 0));
+  return {
+    position: target.clone().add(new THREE.Vector3(3.4, 2.65, 4.4)),
+    target,
+  };
+}
+
+/**
  * Position an on-screen player badge beside its source-linked avatar.
  * A right-sided source actor receives a left-extending badge and vice versa,
  * so the text does not cover the 3D body and stays inward at field boundaries.
