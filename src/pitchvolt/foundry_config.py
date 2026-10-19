@@ -8,6 +8,36 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlsplit
 
+
+def plausible_project_endpoint(endpoint: str) -> bool:
+    """Offline URL shape/template check, not Azure project verification."""
+    try:
+        url = urlsplit(endpoint)
+        host = url.hostname or ""
+        suffix = ".services.ai.azure.com"
+        if (url.scheme != "https" or not host.endswith(suffix)
+                or url.username is not None or url.password is not None
+                or url.query or url.fragment or url.port is not None):
+            return False
+        account = host[:-len(suffix)]
+        parts = url.path.split("/")
+        if (not account or "." in account or not account.replace("-", "").isalnum()
+                or len(parts) != 4 or parts[:3] != ["", "api", "projects"]
+                or not parts[3] or "%" in parts[3]):
+            return False
+        placeholders = (
+            "your-", "your_", "youraccount", "yourproject", "placeholder",
+            "replace-me", "replace_", "insert-", "insert_", "example",
+            "sample", "dummy", "changeme", "change-me",
+        )
+        return not any(
+            marker in label.casefold()
+            for label in (account, parts[3]) for marker in placeholders
+        )
+    except ValueError:
+        return False
+
+
 # Foundry runtime configuration lives here. Other modules must not redefine
 # defaults, limits, deployments, or the smoke experiment budget.
 DEFAULT_OUTPUT_TOKENS = 256
@@ -20,7 +50,7 @@ DEFAULT_PROMPT_CHARACTERS = 12000
 MIN_PROMPT_CHARACTERS = 256
 MAX_PROMPT_CHARACTERS = 16000
 DEFAULT_ROLE_TIMEOUT_SECONDS = 6.0
-MAX_ROLE_TIMEOUT_SECONDS = 15.0
+MAX_ROLE_TIMEOUT_SECONDS = 30.0
 MIN_ROLE_TIMEOUT_SECONDS = 0.1
 
 
@@ -28,15 +58,16 @@ MIN_ROLE_TIMEOUT_SECONDS = 0.1
 class SmokeSettings:
     """Single reviewed, non-billable-by-default local experiment configuration."""
 
-    analyst_deployment: str = "pitchvolt-gpt5-mini"
-    storyteller_deployment: str = "pitchvolt-gpt4o"
-    analyst_output_tokens: int = 4096
-    http_max_retries: int = 2
+    analyst_deployment: str = "matchpulse-gpt5-mini"
+    storyteller_deployment: str = "matchpulse-gpt4o"
+    analyst_output_tokens: int = 6144
+    storyteller_output_tokens: int = 1024
+    http_max_retries: int = 0
     role_level_retries: int = 0
     timeout_seconds_per_role: float = MAX_ROLE_TIMEOUT_SECONDS
     audience: str = "analyst"
     scenario: str = "high_press"
-    preview_total_timeout_seconds: float = 35.0
+    preview_total_timeout_seconds: float = 70.0
 
 
 SMOKE_SETTINGS = SmokeSettings()
@@ -139,4 +170,5 @@ def isolated_foundry_config(
         max_tool_calls_per_analyst=min(DEFAULT_TOOL_CALL_LIMIT, evidence_event_count),
         timeout_seconds_per_role=SMOKE_SETTINGS.timeout_seconds_per_role,
         analyst_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.analyst_output_tokens),
+        storyteller_settings=RoleSettings(max_output_tokens=SMOKE_SETTINGS.storyteller_output_tokens),
     )

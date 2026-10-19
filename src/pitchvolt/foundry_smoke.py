@@ -8,7 +8,12 @@ import os
 from dataclasses import asdict
 
 from pitchvolt.foundry_adapter import FoundryRoles
-from pitchvolt.foundry_config import NARRATIVE_ROLE_CALLS, SMOKE_SETTINGS, isolated_foundry_config
+from pitchvolt.foundry_config import (
+    NARRATIVE_ROLE_CALLS,
+    SMOKE_SETTINGS,
+    isolated_foundry_config,
+    plausible_project_endpoint,
+)
 from pitchvolt.intelligence import InsightKind
 from pitchvolt.narrative import Audience, InMemoryEvidenceTool
 from pitchvolt.narrative_stream import _bundles
@@ -17,7 +22,7 @@ from pitchvolt.workflow import Orchestrator
 
 
 def create_smoke_project_client(endpoint: str, credential: object):
-    """Use SDK transient transport retries; no role-level replay."""
+    """Disable transparent HTTP retries in the one-shot billable smoke."""
     from azure.ai.projects.aio import AIProjectClient
 
     class ConfiguredRetryAsyncProjectClient(AIProjectClient):
@@ -87,6 +92,31 @@ def sanitized_failure(exc: Exception) -> dict[str, object]:
     }
 
 
+def safe_assertion_audit(audit: object) -> dict[str, object]:
+    """Only report finding codes; never expose unverified prose excerpts."""
+    findings = getattr(audit, "findings", ())
+    return {
+        "finding_count": len(findings),
+        "finding_statuses": [item.status.value for item in findings],
+        "complete_coverage": audit.complete_coverage,
+        "publishable": audit.publishable,
+    }
+
+
+def write_machine_report(path: str | None, report: dict[str, object]) -> None:
+    """Write already-sanitized evidence/report metadata for merge-run artifacts.
+
+    Never write original model prose here. The paired CLI flags forbid it.
+    """
+    if path is None:
+        return
+    flags = os.O_CREAT | os.O_TRUNC | os.O_WRONLY
+    fd = os.open(path, flags, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        json.dump(report, handle, indent=2)
+        handle.write("\n")
+
+
 def fixture(name: str | None = None):
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
     selected = name if name is not None else SMOKE_SETTINGS.scenario
@@ -117,6 +147,10 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
         help="Confirm the approved one-Analyst/one-Storyteller budget",
     )
     parser.add_argument(
+        "--report-file", default=None,
+        help="Write a sanitized JSON report for an unattended merge-only CI run",
+    )
+    parser.add_argument(
         "--project-endpoint",
         default=os.getenv("PITCHVOLT_FOUNDRY_PROJECT_ENDPOINT", ""),
         help="Exact Foundry project endpoint (do not enter any API key)",
@@ -126,6 +160,8 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
 
 async def run(argv: list[str] | None = None) -> int:
     args = arguments(argv)
+    if args.report_file and args.show_unverified_prose:
+        raise SystemExit("Cannot export model-authored prose in a CI report")
     bundle = fixture(args.scenario)
     description = {
         "mode": "LIVE" if args.execute else "DRY_RUN",
@@ -138,9 +174,11 @@ async def run(argv: list[str] | None = None) -> int:
         "http_max_retries": SMOKE_SETTINGS.http_max_retries,
         "role_level_retries": SMOKE_SETTINGS.role_level_retries,
         "analyst_max_output_tokens": SMOKE_SETTINGS.analyst_output_tokens,
+        "storyteller_max_output_tokens": SMOKE_SETTINGS.storyteller_output_tokens,
+        "timeout_seconds_per_role": SMOKE_SETTINGS.timeout_seconds_per_role,
         "shadow_model_prose_requested": True,
         "unverified_text_display_enabled": args.show_unverified_prose,
-        "note": "SDK may retry transient HTTP failures, with extra billable requests; no hard monetary cap. No role-level replay.",
+        "note": "No SDK HTTP or role-level retries in this smoke; tool rounds may still generate multiple billable requests. This is NOT a monetary hard stop.",
     }
     print(json.dumps(description, indent=2))
     if not args.execute:
@@ -148,6 +186,10 @@ async def run(argv: list[str] | None = None) -> int:
         return 0
     if not args.acknowledge_billable_inference:
         raise SystemExit("Refusing live inference: add --acknowledge-billable-inference")
+    # Reject copied documentation URLs before creating Azure credentials/clients.
+    if not plausible_project_endpoint(args.project_endpoint):
+        print("BLOCKED: set an actual Foundry project endpoint, not a template URL")
+        return 2
     config = isolated_foundry_config(
         args.project_endpoint, evidence_event_count=len(bundle.events), inference_approved=True
     )
@@ -169,7 +211,10 @@ async def run(argv: list[str] | None = None) -> int:
             print('RESULT: role orchestration returned', flush=True)
             report = {
                 "source": result.source,
-                "rejection_reason": result.rejection_reason,
+                "rejection_reason": (
+                    "deterministic_verifier_rejected" if result.rejection_reason else None
+                ),
+                "rejection_detail_redacted": result.rejection_reason is not None,
                 "model_initiated_evidence_tool_calls": list(roles.last_evidence_tool_calls),
                 "expected_evidence_event_ids": list(bundle.insight.evidence_event_ids),
                 "invocations": [asdict(item) for item in roles.invocations],
@@ -181,7 +226,7 @@ async def run(argv: list[str] | None = None) -> int:
                     if roles.last_grounding_result is not None else None
                 ),
                 "assertion_audit": (
-                    asdict(roles.last_assertion_audit)
+                    safe_assertion_audit(roles.last_assertion_audit)
                     if roles.last_assertion_audit is not None else None
                 ),
                 "evidence_link_assessment": (
@@ -211,7 +256,6 @@ async def run(argv: list[str] | None = None) -> int:
                 "trace": [asdict(item) for item in result.trace],
                 "verified_narrative": result.narrative.model_dump(mode="json"),
             }
-            print(json.dumps(report, indent=2))
             valid = result.source == "controlled" and set(
                 roles.last_evidence_tool_calls
             ) == set(bundle.insight.evidence_event_ids) and len(roles.invocations) == 2
@@ -220,6 +264,9 @@ async def run(argv: list[str] | None = None) -> int:
                 and roles.last_shadow_assessment.publishable is False
                 and roles.last_authored_candidate is not None
             )
+            report["smoke_status"] = "PASS" if valid and shadow_ready else "FAIL"
+            write_machine_report(args.report_file, report)
+            print(json.dumps(report, indent=2))
             if not valid or not shadow_ready:
                 print("FAIL: required role execution or shadow candidate not confirmed")
                 return 1
@@ -233,9 +280,19 @@ async def run(argv: list[str] | None = None) -> int:
         except Exception as exc:  # noqa: BLE001 - sanitize arbitrary provider/SDK failures
             # Do not print exception messages: authentication/HTTP exceptions may contain secrets.
             report = sanitized_failure(exc)
+            # The recorded evidence IDs are trusted synthetic fixture IDs,
+            # never raw tool arguments or model-generated response text.
+            report["model_initiated_evidence_tool_calls"] = list(
+                roles.last_evidence_tool_calls
+            )
+            report["expected_evidence_event_ids"] = list(
+                bundle.insight.evidence_event_ids
+            )
             report["last_attempted_role"] = roles.last_attempted_role
             report["attempted_role_count"] = sum(roles._attempts.values())
             report["completed_roles"] = [item.role for item in roles.invocations]
+            report["smoke_status"] = "FAIL"
+            write_machine_report(args.report_file, report)
             print("FAIL: " + json.dumps(report, sort_keys=True))
             return 1
     

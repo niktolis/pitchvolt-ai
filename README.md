@@ -16,7 +16,7 @@ PitchVolt AI deliberately separates **football truth** from **AI explanation**:
 - FastAPI publishes replayable Server-Sent Events and immutable evidence endpoints.
 - React renders a live 105 × 68m pitch, event replay, tactical insights and evidence inspection.
 - Audience modes change presentation while preserving the same verified facts.
-- Microsoft Foundry Analyst/Storyteller orchestration is the next implementation milestone; it must consume evidence and pass deterministic claim verification.
+- Microsoft Foundry Analyst/Storyteller orchestration has passed a one-fixture live smoke (six observed evidence tool calls, two role decisions, deterministic verifier). A merge-only GitHub Actions regression now runs after approved PR merges.
 
 No unauthorized Premier League event data or footage is used.
 
@@ -36,7 +36,7 @@ The repository currently implements:
 - D2 architecture sources with generated Markdown renders;
 - CI for Python, frontend contracts/builds and architecture rendering.
 
-**Implementation boundaries:** historical StatsBomb Open Data ingestion is incremental, not a complete catalog; live Foundry model inference is disabled until explicitly approved; production telemetry/latency measurements, authentication, persisted live-feed state and multilingual recap remain planned. The approved Azure Container Apps deployment uses locally controlled narratives. See the architecture documents and current GitHub issues for per-feature status.
+**Implementation boundaries:** historical StatsBomb Open Data ingestion is incremental, not a complete catalog; production Foundry model inference stays disabled while a bounded post-merge CI smoke is pre-authorized; production telemetry/latency measurements, authentication, persisted live-feed state and multilingual recap remain planned. The approved Azure Container Apps deployment uses locally controlled narratives. See the architecture documents and current GitHub issues for per-feature status.
 
 ## Run locally
 
@@ -84,4 +84,4 @@ Start with [docs/architecture/README.md](docs/architecture/README.md).
 
 ## Cost and deployment guardrail
 
-PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources, inference charges or increased spending require explicit approval. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend. Existing legacy-named Azure resources are intentionally reused, not recreated during the repository rename.
+PitchVolt AI deploys to an existing Azure Container App using a GitHub Actions OIDC workflow. Any **new** Azure resources or increases to the approved smoke workload require explicit approval. The bounded post-merge Foundry smoke is pre-authorized for each PR merged to main; it does not run on ordinary commits. Azure consumption budgets are notifications rather than a guaranteed hard spending cap. The project requires zero out-of-pocket spend. Existing legacy-named Azure resources are intentionally reused, not recreated during the repository rename.

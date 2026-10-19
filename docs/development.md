@@ -86,4 +86,4 @@ Implemented locally: canonical schemas, synthetic scenarios, deterministic detec
 
 Planned: Foundry agent orchestration, deterministic narrative claim verification, production telemetry, Azure Container Apps deployment, persisted multi-replica state, authentication and authorized external feed adapters.
 
-No billable Azure resource may be provisioned or modified without explicit cost review and approval.
+No billable Azure resource may be provisioned or modified without explicit cost review and approval. An existing-resource Foundry smoke is separately pre-authorized **once per PR merge to main** via GitHub Actions and does not need operator execution or per-run approval.

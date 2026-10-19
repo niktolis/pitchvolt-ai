@@ -21,7 +21,9 @@ The deployment identity requires only:
 - `AcrPush` on registry `matchpulsea433a4e04d`.
 - `Contributor` on **only** the existing container app `matchpulse-web`
   (replace with a narrower tested deployment role if supported). It must not
-  receive Owner, subscription Contributor, directory admin or Foundry access.
+  receive Owner, subscription Contributor or directory admin. Foundry inference
+  requires a separate, project-scoped **Foundry User** assignment on the existing
+  `matchpulse-ai` project, only for the merged-PR smoke described below.
 
 ## Existing Azure identity — repository rename
 
@@ -59,5 +61,47 @@ rollback and verification.
 
 **Cost boundary:** Azure budget alerts are not a guaranteed spending cap.
 Each successful merge builds and pushes another image; ACR Basic storage,
-network operations and Container Apps consumption may incur costs. The workflow
-does not create new Azure resources or call paid Foundry inference.
+network operations and Container Apps consumption may incur costs. The production deployment workflow does not create new Azure resources or call
+paid Foundry inference. A **separate merge-only smoke workflow** now invokes
+the already-deployed models after approved PR merges.
+
+## One-time Foundry CI authorization and merged-PR event
+
+The independent `.github/workflows/foundry-merge-smoke.yml` uses
+`pull_request_target` **only** on PR closure to `main`, runs its job **only**
+for `merged=true`, and checks out the trusted **merge commit**, never the
+unmerged PR head. GitHub's post-2025 default-branch context preserves
+the existing subject `repo:niktolis/pitchvolt-ai:ref:refs/heads/main`.
+It requests `id-token: write` only in this job and reuses
+`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`.
+There are **no push/synchronize/schedule/manual-dispatch triggers**.
+Automatic retries and rerun attempts are suppressed.
+
+The existing deployment service principal has no documented Foundry data-plane
+grant. An Azure IAM administrator must **once** assign **Foundry User**
+(formerly Azure AI User) at the existing Foundry project scope to that
+service principal if the assignment does not already exist. Project
+resource scope:
+`/subscriptions/98d4eb09-a320-4b90-aa9c-e561835357af/resourceGroups/rg-matchpulse-dev/providers/Microsoft.CognitiveServices/accounts/matchpulse-ai-resource/projects/matchpulse-ai`.
+
+Example, for an administrator authorized to manage IAM (review scope first):
+```bash
+CI_PRINCIPAL_OBJECT_ID="$(az ad sp show --id "$AZURE_CLIENT_ID" --query id -o tsv)"
+az role assignment create --assignee-object-id "$CI_PRINCIPAL_OBJECT_ID" \
+  --assignee-principal-type ServicePrincipal --role "Foundry User" \
+  --scope "/subscriptions/98d4eb09-a320-4b90-aa9c-e561835357af/resourceGroups/rg-matchpulse-dev/providers/Microsoft.CognitiveServices/accounts/matchpulse-ai-resource/projects/matchpulse-ai"
+```
+
+Avoid granting Owner, Contributor, Key Vault access, key-based inference or
+additional model-deployment privileges. If the project-scoped role is
+incompatible with the account's inference API, inspect the actual 403 and
+Foundry RBAC documentation; do not silently assign broad subscription roles.
+This step is **one-time IAM configuration**, not a merge-by-merge approval.
+
+The workflow generates a sanitized CI Job Summary and 7-day JSON artifact
+with factual evidence IDs, typed role decisions, timings, verifier status and
+optional token usage. Any failure remains failed without an automated retry.
+The existing free-trial spending limit is the Azure-side financial boundary;
+GitHub action settings/TPM do not hard-stop spending at a specified amount.
+
+[Automatic merge smoke runbook](architecture/foundry-smoke-test.md).

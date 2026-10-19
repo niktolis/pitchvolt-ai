@@ -20,6 +20,7 @@ def test_one_config_controls_smoke_and_preview() -> None:
     assert config.model_deployment == SMOKE_SETTINGS.analyst_deployment
     assert config.storyteller_model_deployment == SMOKE_SETTINGS.storyteller_deployment
     assert config.settings_for("analyst").max_output_tokens == SMOKE_SETTINGS.analyst_output_tokens
+    assert config.settings_for("storyteller").max_output_tokens == SMOKE_SETTINGS.storyteller_output_tokens
     assert config.timeout_seconds_per_role == SMOKE_SETTINGS.timeout_seconds_per_role
     assert config.max_tool_calls_per_analyst == 6
     assert config.max_inference_calls_per_narrative == NARRATIVE_ROLE_CALLS

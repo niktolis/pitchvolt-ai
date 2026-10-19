@@ -37,39 +37,58 @@ class RoleInvocation:
 
 
 def usage_counts(response: object) -> tuple[int | None, int | None]:
-    """Read allowlisted usage fields, never prompts or raw model text."""
-    def get(obj: object, name: str) -> object:
-        return obj.get(name) if isinstance(obj, dict) else getattr(obj, name, None)
+    """Prefer aggregate SDK usage; never mistake partial tool rounds for a total.
 
+    SDK envelopes vary between Agent Framework versions. The root/raw usage
+    is authoritative when present; message-level figures can be combined only
+    when *every* recorded message has complete per-message token counts.
+    Missing or mixed usage is unknown, not zero billed tokens.
+    """
+
+    def field(obj: object, key: str) -> object:
+        return obj.get(key) if isinstance(obj, dict) else getattr(obj, key, None)
+
+    def counts(obj: object) -> tuple[int | None, int | None]:
+        def valid(keys: tuple[str, ...]) -> int | None:
+            for key in keys:
+                value = field(obj, key)
+                if type(value) is int and 0 <= value <= 100_000_000:
+                    return value
+            return None
+
+        return valid(("input_tokens", "prompt_tokens")), valid(
+            ("output_tokens", "completion_tokens")
+        )
+
+    # Root and SDK raw envelopes represent aggregate usage across any tool
+    # rounds; never double-count them with per-message values.
     containers = [response]
     for name in ("usage", "usage_details", "raw_response"):
-        item = get(response, name)
-        if item is not None:
-            containers.append(item)
-            nested = get(item, "usage")
-            if nested is not None:
-                containers.append(nested)
-    messages = get(response, "messages")
-    if isinstance(messages, (tuple, list)):
-        for message in messages:
-            for name in ("usage", "usage_details"):
-                item = get(message, name)
-                if item is not None:
-                    containers.append(item)
-
-    def count(obj: object, names: tuple[str, ...]) -> int | None:
-        for name in names:
-            value = get(obj, name)
-            if isinstance(value, int) and not isinstance(value, bool) and 0 <= value <= 100_000_000:
-                return value
-        return None
-
+        obj = field(response, name)
+        if obj is not None:
+            containers.append(obj)
+            usage = field(obj, "usage")
+            if usage is not None:
+                containers.append(usage)
     for container in containers:
-        input_count = count(container, ("input_tokens", "prompt_tokens"))
-        output_count = count(container, ("output_tokens", "completion_tokens"))
-        if input_count is not None or output_count is not None:
-            return input_count, output_count
-    return None, None
+        pair = counts(container)
+        if pair != (None, None):
+            return pair
+
+    messages = field(response, "messages")
+    if not isinstance(messages, (tuple, list)) or not messages:
+        return None, None
+    totals = [0, 0]
+    for message in messages:
+        usage = field(message, "usage")
+        if usage is None:
+            usage = field(message, "usage_details")
+        pair = counts(usage)
+        if pair[0] is None or pair[1] is None:
+            return None, None
+        totals[0] += pair[0]
+        totals[1] += pair[1]
+    return totals[0], totals[1]
 
 
 class FoundryDisabled(RuntimeError):
@@ -208,23 +227,31 @@ class FoundryRoles:
             return event.model_dump_json()
 
         self.last_evidence_tool_calls = ()
-        response = await self._invoke("analyst",
-            f"Insight: {insight.insight_id}\n"
-            f"Kind: {insight.kind.value}\n"
-            f"Events: {list(insight.evidence_event_ids)}\n"
-            f"Metrics: {insight.metrics}\n"
-            "Return a structured plan and preserve all IDs exactly.",
-            AnalystPlan,
-            tools=[get_evidence_event],
-        )
-        self.last_evidence_tool_calls = tuple(observed)
+        try:
+            response = await self._invoke(
+                "analyst",
+                f"Insight: {insight.insight_id}\n"
+                f"Kind: {insight.kind.value}\n"
+                f"Events: {list(insight.evidence_event_ids)}\n"
+                f"Metrics: {insight.metrics}\n"
+                "Return a structured plan and preserve all IDs exactly.",
+                AnalystPlan,
+                tools=[get_evidence_event],
+            )
+        finally:
+            # A transport/schema failure may happen *after* real model tool
+            # requests. Keep only the IDs actually observed, even on error.
+            self.last_evidence_tool_calls = tuple(observed)
         if response.value is None:
             raise ValueError("Analyst returned no structured output")
         plan = AnalystPlan.model_validate(response.value)
         if plan.evidence_event_ids != insight.evidence_event_ids:
             raise ValueError("Analyst supplied unverified evidence IDs")
-        if set(observed) != set(insight.evidence_event_ids):
-            raise ValueError("Analyst did not retrieve all verified evidence events")
+        if (
+            len(observed) != len(insight.evidence_event_ids)
+            or set(observed) != set(insight.evidence_event_ids)
+        ):
+            raise ValueError("Analyst must retrieve each verified evidence event exactly once")
         self.role_decisions["analyst"] = plan.model_dump(mode="json")
         return plan
 
