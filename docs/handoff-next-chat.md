@@ -368,3 +368,44 @@ for reproducible failure diagnosis. The engineer must not merge without
 approval. The next authorized live test runs in GitHub Actions after
 a PR merge, using OIDC. One-time IAM verification for the CI principal
 may still be necessary; no PC involvement.
+
+## 19 October 2026 — verified current state and NEXT PRIMARY WORKSTREAM
+
+This section supersedes the older dated PR and priority snapshots above.
+PR **#133 merged** on `main` at
+`37bb23b286ce604c3889618ae1a25ee6dc6b8ecc`; frontend, Python and
+architecture CI passed, while Azure deployment was still running at the
+first post-merge check. PR #130 merged into `main` at `eb6f4299ebd4aa9c2679fc998bd6f74df62e4a80`; preserve the documented merge-only Foundry smoke-workflow authorization.
+Always recheck actual GitHub status and the deployed SHA.
+
+**Next major data/architecture milestone: GitHub Issue #134**
+[Licensed synchronized football player/ball tracking](https://github.com/niktolis/pitchvolt-ai/issues/134)
+(subtask of broad action-ROI Issue #129). The app cannot reach the approved
+realistic 11v11/action-ROI depiction from synthetic MatchEvent actor locations
+alone. PR #133's ball graphic is an **event-contact marker**, not observed
+ball tracking or evidence of contested possession. First perform an
+**offline source and legal feasibility PR** for Metrica Sports' synchronized
+event+tracking samples: explicit redistribution permissions, actual player
+and ball channels, event/sample synchronization, per-match identifiers,
+sampling rate, null coverage, source SHA-256 pins and attribution. Do not
+host, embed or publish original tracking data until the rights are
+verified; do not mix historical game tracking with synthetic Harbor/Ridge
+replay. Retain the separately verified StatsBomb 360 event-frame ingestion
+as a distinct source adapter. Then design a versioned provider-neutral
+spatiotemporal player/ball contract, tests, controlled historical mode
+and ROI renderer. Ask for manager approval at each PR boundary. No new Azure resources or ad-hoc paid inference are authorized. The existing Foundry merge-only smoke workflow has standing approval; preserve its documented OIDC and budget safeguards.
+
+**Parallel unblocked visual task currently in progress:** branch
+`feat/ui-actor-visibility-preview-135` improves the existing single
+source-positioned 3D player avatar, player surname/team-crest badge
+legibility and side-aware label placement at pitch edges. This is a
+presentation-only change: no new observed player, real kit logos, ball
+trajectory or claim about actual athletic body pose. Validate CI,
+review before merge, and manually compare exact deployed SHA against
+the authoritative approved 1672 × 941 preview and latest uploaded image
+`image(20261018-213428).png`.
+
+Prioritize Issue #134 after this unblocked avatar-visibility PR. Do not
+start another speculative CSS-only redesign or relabel PR #133 as ball
+tracking. Maintain under-pitch replay controls and keep approved
+three-card broadcast look and feel. Preserve DRY/provenance rules.

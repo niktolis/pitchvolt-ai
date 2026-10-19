@@ -8,12 +8,14 @@ import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js
 import type { MatchEvent } from "../api/types";
 import type { BallActionContext } from "../domain/ballAction";
 import { clockLabel, displayName } from "../domain/presentation";
+import { FootballActorAvatar } from "./FootballActorAvatar";
 import {
   actionCameraPose,
   FIELD_HEIGHT,
   FIELD_WIDTH,
   isSourcePitchPoint,
   type PitchPoint,
+  sourceActorBadgeAnchor,
   sourceActorHeading,
   sourceArrow,
   toWorld,
@@ -232,11 +234,13 @@ function PlayerModel({
 }) {
   const position = toWorld(event.location);
   const heading = sourceActorHeading(event.location, event.destination);
+  const badge = sourceActorBadgeAnchor(event.location);
+  if (!badge) return null;
 
   return (
     <group position={position}>
-      <Html position={[2.8, 3.5, 0]} distanceFactor={23} style={{ pointerEvents: "none" }}>
-        <div className="pitch-source-actor-label">
+      <Html position={badge.position} distanceFactor={72} style={{ pointerEvents: "none" }}>
+        <div className={`pitch-source-actor-label anchor-${badge.side}`}>
           {actorEmblem ? (
             <span
               className="source-actor-crest"
@@ -261,38 +265,7 @@ function PlayerModel({
         <meshBasicMaterial color="#a8f72c" transparent opacity={0.12} depthWrite={false} />
       </mesh>
       <group rotation={[0, heading, 0]}>
-        <mesh position={[0, 1.35, 0]} castShadow>
-          <capsuleGeometry args={[0.47, 0.85, 4, 12]} />
-          <meshStandardMaterial color={color ?? "#43aee7"} roughness={0.78} />
-        </mesh>
-        <mesh position={[0, 1.64, 0.4]} castShadow>
-          <boxGeometry args={[0.56, 0.18, 0.035]} />
-          <meshStandardMaterial color="#e9f8ff" />
-        </mesh>
-        <mesh position={[0, 2.22, 0]} castShadow>
-          <sphereGeometry args={[0.32, 14, 12]} />
-          <meshStandardMaterial color="#e8ba8e" roughness={0.82} />
-        </mesh>
-        <mesh position={[0, 2.43, -0.09]} castShadow>
-          <sphereGeometry args={[0.325, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.43]} />
-          <meshStandardMaterial color="#2b2321" />
-        </mesh>
-        {[-0.57, 0.57].map((side) => (
-          <group key={side}>
-            <mesh position={[side, 1.43, 0]} rotation={[0, 0, side * 0.55]} castShadow>
-              <capsuleGeometry args={[0.19, 0.65, 4, 8]} />
-              <meshStandardMaterial color={color ?? "#47b0e6"} />
-            </mesh>
-            <mesh position={[side / 2, 0.49, 0]} castShadow>
-              <capsuleGeometry args={[0.19, 0.77, 4, 8]} />
-              <meshStandardMaterial color="#143f60" />
-            </mesh>
-            <mesh position={[side / 2, 0.12, 0.2]} castShadow>
-              <boxGeometry args={[0.35, 0.14, 0.57]} />
-              <meshStandardMaterial color="#ecfae5" />
-            </mesh>
-          </group>
-        ))}
+        <FootballActorAvatar kitColor={color} />
       </group>
     </group>
   );

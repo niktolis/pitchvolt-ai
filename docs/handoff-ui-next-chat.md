@@ -460,3 +460,47 @@ transport and selective source-observed attackers/defenders (Issue #129).
 This milestone must not be misrepresented as continuous football tracking.
 Keep the target preview's chrome/layout as implemented post-#132, no
 extra Azure/Foundry charges, no merge before manager approval.
+
+## 20. Owner-directed next workstream and actor visibility (19 October 2026)
+
+PR #133 (event-contact ball and event-time possession/pressure) is
+**merged** at `37bb23b286ce604c3889618ae1a25ee6dc6b8ecc`.
+The approved broadcast preview remains binding, with the manager's
+later closer region-of-interest camera, actor/player badges, under-pitch
+replay controls and unobtrusive in-pitch play glyph.
+
+**Next BLOCKED / priority data milestone: Issue #134**
+https://github.com/niktolis/pitchvolt-ai/issues/134 — *integrate licensed
+synchronized player and ball tracking for action ROI*. Parent UX gap
+Issue #129. The Metrica Sports sample-data repo describes anonymized,
+synchronized 105×68m event/tracking samples; verify the original ball
+and per-player columns, synchronization, sample frequency, null/coverage
+and actual redistribution rights. Its acknowledgement request is not
+itself a public-hosting license. Do not silently ship upstream files,
+relate different games, interpolate missing player/ball samples,
+infer holder/duel state from team possession, or treat StatsBomb 360
+freeze frames as continuous data. Initial work is **offline, SHA-verified
+and legally gated**; explicit approval needed before hosting/inference.
+The new provider-neutral schema and rendering must be separately
+reviewed with tests before replacing the synthetic fixture. The
+target screenshot's many players must never be fabricated.
+
+**Next NON-BLOCKED UI bundle:** branch
+`feat/ui-actor-visibility-preview-135`, after merged PR #133, delivers
+a better-proportioned procedural 3D athlete at the **same exact source
+event position**, a neutral unanimated representation with team color,
+and a larger source-authored surname+fictional crest badge that sits
+to the inward side of the actor (not on the player model).
+The avatar does **not** claim to reconstruct measured body pose,
+official kits, more players, or real ball tracking.
+Pure edge-position tests protect badge placement; requires full CI.
+This is preparation for a later multi-player source-rendering engine,
+not completion of Issue #134. Keep one PR at a time, no merge without
+manager approval.
+
+Last owner-supplied actual after PR #132:
+`image(20261018-213428).png`, and the approved preview is
+`Neon Football Analytics Dashboard(2).png`. These screenshots must be
+requested again if not present in future chat; they are not commit assets.
+Screenshot CI remains intentionally disabled. Compare post-deploy exact
+SHA manually at matching viewport/zoom.
