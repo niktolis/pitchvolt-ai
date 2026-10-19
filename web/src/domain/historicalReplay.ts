@@ -1,7 +1,8 @@
+import historicalSource from "../assets/historicalSourceManifest.json";
+
 /** Strict source-observed historical replay contract. No inferred poses or actors. */
-export const HISTORICAL_ASSET_PATH = "/historical/j03wmx-shot-12519-observed-v1.json";
-export const HISTORICAL_ASSET_SHA256 =
-  "d1b6dda14d84a266cd26ef607c12b62712fe906a8de9c9b75be860b464346db6";
+export const HISTORICAL_ASSET_PATH = historicalSource.assetPath;
+export const HISTORICAL_ASSET_SHA256 = historicalSource.sha256;
 export const HISTORICAL_SHOT_FRAME = 12519;
 export const HISTORICAL_FIRST_FRAME = 12219;
 export const HISTORICAL_FRAME_COUNT = 625;
@@ -60,12 +61,11 @@ export function validateHistoricalClip(value: unknown): HistoricalClip {
     value.player_carrier_known !== false ||
     !isRecord(source) ||
     source.license !== "CC-BY-4.0" ||
-    source.original_tracking_sha256 !==
-      "d3dd92e509421a6466acb0a083c009035f1751bc5fd9ef42ffa8f20d01cf7d49" ||
+    source.original_tracking_sha256 !== historicalSource.originalTrackingSha256 ||
     typeof source.attribution !== "string" ||
     !source.attribution.includes("Deutsche Fußball Liga") ||
     !isRecord(match) ||
-    match.id !== "DFL-MAT-J03WMX" ||
+    match.id !== historicalSource.matchId ||
     match.period !== 1 ||
     !Array.isArray(match.teams) ||
     match.teams.length !== 2 ||
@@ -77,7 +77,7 @@ export function validateHistoricalClip(value: unknown): HistoricalClip {
         (team.role === "home" || team.role === "away"),
     ) ||
     !isRecord(segment) ||
-    segment.source_event_id !== "18226500000041" ||
+    segment.source_event_id !== historicalSource.sourceEventId ||
     segment.source_shot_frame !== HISTORICAL_SHOT_FRAME ||
     segment.first_frame !== HISTORICAL_FIRST_FRAME ||
     segment.last_frame !== 12843 ||

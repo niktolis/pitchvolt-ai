@@ -1,0 +1,11 @@
+{
+  "assetPath": "/historical/j03wmx-shot-12519-observed-v1.json",
+  "sha256": "d1b6dda14d84a266cd26ef607c12b62712fe906a8de9c9b75be860b464346db6",
+  "originalTrackingSha256": "d3dd92e509421a6466acb0a083c009035f1751bc5fd9ef42ffa8f20d01cf7d49",
+  "matchId": "DFL-MAT-J03WMX",
+  "sourceEventId": "18226500000041",
+  "firstFrame": 12219,
+  "lastFrame": 12843,
+  "frameRate": 25,
+  "frameCount": 625
+}
