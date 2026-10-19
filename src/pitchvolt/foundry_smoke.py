@@ -117,6 +117,48 @@ def write_machine_report(path: str | None, report: dict[str, object]) -> None:
         handle.write("\n")
 
 
+def smoke_acceptance_checks(
+    result: object, roles: FoundryRoles, expected_event_ids: tuple[str, ...],
+) -> dict[str, bool]:
+    """Mandatory controlled publication is independent of optional shadow text.
+
+    A supplied model-authored candidate must be assessed as not publishable;
+    neither its absence nor the absence of an assessment is an error when
+    the candidate itself is absent. No generated prose reaches this report.
+    """
+    actual = tuple(roles.last_evidence_tool_calls)
+    expected = tuple(expected_event_ids)
+    candidate = roles.last_authored_candidate
+    shadow = roles.last_shadow_assessment
+    return {
+        "controlled_narrative": result.source == "controlled"
+        and result.rejection_reason is None,
+        "all_evidence_retrieved_once": bool(expected)
+        and len(actual) == len(expected)
+        and len(set(actual)) == len(expected)
+        and set(actual) == set(expected),
+        "two_specialists_completed": [
+            role.role for role in roles.invocations
+        ] == ["analyst", "storyteller"],
+        "typed_role_decisions": set(roles.role_decisions) == {
+            "analyst", "storyteller",
+        },
+        "verifier_published": any(
+            step.role == "verifier" and step.action == "publish"
+            for step in result.trace
+        ),
+        "narrative_evidence_preserved": (
+            len(result.narrative.evidence_event_ids) == len(expected)
+            and set(result.narrative.evidence_event_ids) == set(expected)
+        ),
+        "optional_shadow_isolated": (
+            (candidate is None and shadow is None)
+            or (candidate is not None and shadow is not None
+                and shadow.publishable is False)
+        ),
+    }
+
+
 def fixture(name: str | None = None):
     """Pick exactly one deterministic synthetic insight, independent of Azure."""
     selected = name if name is not None else SMOKE_SETTINGS.scenario
@@ -256,21 +298,25 @@ async def run(argv: list[str] | None = None) -> int:
                 "trace": [asdict(item) for item in result.trace],
                 "verified_narrative": result.narrative.model_dump(mode="json"),
             }
-            valid = result.source == "controlled" and set(
-                roles.last_evidence_tool_calls
-            ) == set(bundle.insight.evidence_event_ids) and len(roles.invocations) == 2
-            shadow_ready = (
-                roles.last_shadow_assessment is not None
-                and roles.last_shadow_assessment.publishable is False
-                and roles.last_authored_candidate is not None
+            checks = smoke_acceptance_checks(
+                result, roles, bundle.insight.evidence_event_ids,
             )
-            report["smoke_status"] = "PASS" if valid and shadow_ready else "FAIL"
+            report["acceptance_checks"] = checks
+            report["optional_shadow_status"] = (
+                "not_provided" if roles.last_authored_candidate is None
+                and roles.last_shadow_assessment is None
+                else "assessed_unpublished" if checks["optional_shadow_isolated"]
+                else "invalid"
+            )
+            report["smoke_status"] = "PASS" if all(checks.values()) else "FAIL"
             write_machine_report(args.report_file, report)
             print(json.dumps(report, indent=2))
-            if not valid or not shadow_ready:
-                print("FAIL: required role execution or shadow candidate not confirmed")
+            if not all(checks.values()):
+                print("FAIL: a mandatory role/evidence/verifier or shadow-isolation check failed")
                 return 1
             print("PASS: evidence tool, both specialist roles and verifier completed")
+            if report["optional_shadow_status"] == "not_provided":
+                print("NOTE: optional model-authored shadow prose was not supplied")
             if roles.last_grounding_result is not None and not roles.last_grounding_result.eligible:
                 print("NOTE: model-authored prose outside bounded grammar; not eligible for publication")
             if any(inv.input_tokens is None or inv.output_tokens is None

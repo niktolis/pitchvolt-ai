@@ -164,3 +164,56 @@ def test_ci_report_refuses_unverified_model_prose_even_offline(tmp_path) -> None
             "--report-file", str(tmp_path / "report.json"), "--show-unverified-prose",
         ]))
     assert not (tmp_path / "report.json").exists()
+
+
+def test_merged_pr_run_optional_shadow_absent_still_passes() -> None:
+    """Oct 19 PR #135: controlled publication passed; shadow fields absent."""
+    from types import SimpleNamespace
+
+    ids = tuple(f"e{i}" for i in range(1, 7))
+    result = SimpleNamespace(
+        source="controlled", rejection_reason=None,
+        trace=(SimpleNamespace(role="verifier", action="publish"),),
+        narrative=SimpleNamespace(evidence_event_ids=ids),
+    )
+    roles = SimpleNamespace(
+        last_evidence_tool_calls=ids,
+        invocations=(SimpleNamespace(role="analyst"), SimpleNamespace(role="storyteller")),
+        role_decisions={"analyst": {}, "storyteller": {}},
+        last_authored_candidate=None, last_shadow_assessment=None,
+    )
+    assert all(foundry_smoke.smoke_acceptance_checks(result, roles, ids).values())
+    roles.last_authored_candidate = SimpleNamespace(text="SHADOW_NOT_PUBLISHABLE")
+    roles.last_shadow_assessment = SimpleNamespace(publishable=False)
+    assert all(foundry_smoke.smoke_acceptance_checks(result, roles, ids).values())
+    roles.last_shadow_assessment = None
+    assert not foundry_smoke.smoke_acceptance_checks(result, roles, ids)["optional_shadow_isolated"]
+    roles.last_shadow_assessment = SimpleNamespace(publishable=True)
+    assert not foundry_smoke.smoke_acceptance_checks(result, roles, ids)["optional_shadow_isolated"]
+
+
+def test_merged_pr_run_rejects_missing_evidence_roles_or_publish() -> None:
+    from types import SimpleNamespace
+
+    ids = ("e1", "e2")
+    result = SimpleNamespace(
+        source="controlled", rejection_reason=None,
+        trace=(SimpleNamespace(role="verifier", action="publish"),),
+        narrative=SimpleNamespace(evidence_event_ids=ids),
+    )
+    roles = SimpleNamespace(
+        last_evidence_tool_calls=("e1", "e1"),
+        invocations=(SimpleNamespace(role="analyst"), SimpleNamespace(role="storyteller")),
+        role_decisions={"analyst": {}, "storyteller": {}},
+        last_authored_candidate=None, last_shadow_assessment=None,
+    )
+    assert not foundry_smoke.smoke_acceptance_checks(result, roles, ids)["all_evidence_retrieved_once"]
+    roles.last_evidence_tool_calls = ids
+    result.trace = (SimpleNamespace(role="verifier", action="fallback"),)
+    assert not foundry_smoke.smoke_acceptance_checks(result, roles, ids)["verifier_published"]
+    result.trace = (SimpleNamespace(role="verifier", action="publish"),)
+    roles.invocations = (SimpleNamespace(role="analyst"),)
+    assert not foundry_smoke.smoke_acceptance_checks(result, roles, ids)["two_specialists_completed"]
+    roles.invocations = (SimpleNamespace(role="analyst"), SimpleNamespace(role="storyteller"))
+    result.source = "fallback"
+    assert not foundry_smoke.smoke_acceptance_checks(result, roles, ids)["controlled_narrative"]
