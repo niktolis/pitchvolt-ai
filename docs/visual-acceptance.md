@@ -256,3 +256,10 @@ WebGL/GLB failure, no continuous WebGL repaint or mobile stalls.
 This is a standing static portrait, *not* a sampled athletic skeleton,
 animation, production photorealism or measured ball trajectory.
 Do not declare EA FC equivalence from asset validator/CI alone.
+
+**Extra GLB fidelity check:** The official standing player asset contains
+a decorative static soccer ball and jersey-number object. Both are
+suppressed as unobserved match props. Inspect a possession-free/pressure
+frame for zero decorative ball, and verify the separately sourced
+ball-contact indicator is the only allowed ball graphic. Do not show
+invented shirt numbers or branded kits.
